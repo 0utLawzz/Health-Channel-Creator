@@ -5,9 +5,9 @@ import path from 'path';
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
-const VIDEO_DURATION_MS = 40500; // scene durations sum: 4500+9000+8000+5500+7500+6000
-const BROWSER_URL = process.env.BIOMINUTE_EXPORT_URL || 'http://localhost:25078/biominute-reels/';
+const BROWSER_URL = (process.env.BIOMINUTE_EXPORT_URL || 'http://localhost:25078/biominute-reels/').replace(/\/?$/, '') + '?export';
 const OUT_DIR = process.env.BIOMINUTE_EXPORT_DIR || '/tmp/biominute-export';
+const FALLBACK_DURATION_MS = 43500;
 
 async function startXvfb(): Promise<{ display: string; stop: () => void }> {
   const display = ':99';
@@ -17,7 +17,6 @@ async function startXvfb(): Promise<{ display: string; stop: () => void }> {
     proc.on('error', reject);
     proc.on('spawn', () => {
       clearTimeout(timeout);
-      // Give Xvfb a moment to be ready
       setTimeout(resolve, 500);
     });
   });
@@ -27,24 +26,6 @@ async function startXvfb(): Promise<{ display: string; stop: () => void }> {
       proc.kill('SIGTERM');
     },
   };
-}
-
-async function blobToBase64(page: any): Promise<string> {
-  return page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      const url = (window as any).__biominuteExportUrl__;
-      if (!url) return reject(new Error('No export URL'));
-      fetch(url)
-        .then(r => r.blob())
-        .then(blob => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        })
-        .catch(reject);
-    });
-  });
 }
 
 async function main() {
@@ -59,6 +40,8 @@ async function main() {
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-gpu',
+        '--kiosk',
+        `--window-size=${VIDEO_WIDTH},${VIDEO_HEIGHT}`,
         '--auto-select-desktop-capture-source=.*',
         '--use-fake-device-for-media-stream',
         '--use-fake-ui-for-media-stream',
@@ -66,11 +49,12 @@ async function main() {
     });
     const context = await browser.newContext({
       viewport: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT },
+      deviceScaleFactor: 1,
     });
     const page = await context.newPage();
     await page.goto(BROWSER_URL, { waitUntil: 'networkidle' });
 
-    // Simulate user gesture to unlock audio and start display capture
+    // Unlock audio with a user gesture, then reload so the audio engine starts on mount
     await page.click('body');
     await page.evaluate(() => {
       (window as any).__biominuteAudioCapture__ = true;
@@ -78,6 +62,13 @@ async function main() {
     await page.reload({ waitUntil: 'networkidle' });
     await page.click('body');
 
+    // Read the total video duration from the page; fall back to a safe value if unavailable
+    const totalDurationMs = await page
+      .evaluate(() => (window as any).__biominuteTotalDuration__ as number | undefined)
+      .then((d) => (d && d > 0 ? d : FALLBACK_DURATION_MS));
+    console.log(`Recording ${totalDurationMs}ms from ${BROWSER_URL}`);
+
+    // Start browser tab capture with audio
     await page.evaluate(async () => {
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: { width: 1080, height: 1920, frameRate: 60 },
@@ -93,11 +84,12 @@ async function main() {
         (window as any).__biominuteExportUrl__ = URL.createObjectURL(blob);
       };
       (window as any).__biominuteRecorder__ = recorder;
+      (window as any).__biominuteChunks__ = chunks;
       recorder.start(1000);
     });
 
     // Wait for the first full video loop
-    await page.waitForTimeout(VIDEO_DURATION_MS + 1000);
+    await page.waitForTimeout(totalDurationMs + 1500);
 
     const base64 = await page.evaluate(() => {
       return new Promise<string>((resolve, reject) => {
@@ -121,7 +113,7 @@ async function main() {
     const base64Data = base64.split(',')[1];
     await fs.writeFile(webmPath, Buffer.from(base64Data, 'base64'));
 
-    // Convert to MP4 with faststart and yuv420p for compatibility
+    // Convert to MP4 at exactly 1080x1920 with yuv420p for compatibility
     execSync(
       `ffmpeg -y -i "${webmPath}" -vf "scale=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:force_original_aspect_ratio=decrease,pad=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:v libx264 -preset fast -crf 23 -movflags +faststart -c:a aac -b:a 128k "${mp4Path}"`,
       { stdio: 'inherit' }

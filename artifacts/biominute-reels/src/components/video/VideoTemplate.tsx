@@ -28,6 +28,12 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   5: Scene5,
 };
 
+declare global {
+  interface Window {
+    __biominuteTotalDuration__?: number;
+  }
+}
+
 export default function VideoTemplate({
   durations = SCENE_DURATIONS,
   loop = true,
@@ -44,6 +50,15 @@ export default function VideoTemplate({
   useEffect(() => {
     onSceneChange?.(currentSceneKey);
   }, [currentSceneKey, onSceneChange]);
+
+  const totalDurationMs = useMemo(
+    () => Object.values(SCENE_DURATIONS).reduce((a, b) => a + b, 0),
+    [],
+  );
+
+  useEffect(() => {
+    window.__biominuteTotalDuration__ = totalDurationMs;
+  }, [totalDurationMs]);
 
   const baseSceneKey = currentSceneKey.replace(/_r[12]$/, '');
   const sceneIndex = Object.keys(SCENE_DURATIONS).indexOf(baseSceneKey);
