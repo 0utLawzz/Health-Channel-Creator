@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 
+const BASE_URL = import.meta.env.BASE_URL ?? '/';
+const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 400, damping: 30 };
 const SPRING_SMOOTH = { type: 'spring' as const, stiffness: 120, damping: 25 };
 
 export function Scene4() {
@@ -13,52 +15,68 @@ export function Scene4() {
     >
       <div className="absolute inset-0 w-full h-full p-[8%] flex flex-col items-center justify-center">
         
-        {/* Text block */}
-        <motion.h2 
-          className="text-white text-center font-bold leading-[1.3] mb-[calc(var(--cvh)*6)] w-full"
-          style={{ fontSize: 'calc(var(--cvw)*9.5)' }}
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ...SPRING_SMOOTH, delay: 0.2 }}
-        >
-          You don't need <br/>
-          <span className="text-white/30 line-through decoration-brand-orange decoration-[calc(var(--cvw)*1)]">speed</span> or <span className="text-white/30 line-through decoration-brand-orange decoration-[calc(var(--cvw)*1)]">distance</span>
-        </motion.h2>
+        {/* Abstract Data Rings */}
+        <div className="relative w-[70%] aspect-square flex items-center justify-center mb-[calc(var(--cvh)*6)]">
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+             <motion.circle 
+               cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="1" className="text-brand-teal/20"
+               initial={{ scale: 0 }}
+               animate={{ scale: 1 }}
+               transition={{ ...SPRING_SMOOTH, delay: 0.2 }}
+               style={{ originX: '50px', originY: '50px' }}
+             />
+             <motion.circle 
+               cx="50" cy="50" r="35" fill="none" stroke="currentColor" strokeWidth="2" className="text-brand-blue/30"
+               initial={{ scale: 0 }}
+               animate={{ scale: 1 }}
+               transition={{ ...SPRING_SMOOTH, delay: 0.4 }}
+               style={{ originX: '50px', originY: '50px' }}
+             />
+             <motion.circle 
+               cx="50" cy="50" r="25" fill="none" stroke="currentColor" strokeWidth="4" className="text-brand-emerald"
+               strokeLinecap="round"
+               strokeDasharray="157"
+               initial={{ strokeDashoffset: 157, rotate: -90 }}
+               animate={{ strokeDashoffset: 0, rotate: -90 }}
+               transition={{ duration: 2, ease: "easeInOut", delay: 1.0 }}
+               style={{ originX: '50px', originY: '50px' }}
+             />
+          </svg>
+          
+          <motion.div 
+             className="absolute flex flex-col items-center justify-center text-center gap-[calc(var(--cvh)*1)]"
+             initial={{ opacity: 0, scale: 0 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ ...SPRING_SNAPPY, delay: 2.0 }}
+          >
+             <span className="text-white font-bold" style={{ fontSize: 'calc(var(--cvw)*6)' }}>1. WATER</span>
+             <span className="text-brand-teal font-bold" style={{ fontSize: 'calc(var(--cvw)*6)' }}>2. COFFEE</span>
+          </motion.div>
+        </div>
 
-        <motion.div 
-           className="relative bg-gradient-to-br from-brand-teal to-brand-emerald text-brand-navy rounded-[calc(var(--cvw)*8)] p-[calc(var(--cvw)*10)] w-full text-center overflow-hidden shadow-[0_20px_50px_rgba(20,184,166,0.3)]"
-           initial={{ scale: 0.9, opacity: 0, rotate: -2 }}
-           animate={{ scale: 1, opacity: 1, rotate: 0 }}
-           transition={{ ...SPRING_SMOOTH, delay: 0.8 }}
-        >
-           {/* Shimmer effect */}
-           <motion.div 
-             className="absolute top-0 -left-[100%] w-1/2 h-full bg-white/40 skew-x-12 blur-[10px]"
-             animate={{ x: ['0%', '400%'] }}
-             transition={{ duration: 1.5, delay: 1.5, repeat: Infinity, repeatDelay: 3.5, ease: "easeInOut" }}
-           />
-
-           <p className="font-bold mb-[calc(var(--cvh)*1)] opacity-90 uppercase tracking-widest" style={{ fontSize: 'calc(var(--cvw)*5)' }}>
-             A relaxed
-           </p>
-           <p className="font-extrabold leading-none tracking-tighter my-[calc(var(--cvh)*1)] drop-shadow-md" style={{ fontSize: 'calc(var(--cvw)*22)' }}>
-             10-15
-           </p>
-           <p className="font-bold uppercase tracking-widest bg-brand-navy/10 inline-block px-[calc(var(--cvw)*4)] py-[calc(var(--cvw)*2)] rounded-full mt-[calc(var(--cvh)*1)]" style={{ fontSize: 'calc(var(--cvw)*5.5)' }}>
-             Minute Walk
-           </p>
+        {/* Text */}
+        <motion.div className="flex flex-col items-center text-center gap-[calc(var(--cvh)*2)] w-full">
+           <motion.p 
+             className="text-white font-bold leading-tight"
+             style={{ fontSize: 'calc(var(--cvw)*9)' }}
+             initial={{ y: 30, opacity: 0 }}
+             animate={{ y: 0, opacity: 1 }}
+             transition={{ ...SPRING_SNAPPY, delay: 0.8 }}
+           >
+             A small swap for an extra edge
+           </motion.p>
         </motion.div>
-
-        <motion.p 
-          className="text-white/70 text-center font-medium mt-[calc(var(--cvh)*5)] leading-tight"
-          style={{ fontSize: 'calc(var(--cvw)*7)' }}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ...SPRING_SMOOTH, delay: 1.4 }}
+        
+        {/* Citation (only final 2s) */}
+        <motion.div 
+          className="absolute bottom-[calc(var(--cvh)*5)] text-white/40 font-body text-center w-[80%]"
+          style={{ fontSize: 'calc(var(--cvw)*3.5)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 7 }}
         >
-          is enough to make a <br/>
-          <span className="text-white font-bold">meaningful difference.</span>
-        </motion.p>
+          Popkin BM et al. (2010), Nutrition Reviews — Water, hydration and health
+        </motion.div>
 
       </div>
     </motion.div>

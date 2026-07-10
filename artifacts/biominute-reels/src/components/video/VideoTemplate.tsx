@@ -12,10 +12,10 @@ import { Scene5 } from './video_scenes/Scene5';
 
 export const SCENE_DURATIONS = {
   0: 4500,
-  1: 9000,
+  1: 8500,
   2: 8000,
-  3: 5500,
-  4: 7500,
+  3: 7500,
+  4: 9000,
   5: 6000,
 };
 
@@ -49,16 +49,6 @@ export default function VideoTemplate({
   const sceneIndex = Object.keys(SCENE_DURATIONS).indexOf(baseSceneKey);
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
-  const stars = useMemo(() => {
-    return Array.from({ length: 40 }).map((_, i) => ({
-      top: `${(i * 5) % 200}%`,
-      left: `${(i * 17) % 100}%`,
-      size: `${(i % 3) + 1}px`,
-      opacity: ((i % 5) + 2) / 10,
-      glow: i % 7 === 0,
-    }));
-  }, []);
-
   return (
     <div
       className="w-full h-full overflow-hidden relative"
@@ -68,45 +58,22 @@ export default function VideoTemplate({
       <motion.div
         className="absolute inset-0 z-0"
         animate={{
-          scale: sceneIndex >= 3 ? 1.1 : 1,
-          rotate: sceneIndex * 2,
+          scale: sceneIndex >= 3 ? 1.05 : 1,
         }}
         transition={{ duration: 4, ease: 'easeOut' }}
       >
-        {/* Moon to Sun gradient shift effect */}
+        {/* Morning gradient shift effect */}
         <motion.div
-           className="absolute inset-0 opacity-30"
+           className="absolute inset-0 opacity-40 mix-blend-screen"
            animate={{
-              background: sceneIndex >= 4 
-                ? 'radial-gradient(circle at center, rgba(16, 185, 129, 0.4) 0%, transparent 70%)' 
-                : 'radial-gradient(circle at top right, rgba(47, 111, 237, 0.4) 0%, transparent 60%)' 
+              background: sceneIndex >= 3 
+                ? 'radial-gradient(circle at center, rgba(16, 185, 129, 0.5) 0%, transparent 70%)' 
+                : 'radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.4) 0%, transparent 60%)' 
            }}
            transition={{ duration: 2 }}
         />
-        <div className="absolute top-[-20%] left-[-20%] w-[calc(var(--cvw)*70)] h-[calc(var(--cvw)*70)] bg-brand-teal/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-20%] right-[-20%] w-[calc(var(--cvw)*70)] h-[calc(var(--cvw)*70)] bg-brand-blue/5 rounded-full blur-[100px]" />
-      </motion.div>
-
-      {/* Parallax stars */}
-      <motion.div
-        className="absolute inset-0 z-0 opacity-40 pointer-events-none"
-        animate={{ y: ['0%', '-50%'] }}
-        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-      >
-        {stars.map((star, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-white"
-            style={{
-              top: star.top,
-              left: star.left,
-              width: star.size,
-              height: star.size,
-              opacity: star.opacity,
-              boxShadow: star.glow ? '0 0 4px 1px rgba(255,255,255,0.8)' : 'none',
-            }}
-          />
-        ))}
+        <div className="absolute top-[-10%] left-[-20%] w-[calc(var(--cvw)*80)] h-[calc(var(--cvw)*80)] bg-brand-teal/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-20%] w-[calc(var(--cvw)*80)] h-[calc(var(--cvw)*80)] bg-brand-blue/10 rounded-full blur-[100px]" />
       </motion.div>
 
       {/* Grid overlay */}
@@ -116,7 +83,7 @@ export default function VideoTemplate({
         {SceneComponent && <SceneComponent key={currentSceneKey} />}
       </AnimatePresence>
 
-      {/* Audio layer: background music + scene-change SFX. Assets are generated per episode and placed in public/audio/. */}
+      {/* Audio layer */}
       <AudioEngine
         currentSceneKey={currentSceneKey}
         muted={muted}
