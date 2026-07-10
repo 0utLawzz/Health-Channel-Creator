@@ -21,12 +21,12 @@ export function Scene1() {
       className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, x: '-50vw' }}
+      exit={{ opacity: 0, x: 'calc(var(--cvw) * -50)' }}
       transition={{ duration: 0.8 }}
     >
-      <div className="z-20 w-full px-[8vw] flex flex-col items-center text-center mt-[-10vh]">
+      <div className="z-20 w-full px-[calc(var(--cvw)*8)] flex flex-col items-center text-center mt-[calc(var(--cvh)*-10)]">
         <motion.p
-          className="font-display font-bold text-[4vh] text-brand-text leading-tight mb-[4vh]"
+          className="font-display font-bold text-[calc(var(--cvh)*4)] text-brand-text leading-tight mb-[calc(var(--cvh)*4)]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ...SPRING_SMOOTH }}
@@ -34,7 +34,7 @@ export function Scene1() {
           More than just <span className="text-brand-orange">burning calories.</span>
         </motion.p>
         
-        <div className="relative w-[60vw] h-[60vw] max-w-[300px] max-h-[300px] flex items-center justify-center mt-[2vh]">
+        <div className="relative w-[calc(var(--cvw)*60)] h-[calc(var(--cvw)*60)] max-w-[300px] max-h-[300px] flex items-center justify-center mt-[calc(var(--cvh)*2)]">
           {/* Background glow */}
           <motion.div
              className="absolute w-[80%] h-[80%] bg-brand-emerald/10 rounded-full blur-[30px]"
@@ -58,7 +58,7 @@ export function Scene1() {
 
           {/* Clock */}
           <motion.div
-             className="absolute -bottom-[2vh] -right-[2vw] w-[20vw] h-[20vw] max-w-[80px] max-h-[80px] border-4 border-brand-blue bg-brand-navy rounded-full shadow-[0_0_20px_rgba(47,111,237,0.4)] flex items-center justify-center z-10"
+             className="absolute -bottom-[calc(var(--cvh)*2)] -right-[calc(var(--cvw)*2)] w-[calc(var(--cvw)*20)] h-[calc(var(--cvw)*20)] max-w-[80px] max-h-[80px] border-4 border-brand-blue bg-brand-navy rounded-full shadow-[0_0_20px_rgba(47,111,237,0.4)] flex items-center justify-center z-10"
              initial={{ scale: 0, opacity: 0 }}
              animate={phase >= 2 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
              transition={SPRING_SNAPPY}
@@ -74,7 +74,7 @@ export function Scene1() {
              </svg>
              {phase >= 2 && (
                <motion.span 
-                 className="absolute -bottom-[3vh] font-mono text-[1.6vh] text-brand-blue tracking-widest font-bold whitespace-nowrap bg-brand-navy/90 px-2 py-1 rounded"
+                 className="absolute -bottom-[calc(var(--cvh)*3)] font-mono text-[calc(var(--cvh)*1.6)] text-brand-blue tracking-widest font-bold whitespace-nowrap bg-brand-navy/90 px-2 py-1 rounded"
                  initial={{ opacity: 0, y: -10 }}
                  animate={{ opacity: 1, y: 0 }}
                  transition={{ delay: 0.5 }}
@@ -86,7 +86,7 @@ export function Scene1() {
         </div>
 
         <motion.p
-          className="font-body text-[2.2vh] text-brand-muted mt-[8vh] max-w-[90%] leading-relaxed text-center font-medium"
+          className="font-body text-[calc(var(--cvh)*2.2)] text-brand-muted mt-[calc(var(--cvh)*8)] max-w-[90%] leading-relaxed text-center font-medium"
           initial={{ opacity: 0, y: 20 }}
           animate={phase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={SPRING_SMOOTH}

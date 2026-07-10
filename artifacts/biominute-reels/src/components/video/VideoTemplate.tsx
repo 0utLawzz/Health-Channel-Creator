@@ -61,7 +61,7 @@ export default function VideoTemplate({
 
   return (
     <div
-      className="w-full h-screen overflow-hidden relative"
+      className="w-full h-full overflow-hidden relative"
       style={{ backgroundColor: 'var(--color-brand-navy)' }}
     >
       {/* Background persistent layer */}
@@ -83,8 +83,8 @@ export default function VideoTemplate({
            }}
            transition={{ duration: 2 }}
         />
-        <div className="absolute top-[-20%] left-[-20%] w-[70vw] h-[70vw] bg-brand-teal/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-20%] right-[-20%] w-[70vw] h-[70vw] bg-brand-blue/5 rounded-full blur-[100px]" />
+        <div className="absolute top-[-20%] left-[-20%] w-[calc(var(--cvw)*70)] h-[calc(var(--cvw)*70)] bg-brand-teal/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-20%] right-[-20%] w-[calc(var(--cvw)*70)] h-[calc(var(--cvw)*70)] bg-brand-blue/5 rounded-full blur-[100px]" />
       </motion.div>
 
       {/* Parallax stars */}
@@ -110,7 +110,7 @@ export default function VideoTemplate({
       </motion.div>
 
       {/* Grid overlay */}
-      <div className="absolute inset-0 z-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:4vw_4vw]" />
+      <div className="absolute inset-0 z-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:calc(var(--cvw)*4)_calc(var(--cvw)*4)]" />
 
       <AnimatePresence mode="popLayout">
         {SceneComponent && <SceneComponent key={currentSceneKey} />}

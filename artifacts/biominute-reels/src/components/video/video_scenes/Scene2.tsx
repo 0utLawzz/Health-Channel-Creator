@@ -18,7 +18,7 @@ export function Scene2() {
   return (
     <motion.div
       className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden"
-      initial={{ opacity: 0, x: '50vw' }}
+      initial={{ opacity: 0, x: 'calc(var(--cvw) * 50)' }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, scale: 0.8, filter: 'blur(10px)' }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -30,9 +30,9 @@ export function Scene2() {
         transition={{ duration: 2 }}
       />
 
-      <div className="z-20 w-full px-[8vw] flex flex-col items-center mt-[-5vh]">
+      <div className="z-20 w-full px-[calc(var(--cvw)*8)] flex flex-col items-center mt-[calc(var(--cvh)*-5)]">
         <motion.p
-          className="font-display text-[3.5vh] text-brand-text font-bold leading-tight mb-[6vh] text-center"
+          className="font-display text-[calc(var(--cvh)*3.5)] text-brand-text font-bold leading-tight mb-[calc(var(--cvh)*6)] text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ...SPRING_SMOOTH }}
@@ -41,7 +41,7 @@ export function Scene2() {
         </motion.p>
 
         {/* Graph Container */}
-        <div className="relative w-[80vw] h-[25vh] bg-brand-navy border border-white/10 rounded-2xl p-4 shadow-xl flex items-end overflow-hidden z-10">
+        <div className="relative w-[calc(var(--cvw)*80)] h-[calc(var(--cvh)*25)] bg-brand-navy border border-white/10 rounded-2xl p-4 shadow-xl flex items-end overflow-hidden z-10">
            {/* Grid lines */}
            <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-10">
              <div className="w-full h-px bg-white" />
@@ -91,14 +91,14 @@ export function Scene2() {
         </div>
 
         {/* Labels */}
-        <div className="flex justify-between w-[80vw] mt-4">
+        <div className="flex justify-between w-[calc(var(--cvw)*80)] mt-4">
            <motion.div
               className="flex items-center gap-2"
               initial={{ opacity: 0 }}
               animate={phase >= 1 ? { opacity: 1 } : { opacity: 0 }}
            >
               <div className="w-3 h-3 rounded-full bg-brand-orange" />
-              <span className="font-mono text-[1.4vh] text-brand-orange font-bold">SITTING</span>
+              <span className="font-mono text-[calc(var(--cvh)*1.4)] text-brand-orange font-bold">SITTING</span>
            </motion.div>
            <motion.div
               className="flex items-center gap-2"
@@ -106,18 +106,18 @@ export function Scene2() {
               animate={phase >= 2 ? { opacity: 1 } : { opacity: 0 }}
            >
               <div className="w-3 h-3 rounded-full bg-brand-emerald" />
-              <span className="font-mono text-[1.4vh] text-brand-emerald font-bold">WALKING</span>
+              <span className="font-mono text-[calc(var(--cvh)*1.4)] text-brand-emerald font-bold">WALKING</span>
            </motion.div>
         </div>
 
         {/* Muscle context */}
         <motion.div
-          className="mt-[6vh] bg-brand-teal/10 border border-brand-teal/30 px-[6vw] py-[3vh] rounded-2xl backdrop-blur-sm"
+          className="mt-[calc(var(--cvh)*6)] bg-brand-teal/10 border border-brand-teal/30 px-[calc(var(--cvw)*6)] py-[calc(var(--cvh)*3)] rounded-2xl backdrop-blur-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={phase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={SPRING_SMOOTH}
         >
-          <p className="font-body text-[2.2vh] text-brand-teal font-medium text-center">
+          <p className="font-body text-[calc(var(--cvh)*2.2)] text-brand-teal font-medium text-center">
             Walking helps muscles absorb glucose from your meal.
           </p>
         </motion.div>

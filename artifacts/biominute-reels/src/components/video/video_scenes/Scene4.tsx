@@ -24,10 +24,10 @@ export function Scene4() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="z-20 w-full px-[8vw] flex flex-col items-center text-center">
+      <div className="z-20 w-full px-[calc(var(--cvw)*8)] flex flex-col items-center text-center">
         
         <motion.p
-          className="font-display text-[3.5vh] text-brand-muted font-bold leading-tight mb-[6vh]"
+          className="font-display text-[calc(var(--cvh)*3.5)] text-brand-muted font-bold leading-tight mb-[calc(var(--cvh)*6)]"
           initial={{ opacity: 0, y: 20 }}
           animate={phase >= 1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={SPRING_SNAPPY}
@@ -37,7 +37,7 @@ export function Scene4() {
 
         {/* 10-15 min Badge */}
         <motion.div
-           className="relative flex items-center justify-center w-[45vw] h-[45vw] max-w-[220px] max-h-[220px] mb-[6vh] z-10"
+           className="relative flex items-center justify-center w-[calc(var(--cvw)*45)] h-[calc(var(--cvw)*45)] max-w-[220px] max-h-[220px] mb-[calc(var(--cvh)*6)] z-10"
            initial={{ scale: 0, opacity: 0 }}
            animate={phase >= 2 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
            transition={SPRING_SNAPPY}
@@ -48,10 +48,10 @@ export function Scene4() {
              transition={{ duration: 3, repeat: Infinity }}
            />
            <div className="absolute inset-0 rounded-full border-8 border-brand-emerald bg-brand-navy shadow-[0_0_40px_rgba(16,185,129,0.4)] flex flex-col items-center justify-center">
-             <span className="font-display font-black text-[6vh] text-white drop-shadow-lg leading-none tracking-tighter">
+             <span className="font-display font-black text-[calc(var(--cvh)*6)] text-white drop-shadow-lg leading-none tracking-tighter">
                10-15
              </span>
-             <span className="font-mono text-[2vh] font-bold text-brand-emerald uppercase tracking-widest mt-2">
+             <span className="font-mono text-[calc(var(--cvh)*2)] font-bold text-brand-emerald uppercase tracking-widest mt-2">
                Minutes
              </span>
            </div>
@@ -63,22 +63,22 @@ export function Scene4() {
           transition={SPRING_SNAPPY}
           className="flex flex-col items-center w-full"
         >
-          <div className="w-full bg-gradient-to-r from-brand-teal/20 to-brand-emerald/20 border border-brand-teal/40 px-[6vw] py-[3vh] rounded-3xl backdrop-blur-md shadow-2xl">
-            <p className="font-display text-[2.5vh] text-brand-text font-bold leading-tight">
+          <div className="w-full bg-gradient-to-r from-brand-teal/20 to-brand-emerald/20 border border-brand-teal/40 px-[calc(var(--cvw)*6)] py-[calc(var(--cvh)*3)] rounded-3xl backdrop-blur-md shadow-2xl">
+            <p className="font-display text-[calc(var(--cvh)*2.5)] text-brand-text font-bold leading-tight">
               A relaxed walk is enough to make a 
-              <span className="block text-brand-teal uppercase tracking-widest font-black text-[2.8vh] mt-2 leading-none drop-shadow-sm">Meaningful Difference</span>
+              <span className="block text-brand-teal uppercase tracking-widest font-black text-[calc(var(--cvh)*2.8)] mt-2 leading-none drop-shadow-sm">Meaningful Difference</span>
             </p>
           </div>
         </motion.div>
 
         {/* Citations */}
         <motion.div 
-          className="absolute bottom-[4vh] left-[4vw] right-[4vw] text-center"
+          className="absolute bottom-[calc(var(--cvh)*4)] left-[calc(var(--cvw)*4)] right-[calc(var(--cvw)*4)] text-center"
           initial={{ opacity: 0 }}
           animate={phase >= 4 ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 1 }}
         >
-          <p className="font-body text-[1.4vh] text-brand-muted/60 tracking-wide leading-[1.6]">
+          <p className="font-body text-[calc(var(--cvh)*1.4)] text-brand-muted/60 tracking-wide leading-[1.6]">
             Dipietro L et al. (2013), Diabetes Care<br/>
             Reynolds AN et al. (2016), Diabetologia
           </p>

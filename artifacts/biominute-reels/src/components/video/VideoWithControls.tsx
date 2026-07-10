@@ -200,10 +200,16 @@ export default function VideoWithControls() {
   const barVisible = !collapsed || hovering || tapPinned;
 
   // Export path: force unmuted so final renders include audio
-  if (!isIframed) return <VideoTemplate muted={false} />;
+  if (!isIframed) {
+    return (
+      <div className="w-full h-full">
+        <VideoTemplate muted={false} />
+      </div>
+    );
+  }
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-full">
       <VideoTemplate
         key={mountKey}
         durations={durations}

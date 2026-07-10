@@ -22,12 +22,12 @@ export function Scene5() {
       <div className="absolute inset-0 bg-brand-navy/80 z-10" />
 
       <motion.div
-        className="relative z-20 flex flex-col items-center w-full px-[8vw]"
+        className="relative z-20 flex flex-col items-center w-full px-[calc(var(--cvw)*8)]"
         initial={{ scale: 0.8, opacity: 0, y: 30 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={SPRING_SNAPPY}
       >
-        <div className="relative w-[25vw] h-[25vw] min-w-[100px] min-h-[100px]">
+        <div className="relative w-[calc(var(--cvw)*25)] h-[calc(var(--cvw)*25)] min-w-[100px] min-h-[100px]">
           <div className="absolute inset-0 bg-brand-teal rounded-full opacity-40 blur-3xl" />
           <img
             src={`${import.meta.env.BASE_URL}images/biominute-logo.png`}
@@ -37,18 +37,18 @@ export function Scene5() {
         </div>
 
         <motion.div
-          className="mt-[8vh] w-full p-[4vh] rounded-3xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 backdrop-blur-md shadow-2xl text-center"
+          className="mt-[calc(var(--cvh)*8)] w-full p-[calc(var(--cvh)*4)] rounded-3xl bg-gradient-to-b from-white/10 to-white/5 border border-white/10 backdrop-blur-md shadow-2xl text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, ...SPRING_SNAPPY }}
         >
-          <p className="font-display font-bold text-[3.5vh] text-brand-text leading-tight drop-shadow-md">
+          <p className="font-display font-bold text-[calc(var(--cvh)*3.5)] text-brand-text leading-tight drop-shadow-md">
             Do you walk after meals, or sit right down?
           </p>
         </motion.div>
         
         <motion.p
-          className="font-body text-[2.5vh] text-brand-teal mt-[6vh] tracking-[0.2em] uppercase font-bold"
+          className="font-body text-[calc(var(--cvh)*2.5)] text-brand-teal mt-[calc(var(--cvh)*6)] tracking-[0.2em] uppercase font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 1 }}
