@@ -8,9 +8,9 @@ export function Scene4() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 800), // Badge
-      setTimeout(() => setPhase(2), 2000), // Energy burst
-      setTimeout(() => setPhase(3), 3500), // Text
+      setTimeout(() => setPhase(1), 800), // No speed/distance text
+      setTimeout(() => setPhase(2), 2200), // 10-15 min badge
+      setTimeout(() => setPhase(3), 3500), // Enough text
       setTimeout(() => setPhase(4), 5000), // Citation
     ];
     return () => timers.forEach(t => clearTimeout(t));
@@ -26,42 +26,35 @@ export function Scene4() {
     >
       <div className="z-20 w-full px-[8vw] flex flex-col items-center text-center">
         
-        {/* 7-9 hrs Badge */}
+        <motion.p
+          className="font-display text-[3.5vh] text-brand-muted font-bold leading-tight mb-[6vh]"
+          initial={{ opacity: 0, y: 20 }}
+          animate={phase >= 1 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={SPRING_SNAPPY}
+        >
+          You don't need <span className="line-through text-brand-text decoration-brand-orange decoration-4">speed</span> or <span className="line-through text-brand-text decoration-brand-orange decoration-4">distance</span>.
+        </motion.p>
+
+        {/* 10-15 min Badge */}
         <motion.div
-           className="relative flex items-center justify-center w-[40vw] h-[40vw] max-w-[200px] max-h-[200px] mb-[6vh] z-10"
+           className="relative flex items-center justify-center w-[45vw] h-[45vw] max-w-[220px] max-h-[220px] mb-[6vh] z-10"
            initial={{ scale: 0, opacity: 0 }}
-           animate={phase >= 1 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+           animate={phase >= 2 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
            transition={SPRING_SNAPPY}
         >
            <motion.div 
-             className="absolute inset-0 rounded-full bg-brand-blue/20 blur-[30px]"
-             animate={phase >= 2 ? { scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] } : {}}
-             transition={{ duration: 2, repeat: Infinity }}
+             className="absolute inset-0 rounded-full bg-brand-emerald/20 blur-[30px]"
+             animate={phase >= 2 ? { scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] } : {}}
+             transition={{ duration: 3, repeat: Infinity }}
            />
-           <div className="absolute inset-0 rounded-full border-8 border-brand-emerald bg-brand-navy shadow-[0_0_40px_rgba(16,185,129,0.5)] flex flex-col items-center justify-center">
-             <span className="font-display font-black text-[6vh] text-white drop-shadow-lg leading-none tracking-tight">
-               7-9
+           <div className="absolute inset-0 rounded-full border-8 border-brand-emerald bg-brand-navy shadow-[0_0_40px_rgba(16,185,129,0.4)] flex flex-col items-center justify-center">
+             <span className="font-display font-black text-[6vh] text-white drop-shadow-lg leading-none tracking-tighter">
+               10-15
              </span>
-             <span className="font-mono text-[2vh] font-bold text-brand-emerald uppercase tracking-widest mt-1">
-               Hours
+             <span className="font-mono text-[2vh] font-bold text-brand-emerald uppercase tracking-widest mt-2">
+               Minutes
              </span>
            </div>
-           
-           {/* Energy particles */}
-           {phase >= 2 && Array.from({length: 6}).map((_, i) => (
-              <motion.div
-                 key={i}
-                 className="absolute w-3 h-3 bg-brand-emerald rounded-full"
-                 initial={{ x: 0, y: 0, opacity: 1 }}
-                 animate={{ 
-                    x: Math.cos(i * (Math.PI / 3)) * 150, 
-                    y: Math.sin(i * (Math.PI / 3)) * 150, 
-                    opacity: 0,
-                    scale: 0
-                 }}
-                 transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
-              />
-           ))}
         </motion.div>
 
         <motion.div
@@ -70,15 +63,15 @@ export function Scene4() {
           transition={SPRING_SNAPPY}
           className="flex flex-col items-center w-full"
         >
-          <div className="w-full bg-gradient-to-r from-brand-emerald/20 to-brand-blue/20 border border-brand-emerald/40 px-[6vw] py-[3vh] rounded-3xl backdrop-blur-md shadow-2xl">
-            <p className="font-display text-[3vh] text-brand-text font-bold leading-tight">
-              Does more for your energy than any
-              <span className="block text-brand-emerald uppercase tracking-widest font-black text-[3vh] mt-2 leading-none">Productivity Hack</span>
+          <div className="w-full bg-gradient-to-r from-brand-teal/20 to-brand-emerald/20 border border-brand-teal/40 px-[6vw] py-[3vh] rounded-3xl backdrop-blur-md shadow-2xl">
+            <p className="font-display text-[2.5vh] text-brand-text font-bold leading-tight">
+              A relaxed walk is enough to make a 
+              <span className="block text-brand-teal uppercase tracking-widest font-black text-[2.8vh] mt-2 leading-none drop-shadow-sm">Meaningful Difference</span>
             </p>
           </div>
         </motion.div>
 
-        {/* Citation */}
+        {/* Citations */}
         <motion.div 
           className="absolute bottom-[4vh] left-[4vw] right-[4vw] text-center"
           initial={{ opacity: 0 }}
@@ -86,7 +79,8 @@ export function Scene4() {
           transition={{ duration: 1 }}
         >
           <p className="font-body text-[1.4vh] text-brand-muted/60 tracking-wide leading-[1.6]">
-            Watson NF et al. (2015), Sleep — AASM/SRS<br/>Recommended Sleep Duration Consensus
+            Dipietro L et al. (2013), Diabetes Care<br/>
+            Reynolds AN et al. (2016), Diabetologia
           </p>
         </motion.div>
         

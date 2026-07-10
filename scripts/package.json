@@ -8,6 +8,9 @@
     "generate-dashboard": "tsx ./src/generate-dashboard.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
   "devDependencies": {
     "@types/node": "catalog:",
     "tsx": "catalog:"

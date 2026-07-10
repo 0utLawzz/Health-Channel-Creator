@@ -9,10 +9,9 @@ export function Scene1() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 1000), // downtime text
-      setTimeout(() => setPhase(2), 2500), // brain / memory
-      setTimeout(() => setPhase(3), 4000), // body / tissue
-      setTimeout(() => setPhase(4), 5500), // hormones
+      setTimeout(() => setPhase(1), 1000), // Plate
+      setTimeout(() => setPhase(2), 2500), // Clock
+      setTimeout(() => setPhase(3), 4000), // Text 2
     ];
     return () => timers.forEach(t => clearTimeout(t));
   }, []);
@@ -27,122 +26,73 @@ export function Scene1() {
     >
       <div className="z-20 w-full px-[8vw] flex flex-col items-center text-center mt-[-10vh]">
         <motion.p
-          className="font-display font-bold text-[4vh] text-brand-text leading-tight mb-[6vh]"
+          className="font-display font-bold text-[4vh] text-brand-text leading-tight mb-[4vh]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ...SPRING_SMOOTH }}
         >
-          Sleep isn't <span className="text-brand-orange">downtime.</span>
+          More than just <span className="text-brand-orange">burning calories.</span>
         </motion.p>
         
-        {/* Central Graphic */}
-        <div className="relative w-[60vw] h-[60vw] max-w-[300px] max-h-[300px] flex items-center justify-center mt-[4vh]">
-          {/* Character Silhouette */}
+        <div className="relative w-[60vw] h-[60vw] max-w-[300px] max-h-[300px] flex items-center justify-center mt-[2vh]">
+          {/* Background glow */}
           <motion.div
-             className="absolute bottom-0 w-[80%] h-[40%] bg-brand-blue/20 rounded-full blur-[20px]"
+             className="absolute w-[80%] h-[80%] bg-brand-emerald/10 rounded-full blur-[30px]"
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
              transition={{ delay: 0.5 }}
           />
-          <motion.svg
-             viewBox="0 0 100 50"
-             className="absolute bottom-4 w-[70%] fill-brand-blue drop-shadow-xl"
-             initial={{ rotate: -90, x: -50, opacity: 0 }}
-             animate={{ rotate: 0, x: 0, opacity: 1 }}
-             transition={{ delay: 0.5, ...SPRING_SMOOTH }}
-          >
-             <path d="M20 30 A10 10 0 1 1 20 10 A10 10 0 1 1 20 30 Z" />
-             <path d="M35 25 L80 25 A10 10 0 0 1 80 45 L10 45 A10 10 0 0 1 10 25 Z" />
-          </motion.svg>
 
-          {/* Brain Icon & Particles */}
+          {/* Plate */}
           <motion.div
-            className="absolute top-0 w-[15vw] h-[15vw] min-w-[60px] min-h-[60px] bg-brand-emerald/20 border border-brand-emerald/50 rounded-full flex flex-col items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={phase >= 2 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-            transition={SPRING_SNAPPY}
+             className="absolute w-[60%] h-[60%] border-4 border-brand-teal rounded-full bg-brand-navy flex items-center justify-center shadow-[0_0_20px_rgba(20,184,166,0.2)]"
+             initial={{ rotate: -90, scale: 0, opacity: 0 }}
+             animate={phase >= 1 ? { rotate: 0, scale: 1, opacity: 1 } : { rotate: -90, scale: 0, opacity: 0 }}
+             transition={SPRING_SMOOTH}
           >
-             <svg viewBox="0 0 24 24" className="w-[60%] h-[60%] stroke-brand-emerald fill-none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9.5 3c-1.5 0-3 1-3 3a4.5 4.5 0 0 0 2.5 8.5h6A4.5 4.5 0 0 0 17.5 6c0-2-1.5-3-3-3" />
-                <path d="M12 3v18" />
+             {/* Food representation */}
+             <div className="w-[40%] h-[40%] bg-brand-orange/80 rounded-l-full absolute left-[10%]" />
+             <div className="w-[40%] h-[40%] bg-brand-emerald/80 rounded-tr-full absolute top-[10%] right-[10%]" />
+             <div className="w-[40%] h-[40%] bg-brand-blue/80 rounded-br-full absolute bottom-[10%] right-[10%]" />
+          </motion.div>
+
+          {/* Clock */}
+          <motion.div
+             className="absolute -bottom-[2vh] -right-[2vw] w-[20vw] h-[20vw] max-w-[80px] max-h-[80px] border-4 border-brand-blue bg-brand-navy rounded-full shadow-[0_0_20px_rgba(47,111,237,0.4)] flex items-center justify-center z-10"
+             initial={{ scale: 0, opacity: 0 }}
+             animate={phase >= 2 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
+             transition={SPRING_SNAPPY}
+          >
+             <svg viewBox="0 0 24 24" className="w-[60%] h-[60%] stroke-brand-blue fill-none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <motion.path 
+                  d="M12 6v6l4 2" 
+                  initial={{ pathLength: 0 }}
+                  animate={phase >= 2 ? { pathLength: 1 } : { pathLength: 0 }}
+                  transition={{ duration: 1, delay: 0.2 }}
+                />
              </svg>
              {phase >= 2 && (
                <motion.span 
-                 className="absolute -top-[3.5vh] font-mono text-[1.6vh] text-brand-emerald tracking-widest font-bold whitespace-nowrap bg-brand-navy/80 px-2 py-1 rounded"
-                 initial={{ opacity: 0, y: 10 }}
+                 className="absolute -bottom-[3vh] font-mono text-[1.6vh] text-brand-blue tracking-widest font-bold whitespace-nowrap bg-brand-navy/90 px-2 py-1 rounded"
+                 initial={{ opacity: 0, y: -10 }}
                  animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.2 }}
+                 transition={{ delay: 0.5 }}
                >
-                 MEMORY
+                 30 MIN
                </motion.span>
              )}
-          </motion.div>
-          
-          {/* Repair / Body Icon */}
-          <motion.div
-            className="absolute left-[-5vw] top-[40%] w-[12vw] h-[12vw] min-w-[50px] min-h-[50px] bg-brand-teal/20 border border-brand-teal/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(20,184,166,0.3)] z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={phase >= 3 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-            transition={SPRING_SNAPPY}
-          >
-             <svg viewBox="0 0 24 24" className="w-[50%] h-[50%] stroke-brand-teal fill-none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 12v-2a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2" />
-                <path d="M4 12h16" />
-                <path d="M12 8v8" />
-             </svg>
-             {phase >= 3 && (
-               <motion.span 
-                 className="absolute -left-[9vw] font-mono text-[1.4vh] text-brand-teal tracking-widest font-bold whitespace-nowrap bg-brand-navy/80 px-2 py-1 rounded"
-                 initial={{ opacity: 0, x: 10 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 transition={{ delay: 0.2 }}
-               >
-                 REPAIR
-               </motion.span>
-             )}
-          </motion.div>
-
-          {/* Hormones Icon */}
-          <motion.div
-            className="absolute right-[-5vw] top-[40%] w-[12vw] h-[12vw] min-w-[50px] min-h-[50px] bg-brand-blue/20 border border-brand-blue/50 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(47,111,237,0.3)] z-10"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={phase >= 4 ? { scale: 1, opacity: 1 } : { scale: 0, opacity: 0 }}
-            transition={SPRING_SNAPPY}
-          >
-             <svg viewBox="0 0 24 24" className="w-[50%] h-[50%] stroke-brand-blue fill-none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v20" />
-                <path d="m17 5-5-3-5 3" />
-                <path d="m17 19-5 3-5-3" />
-                <path d="M2 12h20" />
-             </svg>
-             {phase >= 4 && (
-               <motion.span 
-                 className="absolute -right-[10vw] font-mono text-[1.4vh] text-brand-blue tracking-widest font-bold whitespace-nowrap bg-brand-navy/80 px-2 py-1 rounded"
-                 initial={{ opacity: 0, x: -10 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 transition={{ delay: 0.2 }}
-               >
-                 HORMONES
-               </motion.span>
-             )}
-          </motion.div>
-
-          {/* Emerald pulses */}
-          <motion.div
-             className="absolute inset-0 flex items-center justify-center z-0"
-          >
-             {phase >= 2 && Array.from({length: 3}).map((_, i) => (
-                <motion.div
-                   key={i}
-                   className="absolute w-[20vw] h-[20vw] rounded-full border border-brand-emerald"
-                   initial={{ scale: 0.5, opacity: 1 }}
-                   animate={{ scale: 2, opacity: 0 }}
-                   transition={{ duration: 2, repeat: Infinity, delay: i * 0.6, ease: "easeOut" }}
-                />
-             ))}
           </motion.div>
         </div>
 
+        <motion.p
+          className="font-body text-[2.2vh] text-brand-muted mt-[8vh] max-w-[90%] leading-relaxed text-center font-medium"
+          initial={{ opacity: 0, y: 20 }}
+          animate={phase >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={SPRING_SMOOTH}
+        >
+          Light movement right after eating changes how your body works.
+        </motion.p>
       </div>
     </motion.div>
   );

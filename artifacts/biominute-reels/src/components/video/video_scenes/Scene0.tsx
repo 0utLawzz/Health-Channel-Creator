@@ -55,7 +55,7 @@ export function Scene0() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, ...SPRING_SMOOTH }}
         >
-          S3: Sleep & Recovery
+          Daily Habit
         </motion.div>
         
         <motion.h2
@@ -64,8 +64,8 @@ export function Scene0() {
           animate={phase >= 1 ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.9 }}
           transition={SPRING_SMOOTH}
         >
-          Why Sleep Matters<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-blue">More Than You Think</span>
+          Walk After<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-blue">Meals</span>
         </motion.h2>
       </div>
 
