@@ -9,11 +9,10 @@ export function Scene0() {
 
   useEffect(() => {
     const timers = [
-      setTimeout(() => setPhase(1), 500),
+      setTimeout(() => setPhase(1), 800),
       setTimeout(() => setPhase(2), 2000),
-      setTimeout(() => setPhase(3), 3500),
     ];
-    return () => timers.forEach((t) => clearTimeout(t));
+    return () => timers.forEach(t => clearTimeout(t));
   }, []);
 
   return (
@@ -50,25 +49,24 @@ export function Scene0() {
       </div>
 
       <div className="z-20 w-full px-[8vw] flex flex-col items-center text-center mt-[10vh]">
+        <motion.div
+          className="font-mono font-bold text-[2.5vh] tracking-widest text-brand-blue uppercase mb-[2vh]"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, ...SPRING_SMOOTH }}
+        >
+          S3: Sleep & Recovery
+        </motion.div>
+        
         <motion.h2
-          className="font-display font-extrabold text-[6vh] leading-[1.1] text-brand-text drop-shadow-2xl"
+          className="font-display font-extrabold text-[5.5vh] leading-[1.15] text-brand-text drop-shadow-2xl mt-[2vh]"
           initial={{ opacity: 0, y: 40, scale: 0.9 }}
           animate={phase >= 1 ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.9 }}
           transition={SPRING_SMOOTH}
         >
-          Drink Water<br />
-          <span className="text-brand-muted">Before Your</span><br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-yellow-500">Morning Coffee</span>
+          Why Sleep Matters<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-blue">More Than You Think</span>
         </motion.h2>
-
-        <motion.p
-          className="font-body text-[2.5vh] text-brand-muted mt-[4vh] max-w-[80vw]"
-          initial={{ opacity: 0, y: 20 }}
-          animate={phase >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={SPRING_SMOOTH}
-        >
-          After 7 to 8 hours of sleep, your body is naturally low on fluids just from breathing and sweating overnight.
-        </motion.p>
       </div>
 
       <motion.div 

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useVideoPlayer } from '@/lib/video';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -10,12 +10,12 @@ import { Scene4 } from './video_scenes/Scene4';
 import { Scene5 } from './video_scenes/Scene5';
 
 export const SCENE_DURATIONS = {
-  0: 5500,
-  1: 6000,
-  2: 5000,
-  3: 7500,
-  4: 4000,
-  5: 5867,
+  0: 4500,
+  1: 9000,
+  2: 8000,
+  3: 5500,
+  4: 7500,
+  5: 6000,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
@@ -46,6 +46,16 @@ export default function VideoTemplate({
   const sceneIndex = Object.keys(SCENE_DURATIONS).indexOf(baseSceneKey);
   const SceneComponent = SCENE_COMPONENTS[baseSceneKey];
 
+  const stars = useMemo(() => {
+    return Array.from({ length: 40 }).map((_, i) => ({
+      top: `${(i * 5) % 200}%`,
+      left: `${(i * 17) % 100}%`,
+      size: `${(i % 3) + 1}px`,
+      opacity: ((i % 5) + 2) / 10,
+      glow: i % 7 === 0,
+    }));
+  }, []);
+
   return (
     <div
       className="w-full h-screen overflow-hidden relative"
@@ -53,23 +63,51 @@ export default function VideoTemplate({
     >
       {/* Background persistent layer */}
       <motion.div
-        className="absolute inset-0 z-0 opacity-40"
+        className="absolute inset-0 z-0"
         animate={{
-          scale: sceneIndex >= 4 ? 1.05 : 1.2,
-          y: sceneIndex * -20,
+          scale: sceneIndex >= 3 ? 1.1 : 1,
+          rotate: sceneIndex * 2,
         }}
-        transition={{ duration: 3, ease: 'easeOut' }}
+        transition={{ duration: 4, ease: 'easeOut' }}
       >
-        <img
-          src={`${import.meta.env.BASE_URL}images/sunrise-bg.png`}
-          alt="background"
-          className="w-full h-full object-cover"
+        {/* Moon to Sun gradient shift effect */}
+        <motion.div
+           className="absolute inset-0 opacity-30"
+           animate={{
+              background: sceneIndex >= 4 
+                ? 'radial-gradient(circle at center, rgba(16, 185, 129, 0.4) 0%, transparent 70%)' 
+                : 'radial-gradient(circle at top right, rgba(47, 111, 237, 0.4) 0%, transparent 60%)' 
+           }}
+           transition={{ duration: 2 }}
         />
-        <div className="absolute inset-0 bg-brand-navy/60 mix-blend-multiply" />
+        <div className="absolute top-[-20%] left-[-20%] w-[70vw] h-[70vw] bg-brand-teal/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-20%] right-[-20%] w-[70vw] h-[70vw] bg-brand-blue/5 rounded-full blur-[100px]" />
+      </motion.div>
+
+      {/* Parallax stars */}
+      <motion.div
+        className="absolute inset-0 z-0 opacity-40 pointer-events-none"
+        animate={{ y: ['0%', '-50%'] }}
+        transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+      >
+        {stars.map((star, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white"
+            style={{
+              top: star.top,
+              left: star.left,
+              width: star.size,
+              height: star.size,
+              opacity: star.opacity,
+              boxShadow: star.glow ? '0 0 4px 1px rgba(255,255,255,0.8)' : 'none',
+            }}
+          />
+        ))}
       </motion.div>
 
       {/* Grid overlay */}
-      <div className="absolute inset-0 z-0 opacity-10 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:4vw_4vw]" />
+      <div className="absolute inset-0 z-0 opacity-[0.03] bg-[linear-gradient(rgba(255,255,255,1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,1)_1px,transparent_1px)] bg-[size:4vw_4vw]" />
 
       <AnimatePresence mode="popLayout">
         {SceneComponent && <SceneComponent key={currentSceneKey} />}
