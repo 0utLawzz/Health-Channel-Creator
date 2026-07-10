@@ -1,0 +1,27 @@
+kind = "video"
+previewPath = "/biominute-reels/"
+title = "BioMinute Reels"
+version = "1.0.0"
+id = "artifacts/biominute-reels"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/biominute-reels/" ]
+localPort = 25078
+
+[services.development]
+run = "pnpm --filter @workspace/biominute-reels run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/biominute-reels", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/biominute-reels/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25078"
+BASE_PATH = "/biominute-reels/"
