@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-const SPRING_SNAPPY = { type: 'spring', stiffness: 400, damping: 30 };
+const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 400, damping: 30 };
 
 export function Scene4() {
   const [phase, setPhase] = useState(0);

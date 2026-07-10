@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-const SPRING_SNAPPY = { type: 'spring', stiffness: 400, damping: 30 };
-const SPRING_SMOOTH = { type: 'spring', stiffness: 120, damping: 25 };
+const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 400, damping: 30 };
+const SPRING_SMOOTH = { type: 'spring' as const, stiffness: 120, damping: 25 };
 
 export function Scene3() {
   const [phase, setPhase] = useState(0);
@@ -65,7 +65,7 @@ export function Scene3() {
               className="w-[15vw] h-[15vw] max-w-[60px] max-h-[60px] bg-brand-teal/20 border-2 border-brand-teal/50 rounded-xl flex items-center justify-center shadow-lg"
               initial={{ opacity: 0, y: -100, rotate: -20 }}
               animate={phase >= 2 ? { opacity: 1, y: 0, rotate: -5 } : { opacity: 0, y: -100, rotate: -20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              transition={{ type: 'spring' as const, stiffness: 300, damping: 20 }}
            >
               <span className="font-display font-bold text-brand-teal text-[2vh] uppercase">Sat</span>
            </motion.div>
@@ -73,7 +73,7 @@ export function Scene3() {
               className="w-[15vw] h-[15vw] max-w-[60px] max-h-[60px] bg-brand-teal/20 border-2 border-brand-teal/50 rounded-xl flex items-center justify-center shadow-lg"
               initial={{ opacity: 0, y: -100, rotate: 20 }}
               animate={phase >= 2 ? { opacity: 1, y: 0, rotate: 5 } : { opacity: 0, y: -100, rotate: 20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+              transition={{ type: 'spring' as const, stiffness: 300, damping: 20, delay: 0.1 }}
            >
               <span className="font-display font-bold text-brand-teal text-[2vh] uppercase">Sun</span>
            </motion.div>

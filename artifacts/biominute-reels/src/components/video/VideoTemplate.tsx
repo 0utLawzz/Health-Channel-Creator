@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { AudioEngine } from '@/lib/audio/AudioEngine';
 import { useVideoPlayer } from '@/lib/video';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -30,10 +31,12 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
 export default function VideoTemplate({
   durations = SCENE_DURATIONS,
   loop = true,
+  muted = false,
   onSceneChange,
 }: {
   durations?: Record<string, number>;
   loop?: boolean;
+  muted?: boolean;
   onSceneChange?: (sceneKey: string) => void;
 } = {}) {
   const { currentScene, currentSceneKey } = useVideoPlayer({ durations, loop });
@@ -112,6 +115,25 @@ export default function VideoTemplate({
       <AnimatePresence mode="popLayout">
         {SceneComponent && <SceneComponent key={currentSceneKey} />}
       </AnimatePresence>
+
+      {/* Audio layer: background music + scene-change SFX. Assets are generated per episode and placed in public/audio/. */}
+      <AudioEngine
+        currentSceneKey={currentSceneKey}
+        muted={muted}
+        volume={0.35}
+        assets={{
+          background: 'audio/background.mp3',
+          sceneSfx: {
+            '0': 'audio/swoosh.mp3',
+            '1': 'audio/pop.mp3',
+            '2': 'audio/swoosh.mp3',
+            '3': 'audio/pop.mp3',
+            '4': 'audio/swoosh.mp3',
+            '5': 'audio/pop.mp3',
+            default: 'audio/swoosh.mp3',
+          },
+        }}
+      />
     </div>
   );
 }

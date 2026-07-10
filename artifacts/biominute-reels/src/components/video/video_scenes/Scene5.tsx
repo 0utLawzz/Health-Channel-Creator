@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const SPRING_SNAPPY = { type: 'spring', stiffness: 400, damping: 30 };
+const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 400, damping: 30 };
 
 export function Scene5() {
   return (

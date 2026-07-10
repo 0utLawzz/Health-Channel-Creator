@@ -47,3 +47,7 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# NOTE: exports/ is intentionally NOT ignored — it contains the production-log.md
+# and per-episode export folders with final MP4s/thumbnails/episode-notes.md.
+# Do NOT add exports/ to this file.

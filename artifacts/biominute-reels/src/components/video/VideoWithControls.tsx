@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Repeat } from 'lucide-react';
 
+import { AudioMuteButton, useAudioState } from '@/lib/audio/AudioEngine';
 import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
 import { useSceneControls } from './useSceneControls';
 
@@ -14,7 +15,9 @@ interface ControlBarProps {
   activeIndex: number;
   activeDuration: number;
   tick: number;
+  audioMuted: boolean;
   onToggleLock: () => void;
+  onToggleAudio: () => void;
   onJumpTo: (index: number) => void;
   onToggleCollapsed: () => void;
 }
@@ -77,7 +80,9 @@ function ControlBar({
   activeIndex,
   activeDuration,
   tick,
+  audioMuted,
   onToggleLock,
+  onToggleAudio,
   onJumpTo,
   onToggleCollapsed,
 }: ControlBarProps) {
@@ -103,6 +108,10 @@ function ControlBar({
       >
         <Repeat className="w-8 h-8" />
       </button>
+
+      <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
+
+      <AudioMuteButton muted={audioMuted} toggle={onToggleAudio} />
 
       <div className="w-px self-stretch bg-white/15" aria-hidden="true" />
 
@@ -147,6 +156,8 @@ export default function VideoWithControls() {
     toggleLock,
   } = useSceneControls(SCENE_DURATIONS);
 
+  const { muted: audioMuted, toggleMuted: toggleAudioMuted } = useAudioState();
+
   const sensorRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [hovering, setHovering] = useState(false);
@@ -188,8 +199,8 @@ export default function VideoWithControls() {
 
   const barVisible = !collapsed || hovering || tapPinned;
 
-  // Export path: no props, preserves recording markers
-  if (!isIframed) return <VideoTemplate />;
+  // Export path: force unmuted so final renders include audio
+  if (!isIframed) return <VideoTemplate muted={false} />;
 
   return (
     <div className="relative w-full h-screen">
@@ -197,6 +208,7 @@ export default function VideoWithControls() {
         key={mountKey}
         durations={durations}
         loop
+        muted={audioMuted}
         onSceneChange={onSceneChange}
       />
       <div
@@ -216,7 +228,9 @@ export default function VideoWithControls() {
           activeIndex={activeIndex}
           activeDuration={activeDuration}
           tick={tick}
+          audioMuted={audioMuted}
           onToggleLock={toggleLock}
+          onToggleAudio={toggleAudioMuted}
           onJumpTo={jumpTo}
           onToggleCollapsed={handleToggleCollapsed}
         />
