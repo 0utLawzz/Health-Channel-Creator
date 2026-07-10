@@ -9,7 +9,12 @@
 2. Water glass visual — glass of water helps replace overnight fluid losses before coffee
 3. Coffee dimming — greyscaled coffee cup vs. vivid water glass, "Starting Hydrated" card
 4. The Swap — "1. Water First", "2. Coffee Second" cards; citation: Popkin BM et al.
-5. Outro — end-card question + BioMinute logo loop
+5. Outro — end-card question + BioMinute logo
+6. Endscreen (Scene5, ~5.9s) — user-provided brand endscreen clip (`public/videos/endscreen.mp4`) with the official logo overlaid on top
+
+## Assets updated 2026-07-10
+- Replaced the placeholder AI-generated logo with the user's official channel logo (`attached_assets/Logo_Youtube_20260710_055117_0000_1783646169306.png`) in every scene that shows it.
+- Added the user's endscreen clip (`attached_assets/download_20260710_055416_0000_1783646169419.mp4`, 720x1280, ~5.87s) as a new final scene.
 
 Full VO script, citation text, hashtags, CTA, and thumbnail prompt are in `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx`, row 2 (Content_Master sheet).
 

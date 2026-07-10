@@ -7,6 +7,7 @@ import { Scene1 } from './video_scenes/Scene1';
 import { Scene2 } from './video_scenes/Scene2';
 import { Scene3 } from './video_scenes/Scene3';
 import { Scene4 } from './video_scenes/Scene4';
+import { Scene5 } from './video_scenes/Scene5';
 
 export const SCENE_DURATIONS = {
   0: 5500,
@@ -14,6 +15,7 @@ export const SCENE_DURATIONS = {
   2: 5000,
   3: 7500,
   4: 4000,
+  5: 5867,
 };
 
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
@@ -22,6 +24,7 @@ const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   2: Scene2,
   3: Scene3,
   4: Scene4,
+  5: Scene5,
 };
 
 export default function VideoTemplate({
@@ -52,7 +55,7 @@ export default function VideoTemplate({
       <motion.div
         className="absolute inset-0 z-0 opacity-40"
         animate={{
-          scale: sceneIndex === 4 ? 1.05 : 1.2,
+          scale: sceneIndex >= 4 ? 1.05 : 1.2,
           y: sceneIndex * -20,
         }}
         transition={{ duration: 3, ease: 'easeOut' }}
