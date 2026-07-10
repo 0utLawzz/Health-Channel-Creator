@@ -5,7 +5,7 @@ This file is the step-by-step checklist for creating any BioMinute episode. Foll
 ## Before you start
 
 1. Confirm the 9:16 format commitment: **"I will build every BioMinute video in 9:16 vertical (1080×1920), not 16:9."**
-2. Read `exports/production-log.md` and find the lowest-numbered episode with status `Queued`.
+2. Read `exports/production-log.md` and find the lowest-numbered episode with status `Uncomplete`.
 2. Read the matching row in `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` (sheet `Content_Master`) for the exact script, citation, visual direction, CTA, hashtags, and thumbnail prompt.
 3. Check the existing `artifacts/biominute-reels/src/components/video/video_scenes/` to understand the current brand execution.
 
@@ -30,9 +30,11 @@ This file is the step-by-step checklist for creating any BioMinute episode. Foll
 1. Use the preview's built-in **record/export control** to capture the MP4.
 2. Generate a 1080×1920 thumbnail matching the brand thumbnail spec (dark slate, bold white headline, one emerald/orange keyword, one rounded flat icon, blue glow, no stock photos).
 
-> **Do not store finished MP4s in this repository.** The export folder is for tracking notes and thumbnails; actual MP4s are kept on the user's local machine or cloud storage. This repo only tracks status, timing/style decisions, and scene source code.
-3. Place both files in `exports/Episode-NN-slug/` and update `exports/Episode-NN-slug/episode-notes.md` with build/export notes.
-4. Update `exports/production-log.md`: set status to `Complete`, set `Date Completed`, and note the exported files.
+3. Place both files in `exports/Episode-NN-slug/` as `episode.mp4` and `thumbnail.png`.
+4. Update `exports/Episode-NN-slug/episode-notes.md` with build/export notes.
+5. Update `exports/production-log.md`: set status to `Complete`, set `Date Completed`, and note the exported files.
+6. Regenerate the dashboard so the video preview shows up: `pnpm --filter @workspace/scripts generate-dashboard`.
+7. Commit and push the MP4, thumbnail, regenerated `exports/dashboard.html`, and `exports/production-log.md` to git so the repo stays self-contained.
 
 ## Important rule
 
@@ -40,6 +42,6 @@ The artifact holds **one episode at a time**. If you build Episode 7 before expo
 
 ## Status definitions
 
-- `Queued` — not yet built
+- `Uncomplete` — not yet built or exported (used when the queue is reset or an episode hasn't been started)
 - `Built — awaiting export` — scenes rendered in the artifact, waiting for user to export MP4/thumbnail
-- `Complete` — exported MP4 and thumbnail are in the episode's `exports/` folder
+- `Complete` — exported `episode.mp4` and `thumbnail.png` are in the episode's `exports/` folder and committed to git

@@ -32,6 +32,7 @@ A pnpm-workspace template for producing short animated health-science YouTube Sh
 - `artifacts/biominute-reels/public/audio/` — background music and SFX assets
 - `exports/production-log.md` — source-of-truth episode tracker (36 episodes, statuses, export folders)
 - `exports/Episode-NN-slug/` — per-episode export folder for final MP4 + thumbnail + notes
+- `exports/dashboard.html` — generated production dashboard; run `pnpm dashboard:generate` to regenerate it from `exports/production-log.md`
 - `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` — master scripts, citations, visual directions, hashtags, CTAs
 - `WORKFLOW.md` — step-by-step production checklist for every episode
 - `TEMPLATE.md` — contract for anyone importing this repo as a template
@@ -56,12 +57,15 @@ A pnpm-workspace template for producing short animated health-science YouTube Sh
 - Always build in 9:16 vertical; never default to 16:9 widescreen.
 - Add background music and minor SFX to every new episode.
 - Update `exports/production-log.md` and per-episode `episode-notes.md` after each build/export.
+- Commit and push the actual `episode.mp4` and `thumbnail.png` for each completed episode.
+- Regenerate `exports/dashboard.html` after every production-log change.
 
 ## Gotchas
 
 - Only the most recently built episode is live in the artifact. If you need to export an earlier episode, rebuild it first.
 - Audio is muted by default in the iframe preview control bar (browser autoplay policy). The export path is forced unmuted, so exported MP4s include audio.
-- `exports/` is **not** in `.gitignore` — export folders and production log are tracked by design.
+- `exports/` is **not** in `.gitignore` — export folders, production log, and dashboard are tracked by design.
+- Finished `episode.mp4` and `thumbnail.png` files are committed to the repo per episode so the project stays self-contained and portable across Replit accounts.
 
 ## Pointers
 

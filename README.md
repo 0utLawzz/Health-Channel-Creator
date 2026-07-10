@@ -24,18 +24,19 @@ The generic video-js skill defaults to 16:9 widescreen motion pieces. **BioMinut
 2. Start the reels artifact: `pnpm --filter @workspace/biominute-reels run dev`
 3. Open the preview and use the **record/export control** to capture the MP4.
 4. Drop the MP4 + thumbnail into `exports/Episode-NN-slug/` and update `exports/production-log.md`.
+5. Regenerate the dashboard: `pnpm --filter @workspace/scripts generate-dashboard`
+6. Commit and push the MP4, thumbnail, and updated `exports/` files to git.
 
-> **Note on finished MP4s:** this repository does **not** store finished video files. The `exports/` folders are for tracking metadata and notes only. Actual exported MP4s and thumbnails are kept on the user's local machine or cloud storage, not committed to git.
+> **Self-contained repo policy:** every finished episode's `episode.mp4` and `thumbnail.png` are committed to its `exports/Episode-NN-slug/` folder. This keeps the repo portable — re-import into any Replit account and `exports/dashboard.html` still shows working video previews.
 
 See [`WORKFLOW.md`](WORKFLOW.md) for the full step-by-step and [`TEMPLATE.md`](TEMPLATE.md) for the project template contract.
 
 ## Completed vs remaining
 
 - Total planned episodes: **36**
-- Currently built in the live artifact: **Episode 5** (`Why Sleep Matters More Than You Think`)
-- Episodes marked `Built — awaiting export`: 2, 3, 4, 5 (must be rebuilt before exporting unless already exported)
-- Episodes not yet built: 1, 6–36
-- Episode 1 status is intentionally **not marked Complete** — final exported MP4/thumbnail were never provided.
+- Currently loaded in the live artifact: **Episode 5** (`Why Sleep Matters More Than You Think`) — will be overwritten when the next episode is built.
+- All episodes are now **Uncomplete**; the queue is being restarted from Episodes 1 and 2.
+- No finished MP4s or thumbnails are currently present in the repo; they are committed per episode as each one is exported.
 
 ## Format note
 
