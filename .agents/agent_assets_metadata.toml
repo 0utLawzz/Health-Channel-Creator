@@ -18,3 +18,9 @@ id = "NPHx3LIQn9z5kAQqyXzVY"
 uri = "file://home/runner/workspace/artifacts/biominute-reels/public/audio/background.mp3"
 type = "audio"
 title = "biominute-bg"
+
+[[outputs]]
+id = "mCs1cVrueuOI7HvuRso-P"
+uri = "file://exports/Episode-01-Walk-After-Meals/preview-1080x1920.jpg"
+type = "image"
+title = "Episode 1 preview at 1080x1920"
