@@ -4,7 +4,8 @@ This file is the step-by-step checklist for creating any BioMinute episode. Foll
 
 ## Before you start
 
-1. Read `exports/production-log.md` and find the lowest-numbered episode with status `Queued`.
+1. Confirm the 9:16 format commitment: **"I will build every BioMinute video in 9:16 vertical (1080×1920), not 16:9."**
+2. Read `exports/production-log.md` and find the lowest-numbered episode with status `Queued`.
 2. Read the matching row in `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` (sheet `Content_Master`) for the exact script, citation, visual direction, CTA, hashtags, and thumbnail prompt.
 3. Check the existing `artifacts/biominute-reels/src/components/video/video_scenes/` to understand the current brand execution.
 

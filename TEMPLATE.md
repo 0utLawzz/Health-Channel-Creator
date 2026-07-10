@@ -18,6 +18,7 @@ This repository is a **template** for producing a series of short animated healt
 ## How to continue production
 
 1. Read `README.md` and `WORKFLOW.md`.
+2. **Confirm the 9:16 acknowledgment:** state out loud that you will build every video in 9:16 vertical (1080×1920), not 16:9. The generic video-js skill defaults to 16:9; BioMinute requires 9:16.
 2. Find the next `Queued` episode in `exports/production-log.md`.
 3. Read that episode's row from the Excel master sheet.
 4. Build the episode by overwriting `artifacts/biominute-reels/src/components/video/video_scenes/Scene0.tsx` through `Scene5.tsx`.

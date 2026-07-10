@@ -1,12 +1,16 @@
 # Episode 5: Why Sleep Matters More Than You Think
 
-- Status: Built — awaiting export
+- Status: Complete
 - Playlist: S3: Sleep & Recovery
 - Export folder: `exports/Episode-05-why-sleep-matters-more-than/`
 
 ## Notes
 
 Planned post date: Mon, Jul 20, 2026. **Currently live in the artifact.** 9:16, sleep-repair/brain-hormone visual direction, moon-to-sun timelapse + parallax stars, Watson NF et al. 2015 citation on-screen. Background music + scene-change SFX added (public/audio/background.mp3, swoosh.mp3, pop.mp3). Export this one first.
+
+## Build/export notes
+
+MP4 and thumbnail exported on 2026-07-10.
 
 ## Files to add here
 

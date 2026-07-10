@@ -10,6 +10,14 @@ A pnpm-workspace template for producing short animated health-science YouTube Sh
 - **Episode queue**: `exports/production-log.md` is the source of truth for all 36 planned episodes, their scripts, statuses, and export folders.
 - **Master data**: `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` (sheet `Content_Master`) has exact scripts, citations, visual directions, and hashtags.
 
+## Pre-flight acknowledgment (AI contributors must confirm before building)
+
+Before you touch any code, confirm this out loud in your first response:
+
+> **"I acknowledge that all BioMinute videos are 9:16 vertical (1080×1920) YouTube Shorts. I will build every scene in the `artifacts/biominute-reels` video player in vertical format, not 16:9."**
+
+The generic video-js skill defaults to 16:9 widescreen motion pieces. **BioMinute overrides that to 9:16.** If this confirmation is missing, stop and read `WORKFLOW.md` before proceeding.
+
 ## Quick start (for the next AI / contributor)
 
 1. Install dependencies: `pnpm install`
