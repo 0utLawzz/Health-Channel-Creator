@@ -45,7 +45,29 @@ Persistent tracker for all BioMinute reel/short episodes. **Read this file befor
 
 ## Style & timing decisions log
 
-_(Nothing recorded yet — will fill in as episodes are produced, e.g. "Ep.1: used 3s hold on stat cards", "swapped icon X for Y".)_
+Record exact constants and creative choices here so future episodes don't drift. **Re-use these values unless the master plan explicitly calls for a different treatment.**
+
+### Episode 5 ("Why Sleep Matters More Than You Think") — current canonical template
+
+- **Format:** 9:16 vertical, 1080×1920 target. No 16:9 scene compositions.
+- **Scene durations (ms):** `0: 4500`, `1: 9000`, `2: 8000`, `3: 5500`, `4: 7500`, `5: 6000`. Total loop ≈ **40.5s**.
+- **Scene transition:** 0.8s fade/blur exit with slight scale-up (`exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.1 }}`).
+- **Framer Motion springs:**
+  - `SPRING_SNAPPY` = `{ type: 'spring', stiffness: 400, damping: 30 }` — for logo pops, badges, icons, CTAs.
+  - `SPRING_SMOOTH` = `{ type: 'spring', stiffness: 120, damping: 25 }` — for headlines, text blocks, larger panels.
+- **Intra-scene pacing:** first beat fires at 0.8–1.0s, subsequent beats every 1.5–1.6s, final beat reserved for citation or CTA.
+- **Typography:** `Outfit` for display/headlines, `Plus Jakarta Sans` for body. Display headline sizes scale by `vh` units (e.g. `5.5vh` for main hook, `2.5vh` for badges).
+- **Color lock:** navy `#0F172A`, teal `#14b8a6`, emerald `#10b981`, orange `#f97316`, blue `#2F6FED`. No red.
+- **Audio:** background music at `volume: 0.35`, scene-change SFX at `volume: 0.6`, preview starts muted, export path forced unmuted.
+- **Citation treatment:** small, low-contrast text appears in the final 1–2s of a scene, not a full-screen card.
+- **Outro:** BioMinute logo + gradient wordmark + CTA line, no clickable buttons.
+
+### Decisions to log as new episodes are built
+
+- Any deviation from the durations above.
+- Any new spring/transition values or custom easing curves.
+- New recurring components (e.g. "stat card", "progress bar", "citation chip") so they can be reused consistently.
+- Color/icon changes that become part of the brand language.
 
 ## Brand reference
 - Logo/banner theme: dark navy/slate background (#0F172A-ish), teal-to-emerald gradient wordmark ("BioMinute"), DNA-helix + heartbeat-pulse motif, small orange accent dot. Never use red.

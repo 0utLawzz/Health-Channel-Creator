@@ -25,6 +25,8 @@ The generic video-js skill defaults to 16:9 widescreen motion pieces. **BioMinut
 3. Open the preview and use the **record/export control** to capture the MP4.
 4. Drop the MP4 + thumbnail into `exports/Episode-NN-slug/` and update `exports/production-log.md`.
 
+> **Note on finished MP4s:** this repository does **not** store finished video files. The `exports/` folders are for tracking metadata and notes only. Actual exported MP4s and thumbnails are kept on the user's local machine or cloud storage, not committed to git.
+
 See [`WORKFLOW.md`](WORKFLOW.md) for the full step-by-step and [`TEMPLATE.md`](TEMPLATE.md) for the project template contract.
 
 ## Completed vs remaining

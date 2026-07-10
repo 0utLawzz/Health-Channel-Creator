@@ -29,6 +29,8 @@ This file is the step-by-step checklist for creating any BioMinute episode. Foll
 
 1. Use the preview's built-in **record/export control** to capture the MP4.
 2. Generate a 1080×1920 thumbnail matching the brand thumbnail spec (dark slate, bold white headline, one emerald/orange keyword, one rounded flat icon, blue glow, no stock photos).
+
+> **Do not store finished MP4s in this repository.** The export folder is for tracking notes and thumbnails; actual MP4s are kept on the user's local machine or cloud storage. This repo only tracks status, timing/style decisions, and scene source code.
 3. Place both files in `exports/Episode-NN-slug/` and update `exports/Episode-NN-slug/episode-notes.md` with build/export notes.
 4. Update `exports/production-log.md`: set status to `Complete`, set `Date Completed`, and note the exported files.
 
