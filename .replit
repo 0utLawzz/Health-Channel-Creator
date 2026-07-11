@@ -9,28 +9,6 @@ args = ["pnpm", "store", "prune"]
 env = { "CI" = "true" }
 
 [workflows]
-runButton = "Project"
-
-[[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "BioMinute Reels"
-
-[[workflows.workflow]]
-name = "BioMinute Reels"
-author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "PORT=25078 BASE_PATH=/biominute-reels/ pnpm --filter @workspace/biominute-reels run dev"
-waitForPort = 25078
 
 [agent]
 stack = "PNPM_WORKSPACE"
