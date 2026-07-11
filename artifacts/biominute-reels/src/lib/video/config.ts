@@ -21,9 +21,9 @@ export const CANVAS_STYLE = {
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
   0: 4500,
-  1: 9000,
+  1: 7500,
   2: 8000,
-  3: 5500,
+  3: 8000,
   4: 7500,
   5: 6000,
   6: 4000, // ThumbnailSlide end card

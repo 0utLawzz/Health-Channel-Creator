@@ -6,10 +6,10 @@ const SPRING_SMOOTH = { type: 'spring' as const, stiffness: 120, damping: 25 };
 export function Scene0() {
   return (
     <motion.div
-      className="absolute inset-0 w-full h-full font-display bg-gradient-to-br from-brand-navy via-[#1e293b] to-brand-teal/20"
+      className="absolute inset-0 w-full h-full font-display bg-brand-navy overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.1 }}
+      exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.05 }}
       transition={{ duration: 0.8 }}
     >
       <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center p-[8%]">
@@ -22,14 +22,14 @@ export function Scene0() {
           transition={{ ...SPRING_SMOOTH, delay: 0.15 }}
         >
           {/* Glowing sunrise backdrop */}
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-orange/40 to-brand-orange/0 blur-[60px] rounded-full translate-y-[20%]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-orange/40 to-brand-navy blur-[60px] rounded-full translate-y-[20%]" />
           
           <motion.div 
             className="absolute bg-brand-orange/80 rounded-full blur-[20px]"
             style={{ width: '40%', height: '40%' }}
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: -30, opacity: 1 }}
-            transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+            transition={{ duration: 2.5, ease: "easeOut", delay: 0.5 }}
           />
 
           <motion.div
