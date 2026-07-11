@@ -5,8 +5,8 @@ import path from 'path';
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
-const BROWSER_URL = (process.env.BIOMINUTE_EXPORT_URL || 'http://localhost:25078/biominute-reels/').replace(/\/?$/, '') + '?export';
-const OUT_DIR = process.env.BIOMINUTE_EXPORT_DIR || '/tmp/biominute-export';
+const BROWSER_URL = (process.env.BIOMINUTE_EXPORT_URL || 'http://localhost:5173/').replace(/\/?$/, '');
+const OUT_DIR = process.env.BIOMINUTE_EXPORT_DIR || (process.platform === 'win32' ? path.join(process.env.TEMP || 'C:\\Temp', 'biominute-export') : '/tmp/biominute-export');
 const FALLBACK_DURATION_MS = 43500;
 
 async function startXvfb(): Promise<{ display: string; stop: () => void }> {
@@ -34,89 +34,62 @@ async function main() {
   let browser;
   try {
     await fs.mkdir(OUT_DIR, { recursive: true });
+
+    const launchArgs = [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-gpu',
+      `--window-size=${VIDEO_WIDTH},${VIDEO_HEIGHT}`,
+    ];
+
     browser = await chromium.launch({
       headless: false,
       env: isWindows ? { ...process.env } : { ...process.env, DISPLAY: xvfb.display },
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-gpu',
-        '--kiosk',
-        `--window-size=${VIDEO_WIDTH},${VIDEO_HEIGHT}`,
-        '--auto-select-desktop-capture-source=.*',
-        '--use-fake-device-for-media-stream',
-        '--use-fake-ui-for-media-stream',
-      ],
+      args: launchArgs,
     });
+
+    // Create context with Playwright's built-in video recording
     const context = await browser.newContext({
       viewport: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT },
       deviceScaleFactor: 1,
+      recordVideo: {
+        dir: OUT_DIR,
+        size: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT },
+      },
     });
     const page = await context.newPage();
-    await page.goto(BROWSER_URL, { waitUntil: 'networkidle' });
 
-    // Unlock audio with a user gesture, then reload so the audio engine starts on mount
-    await page.click('body');
-    await page.evaluate(() => {
-      (window as any).__biominuteAudioCapture__ = true;
-    });
-    await page.reload({ waitUntil: 'networkidle' });
-    await page.click('body');
+    // Navigate with a generous timeout
+    console.log(`Navigating to ${BROWSER_URL}`);
+    await page.goto(BROWSER_URL, { waitUntil: 'load', timeout: 60000 });
 
-    // Read the total video duration from the page; fall back to a safe value if unavailable
+    // Give the React app time to mount and start animations
+    console.log('Waiting for app to initialize...');
+    await page.waitForTimeout(5000);
+
+    // Read the total video duration from the page; fall back to a safe value
     const totalDurationMs = await page
       .evaluate(() => (window as any).__biominuteTotalDuration__ as number | undefined)
       .then((d) => (d && d > 0 ? d : FALLBACK_DURATION_MS));
-    console.log(`Recording ${totalDurationMs}ms from ${BROWSER_URL}`);
+    console.log(`Recording ${totalDurationMs}ms...`);
 
-    // Start browser tab capture with audio
-    await page.evaluate(async () => {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { width: 1080, height: 1920, frameRate: 60 },
-        audio: true,
-      });
-      const recorder = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9,opus' });
-      const chunks: Blob[] = [];
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunks.push(e.data);
-      };
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'video/webm' });
-        (window as any).__biominuteExportUrl__ = URL.createObjectURL(blob);
-      };
-      (window as any).__biominuteRecorder__ = recorder;
-      (window as any).__biominuteChunks__ = chunks;
-      recorder.start(1000);
-    });
+    // Wait for the full video loop plus buffer
+    await page.waitForTimeout(totalDurationMs + 2000);
 
-    // Wait for the first full video loop
-    await page.waitForTimeout(totalDurationMs + 1500);
+    // Close context to finalize the video recording
+    const videoPath = await page.video()?.path();
+    await context.close();
 
-    const base64 = await page.evaluate(() => {
-      return new Promise<string>((resolve, reject) => {
-        const recorder = (window as any).__biominuteRecorder__ as MediaRecorder;
-        recorder.onstop = async () => {
-          const url = (window as any).__biominuteExportUrl__ as string;
-          if (!url) return reject(new Error('No export URL'));
-          const res = await fetch(url);
-          const blob = await res.blob();
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        };
-        recorder.stop();
-      });
-    });
+    if (!videoPath) {
+      throw new Error('No video was recorded by Playwright');
+    }
 
-    const webmPath = path.join(OUT_DIR, 'episode.webm');
-    const mp4Path = process.argv[2] || path.join(OUT_DIR, 'episode.mp4');
-    const base64Data = base64.split(',')[1];
-    await fs.writeFile(webmPath, Buffer.from(base64Data, 'base64'));
+    console.log('Playwright recorded:', videoPath);
 
     // Convert to MP4 at exactly 1080x1920 with yuv420p for compatibility
+    const mp4Path = process.argv[2] || path.join(OUT_DIR, 'episode.mp4');
     execSync(
-      `ffmpeg -y -i "${webmPath}" -vf "scale=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:force_original_aspect_ratio=decrease,pad=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:v libx264 -preset fast -crf 23 -movflags +faststart -c:a aac -b:a 128k "${mp4Path}"`,
+      `ffmpeg -y -i "${videoPath}" -vf "scale=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:force_original_aspect_ratio=decrease,pad=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:v libx264 -preset fast -crf 23 -movflags +faststart -c:a aac -b:a 128k "${mp4Path}"`,
       { stdio: 'inherit' }
     );
 
