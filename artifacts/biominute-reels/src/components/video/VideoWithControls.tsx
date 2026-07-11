@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Repeat } from 'lucide-react';
 
 import { AudioMuteButton, useAudioState } from '@/lib/audio/AudioEngine';
-import VideoTemplate, { SCENE_DURATIONS } from './VideoTemplate';
+import { SCENE_DURATIONS } from '@/lib/video';
+import VideoTemplate from './VideoTemplate';
 import { useSceneControls } from './useSceneControls';
 
 const PROGRESS_TICK_MS = 60;

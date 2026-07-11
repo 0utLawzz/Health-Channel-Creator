@@ -11,8 +11,6 @@ import { Scene4 } from './video_scenes/Scene4';
 import { Scene5 } from './video_scenes/Scene5';
 import { ThumbnailSlide } from './video_scenes/ThumbnailSlide';
 
-export { SCENE_DURATIONS };
-
 const SCENE_COMPONENTS: Record<string, React.ComponentType> = {
   0: Scene0,
   1: Scene1,
