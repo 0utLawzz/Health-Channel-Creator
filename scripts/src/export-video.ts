@@ -2,6 +2,12 @@ import { spawn, execSync } from 'child_process';
 import { chromium } from 'playwright-chromium';
 import fs from 'fs/promises';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Path to the public audio assets relative to this script
+const AUDIO_DIR = path.resolve(__dirname, '../../artifacts/biominute-reels/public/audio');
+const BG_MUSIC_PATH = path.join(AUDIO_DIR, 'background.mp3');
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
@@ -87,11 +93,25 @@ async function main() {
     console.log('Playwright recorded:', videoPath);
 
     // Convert to MP4 at exactly 1080x1920 with yuv420p for compatibility
+    // Mix in background music directly via ffmpeg (Playwright recordVideo cannot capture audio)
     const mp4Path = process.argv[2] || path.join(OUT_DIR, 'episode.mp4');
-    execSync(
-      `ffmpeg -y -i "${videoPath}" -vf "scale=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:force_original_aspect_ratio=decrease,pad=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:v libx264 -preset fast -crf 23 -movflags +faststart -c:a aac -b:a 128k "${mp4Path}"`,
-      { stdio: 'inherit' }
-    );
+
+    let bgMusicExists = false;
+    try { await fs.access(BG_MUSIC_PATH); bgMusicExists = true; } catch {}
+
+    if (bgMusicExists) {
+      console.log('Mixing background music from:', BG_MUSIC_PATH);
+      execSync(
+        `ffmpeg -y -i "${videoPath}" -stream_loop -1 -i "${BG_MUSIC_PATH}" -vf "scale=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:force_original_aspect_ratio=decrease,pad=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:v libx264 -preset fast -crf 23 -movflags +faststart -c:a aac -b:a 128k -shortest "${mp4Path}"`,
+        { stdio: 'inherit' }
+      );
+    } else {
+      console.warn('Background music not found at:', BG_MUSIC_PATH, '— exporting video-only');
+      execSync(
+        `ffmpeg -y -i "${videoPath}" -vf "scale=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:force_original_aspect_ratio=decrease,pad=${VIDEO_WIDTH}:${VIDEO_HEIGHT}:(ow-iw)/2:(oh-ih)/2,format=yuv420p" -c:v libx264 -preset fast -crf 23 -movflags +faststart "${mp4Path}"`,
+        { stdio: 'inherit' }
+      );
+    }
 
     console.log('Exported MP4:', mp4Path);
   } finally {
