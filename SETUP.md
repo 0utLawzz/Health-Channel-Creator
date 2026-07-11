@@ -1,32 +1,14 @@
 # BioMinute Reels — Local Setup & Run Guide
 
-Complete step-by-step instructions to install, run, and test any episode on your local machine.
+Step-by-step instructions to install, run, and export a BioMinute episode on your own machine or Replit.
 
 ---
 
-## Table of Contents
+## 1. What you need first
 
-1. [Prerequisites](#1-prerequisites)
-2. [Environment Variables & Secrets](#2-environment-variables--secrets)
-3. [First-Time Install](#3-first-time-install)
-4. [Run the App Locally](#4-run-the-app-locally)
-5. [Viewing Episode 1 in the Browser](#5-viewing-episode-1-in-the-browser)
-6. [Exporting a Video (MP4)](#6-exporting-a-video-mp4)
-7. [Push to GitHub](#7-push-to-github)
-8. [Project Structure at a Glance](#8-project-structure-at-a-glance)
-9. [Troubleshooting](#9-troubleshooting)
-
----
-
-## 1. Prerequisites
-
-Install these tools on your machine before anything else.
-
-| Tool | Minimum Version | Install |
-|------|----------------|---------|
-| **Node.js** | v20 or higher (v24 recommended) | https://nodejs.org |
-| **pnpm** | v10 or higher | `npm install -g pnpm` |
-| **Git** | any recent version | https://git-scm.com |
+- **Node.js** v20 or higher (v24 recommended)
+- **pnpm** v10 or higher
+- **Git**
 
 Check your versions:
 
@@ -38,287 +20,234 @@ git --version
 
 ---
 
-## 2. Environment Variables & Secrets
+## 2. Secrets & tokens
 
-### Required for GitHub auto-push only
+### `DATABASE_URL` (only for the API server)
 
-| Variable | Value | Where to set it |
-|----------|-------|-----------------|
-| `GITHUB_TOKEN` | Your GitHub Personal Access Token (classic, `repo` scope) | `.env` file or shell export (see below) |
+This is already set in Replit. You do **not** need it just to run the video player.
 
-**How to create a GitHub Personal Access Token (PAT):**
-1. Go to https://github.com/settings/tokens → **Generate new token (classic)**
-2. Give it a name (e.g. `biominute-push`)
-3. Check the **`repo`** scope checkbox
-4. Click **Generate token** and copy it
+### `GITHUB_TOKEN` (only for auto-pushing to GitHub)
 
-**How to set it locally:**
+If you want to push exported episodes to GitHub automatically:
 
-Option A — create a `.env` file in the project root (never commit this):
-```
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
+1. Create a **classic** GitHub Personal Access Token at https://github.com/settings/tokens
+2. Check the **`repo`** scope.
+3. Copy the token.
+4. Add it as a **Replit Secret** named `GITHUB_TOKEN`.
 
-Option B — export it in your terminal session:
+Then you can run:
+
 ```bash
-export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+bash scripts/push-to-github.sh "Episode 1: Walk After Meals exported"
 ```
 
-> **Note:** The `.env` file is already listed in `.gitignore`. Never commit your token.
-
-### No other secrets required
-
-The video player, audio, images, and all scene animations run entirely in the browser with no external API calls. You do **not** need any API keys just to run and preview episodes locally.
+No other secrets are required for the video player or audio.
 
 ---
 
-## 3. First-Time Install
+## 3. First-time install
 
-Clone the repo (skip if you already have it):
 ```bash
 git clone https://github.com/0utLawzz/Health-Channel-Creator.git
 cd Health-Channel-Creator
-```
-
-Install all dependencies (run this once, and again after any `package.json` changes):
-```bash
 pnpm install
 ```
 
-This installs packages for all workspace projects at once:
-- `artifacts/biominute-reels` — the video player
-- `artifacts/api-server` — optional backend
-- `artifacts/mockup-sandbox` — optional design sandbox
-
-**Expected output:** `Done in Xs` with no errors. A warning about `playwright-chromium` is normal and can be ignored.
+This installs packages for all workspace projects at once.
 
 ---
 
-## 4. Run the App Locally
-
-### Start the BioMinute Reels video player
+## 4. Run the video player
 
 ```bash
 PORT=5173 BASE_PATH=/ pnpm --filter @workspace/biominute-reels run dev
 ```
 
-This starts a Vite dev server. You should see:
+Then open **http://localhost:5173/** in your browser.
 
-```
-  VITE v7.x.x  ready in 400 ms
+Keep this terminal running. Open a new tab for other commands.
 
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: http://192.168.x.x:5173/
-```
-
-Open your browser at: **http://localhost:5173/**
-
-> **Why `PORT=5173 BASE_PATH=/`?**
-> On Replit the app runs at `/biominute-reels/` on a specific port. Locally you want it at root `/` on the standard Vite port.
-
-### Keep the terminal running
-
-The dev server must stay running while you preview. Open a new terminal tab for any other commands.
+> On Replit, the artifact runs at `/biominute-reels/` on an assigned port automatically. The `PORT=5173 BASE_PATH=/` values are for local development only.
 
 ---
 
-## 5. Viewing Episode 1 in the Browser
+## 5. What you see in the preview
 
-Once the dev server is running at http://localhost:5173/ you will see:
+- A 9:16 vertical canvas centered on a dark background.
+- The video loops through all scenes automatically.
+- A control bar at the bottom lets you jump between scenes, loop a scene, toggle audio, and collapse the bar.
+- Audio starts muted by default. Click the **🔊 audio button** to unmute.
 
-- A **9:16 vertical canvas** (1080×1920, scaled to fit your screen) centered on a dark background
-- The video loops automatically through all **7 scenes**:
-
-| # | Scene | Duration |
-|---|-------|----------|
-| 0 | Hook — "What happens right after you eat?" + meal plate | 4.5 s |
-| 1 | Blood sugar graph — orange spike vs emerald flatline | 9.0 s |
-| 2 | Muscles as a glucose sponge + GLUT-4 animation | 8.0 s |
-| 3 | 4 benefit cards (blood sugar / digestion / energy / burn) | 5.5 s |
-| 4 | Walking shoes + 3 stat cards (10–15 min / relaxed / within 30 min) | 7.5 s |
-| 5 | BioMinute logo + CTA "Do you walk after meals?" | 6.0 s |
-| 6 | **Thumbnail end slide** (your thumbnail image, full-bleed) | 4.0 s |
-
-**Total runtime: ~44.5 seconds, then loops**
-
-### Controls at the bottom of the screen
-
-| Control | What it does |
-|---------|-------------|
-| **Progress segments** (tap/click) | Jump directly to any scene |
-| **🔁 Loop button** | Lock/unlock the current scene (loops it until you unlock) |
-| **🔊 Audio button** | Toggle background music on/off |
-| **∨ Collapse button** | Hide the control bar |
-
-### Verify the aspect ratio
-
-The canvas should appear **taller than it is wide** (portrait/vertical). If it looks square or landscape, the viewport is not correctly applying the 9:16 scale — see [Troubleshooting](#9-troubleshooting).
+If the canvas looks landscape instead of portrait, make your browser window taller.
 
 ---
 
-## 6. Exporting a Video (MP4)
+## 6. Export an MP4
 
-The export flow works differently from a normal screen recorder. The app has a built-in export mode that renders at full 1080×1920.
+There are two ways to export. Pick the one that works for you.
 
-### Step-by-step export
+### Option A — Programmatic export (Playwright + ffmpeg)
 
-1. **Open the export URL** in a fresh browser tab:
+```bash
+# Make sure the dev server is running on http://localhost:5173
+pnpm run export-video
+```
+
+The script records the browser tab and saves an MP4. By default it writes to `/tmp/biominute-export/episode.mp4`. Set a custom output folder with:
+
+```bash
+cross-env BIOMINUTE_EXPORT_DIR="exports/Episode-01-Walk-After-Meals" pnpm run export-video
+```
+
+> This requires `ffmpeg` and `playwright-chromium` installed (already included as a dev dependency). On Linux, it also uses `Xvfb`.
+
+### Option B — Manual screen recording (most reliable)
+
+1. Open the export URL in a fresh browser tab:
    ```
    http://localhost:5173/?export
    ```
-   The `?export` query parameter switches the player into export mode:
-   - Controls are hidden
-   - Audio plays unmuted
-   - The canvas is rendered at exactly 1080×1920 CSS pixels (scaled to fit your screen)
+   This hides controls and forces audio unmuted.
+2. Resize the browser so the canvas fills the screen.
+3. Record the tab with QuickTime, OBS, Xbox Game Bar, or a browser extension.
+4. Stop after the thumbnail slide finishes.
+5. Save the recording as `episode.mp4` inside the correct `exports/Episode-NN-slug/` folder.
 
-2. **Resize your browser window** so the canvas fills as much of the screen as possible. The canvas will scale with the window.
-
-3. **Use a screen recorder** to record the tab:
-   - **Mac:** QuickTime Player → New Screen Recording → select the browser tab
-   - **Windows:** Xbox Game Bar (`Win + G`) or OBS Studio
-   - **Browser extension:** Loom, Screencastify, or similar
-
-4. **Start recording, then wait** for the full loop to play through once (~44.5 seconds for Episode 1). Stop the recording after the thumbnail slide disappears.
-
-5. **Save the file** as `episode.mp4` and move it into:
-   ```
-   exports/Episode-01-Walk-After-Meals/episode.mp4
-   ```
-
-6. **Update the production log** — open `exports/production-log.md` and change Episode 1's status from `Built — awaiting export` to `Complete` and set today's date.
+After exporting, run `pnpm verify-export exports/Episode-NN-slug/episode.mp4` to confirm the resolution is 1080×1920.
 
 ---
 
-## 7. Push to GitHub
+## 7. Update the production tracker
 
-Once you have recorded and saved the episode MP4, push everything to GitHub:
+1. Open `exports/production-log.md`.
+2. Set the episode's status to `Complete`, add the date, and write a short note.
+3. Run `pnpm run dashboard:generate` to update `exports/dashboard.html`.
+
+---
+
+## 8. Push to GitHub
 
 ```bash
-# Make sure GITHUB_TOKEN is set (see Section 2)
-bash scripts/push-to-github.sh "EP1 Walk After Meals: exported"
+bash scripts/push-to-github.sh "Episode 1: Walk After Meals exported"
 ```
 
-This script will:
-- `git add -A` (stage all changes including the new MP4)
-- `git commit -m "your message"`
-- `git push` to `https://github.com/0utLawzz/Health-Channel-Creator`
+The script stages, commits, and pushes to GitHub. The `GITHUB_TOKEN` secret must be set.
 
 ---
 
-## 8. Project Structure at a Glance
+## 9. Project structure
 
 ```
 Health-Channel-Creator/
 ├── artifacts/
-│   ├── biominute-reels/          ← The video player app (this is what you run)
+│   ├── biominute-reels/          ← The video player app
 │   │   ├── src/
-│   │   │   ├── App.tsx           ← Root: renders 9:16 VerticalFrame
+│   │   │   ├── App.tsx
 │   │   │   ├── components/video/
-│   │   │   │   ├── VideoTemplate.tsx     ← Scene list + durations
-│   │   │   │   ├── VideoWithControls.tsx ← Player UI with control bar
+│   │   │   │   ├── VideoTemplate.tsx
+│   │   │   │   ├── VideoWithControls.tsx
 │   │   │   │   └── video_scenes/
-│   │   │   │       ├── Scene0.tsx  ← EP1 Hook
-│   │   │   │       ├── Scene1.tsx  ← EP1 Blood sugar graph
-│   │   │   │       ├── Scene2.tsx  ← EP1 Muscle sponge
-│   │   │   │       ├── Scene3.tsx  ← EP1 Benefits
-│   │   │   │       ├── Scene4.tsx  ← EP1 The dose
-│   │   │   │       ├── Scene5.tsx  ← EP1 BioMinute outro
-│   │   │   │       └── ThumbnailSlide.tsx ← Final thumbnail frame
-│   │   │   └── lib/video/config.ts  ← VIDEO_WIDTH=1080, VIDEO_HEIGHT=1920
+│   │   │   │       ├── Scene0.tsx  ← Hook scene
+│   │   │   │       ├── Scene1.tsx
+│   │   │   │       ├── Scene2.tsx
+│   │   │   │       ├── Scene3.tsx
+│   │   │   │       ├── Scene4.tsx
+│   │   │   │       ├── Scene5.tsx  ← Outro / CTA
+│   │   │   │       └── ThumbnailSlide.tsx
+│   │   │   └── lib/video/config.ts  ← 1080×1920 constants
 │   │   └── public/
-│   │       ├── images/             ← All images used by scenes
-│   │       │   ├── episode-thumbnail.png  ← Current episode thumbnail (end slide)
-│   │       │   ├── plate-overhead.png
-│   │       │   ├── walking-shoes-3d.png
-│   │       │   ├── biominute-logo.png
-│   │       │   └── ... (other brand images)
-│   │       └── audio/
-│   │           ├── background.mp3  ← Background music
-│   │           ├── swoosh.mp3      ← Scene transition SFX
-│   │           └── pop.mp3         ← Scene transition SFX
-│   ├── api-server/               ← Optional backend (not needed for video preview)
-│   └── mockup-sandbox/           ← Optional design prototyping (not needed)
+│   │       ├── images/             ← Scene images
+│   │       └── audio/              ← Background music + SFX
+│   ├── api-server/                 ← Optional backend
+│   └── mockup-sandbox/             ← Optional design sandbox
 │
 ├── exports/
-│   ├── production-log.md         ← Episode queue & status (source of truth)
-│   ├── dashboard.html            ← Auto-generated video dashboard
-│   └── Episode-01-Walk-After-Meals/
-│       ├── thumbnail.png         ← 1080×1920 thumbnail
-│       ├── episode-notes.md      ← Build notes
-│       └── episode.mp4           ← (place here after export)
+│   ├── production-log.md         ← Episode tracker
+│   ├── dashboard.html            ← Auto-generated dashboard
+│   └── Episode-01-Walk-After-Meals/  ← Episode 1 export folder
+│       ├── episode.mp4
+│       ├── thumbnail.png
+│       └── episode-notes.md
 │
 ├── attached_assets/
-│   └── BioMinute-Episode-Master-Plan_1783643847514.xlsx  ← All 36 episode scripts
+│   └── BioMinute-Episode-Master-Plan_1783643847514.xlsx  ← 36-episode master plan
 │
 ├── scripts/
-│   └── push-to-github.sh         ← Auto-push script (needs GITHUB_TOKEN)
+│   ├── push-to-github.sh
+│   ├── finish-and-push.sh
+│   ├── export-video.ts
+│   ├── generate-dashboard.ts
+│   └── verify-export.ts
 │
-├── SETUP.md                      ← This file
-├── WORKFLOW.md                   ← Episode build workflow
-└── README.md                     ← Project overview
+├── README.md
+├── WORKFLOW.md
+├── TEMPLATE.md
+└── SETUP.md
 ```
 
 ---
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
-### The video looks 16:9 / landscape instead of 9:16 / portrait
+### The video looks 16:9 / landscape
 
-The canvas is always 1080×1920 internally and scales to fit your browser window. If your browser window is wider than it is tall, the canvas will appear small and centered. **Make your browser window taller** (or use full-screen on a vertical monitor). The canvas itself is always correctly 9:16 regardless.
+Make your browser window taller. The canvas is always 1080×1920 internally; it only looks small if the window is wide.
 
-### Audio doesn't play
+### Audio does not play
 
-By default the preview is muted (to allow auto-play in browsers). Click the **🔊 audio button** at the bottom of the player to unmute. If you're recording for export, use the `?export` URL — it forces audio unmuted.
+The preview starts muted. Click the **🔊 audio button** to unmute. For export, use `http://localhost:5173/?export` to force audio on.
 
 ### `pnpm install` fails with "use pnpm instead"
 
-You ran `npm install` or `yarn install` by mistake. Always use `pnpm install`.
+You ran `npm install` or `yarn install`. Always use `pnpm install`.
 
-### Port 5173 is already in use
+### Port is already in use
 
 Use a different port:
+
 ```bash
 PORT=3456 BASE_PATH=/ pnpm --filter @workspace/biominute-reels run dev
 ```
-Then open http://localhost:3456/
 
-### Scene images show as broken (404)
+Then open http://localhost:3456/.
 
-Make sure you're running with `BASE_PATH=/` locally. The images are served from `public/images/`. If you see 404s, check that the `public/images/` folder exists and contains the files listed in Section 8.
+### Images show as broken (404)
 
-### Episode thumbnail end slide is blank / wrong image
+Make sure the dev server is running with `BASE_PATH=/` locally. Also confirm the image files exist in `artifacts/biominute-reels/public/images/`.
 
-The thumbnail slide always shows `public/images/episode-thumbnail.png`. When you switch to a new episode, copy that episode's thumbnail into that file:
+### Thumbnail end slide is wrong
+
+The thumbnail slide reads `public/images/episode-thumbnail.png`. Copy the correct episode thumbnail there before exporting:
+
 ```bash
 cp exports/Episode-02-drink-water-before-your-morning/thumbnail.png \
    artifacts/biominute-reels/public/images/episode-thumbnail.png
 ```
 
-### `GITHUB_TOKEN` not set error when pushing
+### `GITHUB_TOKEN` not set error
 
-Set the token in your terminal:
-```bash
-export GITHUB_TOKEN=ghp_your_token_here
-bash scripts/push-to-github.sh "your commit message"
-```
+Add `GITHUB_TOKEN` as a Replit Secret (classic PAT with `repo` scope). Do not paste it into chat or commit it.
 
 ---
 
-## Quick Reference Card
+## Quick reference
 
 ```bash
-# 1. Install (first time only)
+# Install
 pnpm install
 
-# 2. Run locally
+# Run video player
 PORT=5173 BASE_PATH=/ pnpm --filter @workspace/biominute-reels run dev
 
-# 3. Open in browser
-open http://localhost:5173/
+# Export (programmatic)
+BIOMINUTE_EXPORT_DIR="exports/Episode-01-Walk-After-Meals" pnpm run export-video
 
-# 4. Export mode (full quality, audio unmuted)
-open "http://localhost:5173/?export"
+# Verify resolution
+pnpm verify-export exports/Episode-01-Walk-After-Meals/episode.mp4
 
-# 5. Push to GitHub (after setting GITHUB_TOKEN)
-bash scripts/push-to-github.sh "EP1 Walk After Meals: exported"
+# Update dashboard after production-log change
+pnpm run dashboard:generate
+
+# Push to GitHub (needs GITHUB_TOKEN secret)
+bash scripts/push-to-github.sh "Episode 1: Walk After Meals exported"
 ```

@@ -1,54 +1,54 @@
 # BioMinute Reels
 
-A pnpm-workspace template for producing short animated health-science YouTube Shorts/Reels for the **BioMinute** channel. The active video artifact lives in `artifacts/biominute-reels`; episodes are tracked in `exports/production-log.md`.
+A workspace for producing short animated health-science YouTube Shorts/Reels for the **BioMinute** channel.
+
+## Current state
+
+- **Episode 1 — Walk After Meals:** `Complete` (exported and in `exports/Episode-01-Walk-After-Meals/`).
+- **Episodes 2–5:** `Uncomplete` — export folders removed, queued for fresh rebuilds.
+- **Episodes 6–36:** `Uncomplete` (planned queue).
+- **Live artifact:** `artifacts/biominute-reels` currently holds **Episode 1** scenes.
 
 ## Run & Operate
 
-- `pnpm install` — install dependencies
-- `pnpm --filter @workspace/biominute-reels run dev` — run the reels video player
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm --filter @workspace/mockup-sandbox run dev` — run the design mockup sandbox
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string (only needed for the API server)
+| Command | What it does |
+|---|---|
+| `pnpm install` | Install dependencies |
+| `pnpm --filter @workspace/biominute-reels run dev` | Run the reels video player |
+| `pnpm --filter @workspace/api-server run dev` | Run the optional API server |
+| `pnpm --filter @workspace/mockup-sandbox run dev` | Run the optional design mockup sandbox |
+| `pnpm run typecheck` | Check all packages |
+| `pnpm run build` | Typecheck + build all packages |
+| `pnpm run dashboard:generate` | Regenerate `exports/dashboard.html` from the production log |
+| `bash scripts/push-to-github.sh "message"` | Push changes to GitHub (needs `GITHUB_TOKEN` secret) |
+
+## Environment secrets
+
+- `DATABASE_URL` — already set; only needed for the optional API server.
+- `GITHUB_TOKEN` — set by you as a Replit Secret. Used by `scripts/push-to-github.sh` to auto-push exports to GitHub. Create a classic GitHub PAT with `repo` scope and add it via the Secrets tab.
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- Video: React 19 + Vite + Framer Motion + Tailwind CSS (video-js artifact)
-- Audio: HTML5 Audio engine with generated background music + scene SFX
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
+- Video: React 19 + Vite + Framer Motion + Tailwind CSS (9:16 vertical)
+- Audio: HTML5 Audio engine with background music + scene SFX
+- API: Express 5 (optional)
+- DB: PostgreSQL + Drizzle ORM (optional)
 - Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
 
 ## Where things live
 
-- `artifacts/biominute-reels/` — runnable video player + scene components for the current episode
-- `artifacts/biominute-reels/src/components/video/video_scenes/Scene0.tsx` through `Scene5.tsx` — current episode's scenes
-- `artifacts/biominute-reels/public/audio/` — background music and SFX assets
-- `exports/production-log.md` — source-of-truth episode tracker (36 episodes, statuses, export folders)
-- `exports/Episode-NN-slug/` — per-episode export folder for final MP4 + thumbnail + notes
-- `exports/dashboard.html` — generated production dashboard; run `pnpm dashboard:generate` to regenerate it from `exports/production-log.md`
+- `artifacts/biominute-reels/` — video player + current episode's scenes
+- `artifacts/biominute-reels/src/components/video/video_scenes/Scene0.tsx` through `Scene5.tsx` — the live episode
+- `artifacts/biominute-reels/public/audio/` — background music and SFX
+- `exports/production-log.md` — episode tracker (36 episodes, statuses, export folders)
+- `exports/Episode-NN-slug/` — per-episode export folder for MP4 + thumbnail + notes
+- `exports/dashboard.html` — generated production dashboard
 - `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` — master scripts, citations, visual directions, hashtags, CTAs
-- `WORKFLOW.md` — step-by-step production checklist for every episode
-- `TEMPLATE.md` — contract for anyone importing this repo as a template
-
-## Architecture decisions
-
-- **Single video artifact, sequential episodes:** only one episode's scenes live in `artifacts/biominute-reels` at a time. Building a new episode overwrites the previous scenes, so export the MP4 before moving on.
-- **9:16 vertical format:** the video player is designed for 1080×1920 YouTube Shorts. The generic 16:9 motion-graphics default from the video-js skill is intentionally overridden here.
-- **Audio engine:** generated background music and SFX are wired in. The iframe preview control bar starts muted by default (browser autoplay policy + persisted user preference) and the viewer can unmute. The non-iframe export path forces `muted={false}` so final MP4 exports always include audio.
-- **No programmatic MP4 export:** final export is done by the user through the preview's built-in record/export control.
-
-## Product
-
-- Produces a queue of 36 evidence-based health tip shorts for YouTube Shorts/Reels.
-- Each episode follows a 6-scene structure (hook → context → science → payoff → caveat → outro/CTA).
-- Visual identity: dark navy/slate background, teal-to-emerald gradients, orange accent dot, blue glow, DNA/heartbeat motif, Kurzgesagt-inspired flat design, no red.
+- `WORKFLOW.md` — step-by-step production checklist
+- `SETUP.md` — local setup + run guide
+- `TEMPLATE.md` — import-as-template contract
 
 ## User preferences
 
@@ -57,18 +57,12 @@ A pnpm-workspace template for producing short animated health-science YouTube Sh
 - Always build in 9:16 vertical; never default to 16:9 widescreen.
 - Add background music and minor SFX to every new episode.
 - Update `exports/production-log.md` and per-episode `episode-notes.md` after each build/export.
-- Commit and push the actual `episode.mp4` and `thumbnail.png` for each completed episode.
 - Regenerate `exports/dashboard.html` after every production-log change.
+- Push `episode.mp4` and `thumbnail.png` to GitHub for each completed episode.
 
 ## Gotchas
 
-- Only the most recently built episode is live in the artifact. If you need to export an earlier episode, rebuild it first.
-- Audio is muted by default in the iframe preview control bar (browser autoplay policy). The export path is forced unmuted, so exported MP4s include audio.
+- The artifact holds **one episode at a time**. Building a new episode overwrites the previous scenes.
+- Preview starts muted by default (browser autoplay policy). Use the `?export` URL or unmute manually for export.
 - `exports/` is **not** in `.gitignore` — export folders, production log, and dashboard are tracked by design.
-- Finished `episode.mp4` and `thumbnail.png` files are committed to the repo per episode so the project stays self-contained and portable across Replit accounts.
-
-## Pointers
-
-- See `WORKFLOW.md` for the full production checklist.
-- See `TEMPLATE.md` for how this repo should behave when imported as a template.
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+- Finished `episode.mp4` and `thumbnail.png` files are committed per episode so the project stays portable across Replit accounts.

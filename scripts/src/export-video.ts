@@ -75,7 +75,7 @@ async function main() {
 
     // Read the total video duration from the page; fall back to a safe value
     const totalDurationMs = await page
-      .evaluate(() => (window as any).__biominuteTotalDuration__ as number | undefined)
+      .evaluate(() => ((globalThis as any).__biominuteTotalDuration__ as number | undefined))
       .then((d) => (d && d > 0 ? d : FALLBACK_DURATION_MS));
     console.log(`Recording ${totalDurationMs}ms...`);
 

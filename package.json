@@ -8,7 +8,8 @@
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
     "dashboard:generate": "pnpm --filter @workspace/scripts generate-dashboard",
-    "export-video": "cross-env BIOMINUTE_EXPORT_URL=http://localhost:5173/ BIOMINUTE_EXPORT_DIR=\"exports/Episode-01-Walk-After-Meals\" pnpm --filter @workspace/scripts export-video",
+    "export-video": "cross-env BIOMINUTE_EXPORT_URL=http://localhost:5173/ pnpm --filter @workspace/scripts export-video",
+    "export-video:episode1": "cross-env BIOMINUTE_EXPORT_URL=http://localhost:5173/ BIOMINUTE_EXPORT_DIR=\"exports/Episode-01-Walk-After-Meals\" pnpm --filter @workspace/scripts export-video",
     "verify-export": "pnpm --filter @workspace/scripts verify-export",
     "push": "git add -A && git commit -m \"update: latest BioMinute changes\" && git push",
     "export-and-push": "pnpm run export-video && pnpm run push"

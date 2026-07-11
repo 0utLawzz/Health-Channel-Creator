@@ -1,47 +1,60 @@
 # BioMinute Reel Production Workflow
 
-This file is the step-by-step checklist for creating any BioMinute episode. Follow it exactly for every new video.
+A simple checklist for creating any BioMinute episode. Follow it every time.
 
 ## Before you start
 
-1. Confirm the 9:16 format commitment: **"I will build every BioMinute video in 9:16 vertical (1080×1920), not 16:9."**
+1. Confirm the 9:16 format: **"I will build every BioMinute video in 9:16 vertical (1080×1920), not 16:9."**
 2. Read `exports/production-log.md` and find the lowest-numbered episode with status `Uncomplete`.
-2. Read the matching row in `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` (sheet `Content_Master`) for the exact script, citation, visual direction, CTA, hashtags, and thumbnail prompt.
-3. Check the existing `artifacts/biominute-reels/src/components/video/video_scenes/` to understand the current brand execution.
+3. Read that episode's row in `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` (sheet `Content_Master`) for the exact script, citation, visual direction, CTA, hashtags, and thumbnail prompt.
+4. Check the existing `artifacts/biominute-reels/src/components/video/video_scenes/` to understand the current brand execution.
 
 ## Build the episode
 
-1. Build the new episode in `artifacts/biominute-reels` by overwriting `Scene0.tsx` through `Scene5.tsx` with the new episode's content.
-2. Keep the brand identity: dark navy/slate `#0F172A`, teal `#14b8a6`, emerald `#10b981`, orange `#f97316`, blue `#2F6FED`, no red, BioMinute logo, DNA/heartbeat motif.
-3. Keep **9:16 vertical** format (not 16:9). The video fills the viewport; all scenes are vertical.
-4. Add background music and minor SFX where appropriate. Place audio files in `artifacts/biominute-reels/public/audio/` and wire them into `VideoTemplate`/`VideoWithControls`.
-5. Use the video-js skill quality bar: layered scenes, choreographed intra-scene motion, custom transitions, no slideshow fades.
-6. Include the citation on screen (small, unobtrusive corner or end-card).
-7. End with the BioMinute logo/brand outro and the episode's CTA as on-screen text (not a button).
+1. Overwrite `Scene0.tsx` through `Scene5.tsx` in `artifacts/biominute-reels/src/components/video/video_scenes/` with the new episode's content.
+2. Keep the brand identity:
+   - Dark navy/slate `#0F172A`
+   - Teal `#14b8a6`, emerald `#10b981`, orange `#f97316`, blue `#2F6FED`
+   - No red
+   - BioMinute logo, DNA/heartbeat motif
+3. Keep **9:16 vertical** format. All scenes must fill the vertical canvas.
+4. Add background music and minor SFX. Place audio files in `artifacts/biominute-reels/public/audio/` and wire them in `VideoTemplate` / `VideoWithControls`.
+5. Use the video-js quality bar: layered scenes, choreographed motion, custom transitions, no slideshow fades.
+6. Include the citation on screen (small corner or end-card).
+7. End with the BioMinute logo/brand outro and the episode's CTA as on-screen text.
 
 ## Verify
 
-1. Restart the workflow: `pnpm --filter @workspace/biominute-reels run dev` or use the Replit workflow restart.
+1. Restart the workflow: `pnpm --filter @workspace/biominute-reels run dev` or restart the Replit workflow.
 2. Open the preview and watch the full loop at least twice.
-3. Check that no generic 16:9 composition snuck in and all text is readable at 9:16.
+3. Check that no 16:9 composition snuck in and all text is readable at 9:16.
 
 ## Export
 
 1. Use the preview's built-in **record/export control** to capture the MP4.
-2. Generate a 1080×1920 thumbnail matching the brand thumbnail spec (dark slate, bold white headline, one emerald/orange keyword, one rounded flat icon, blue glow, no stock photos).
-
+2. Generate a 1080×1920 thumbnail matching the brand thumbnail spec:
+   - Dark slate background
+   - Bold white headline
+   - One keyword highlighted in emerald or orange
+   - One simple rounded flat icon
+   - Soft blue glow
+   - No stock photos
 3. Place both files in `exports/Episode-NN-slug/` as `episode.mp4` and `thumbnail.png`.
 4. Update `exports/Episode-NN-slug/episode-notes.md` with build/export notes.
 5. Update `exports/production-log.md`: set status to `Complete`, set `Date Completed`, and note the exported files.
-6. Regenerate the dashboard so the video preview shows up: `pnpm --filter @workspace/scripts generate-dashboard`.
-7. Commit and push the MP4, thumbnail, regenerated `exports/dashboard.html`, and `exports/production-log.md` to git so the repo stays self-contained.
+6. Regenerate the dashboard: `pnpm run dashboard:generate`.
+7. Push to GitHub:
+   - Make sure `GITHUB_TOKEN` is set as a Replit Secret (classic PAT with `repo` scope).
+   - Run `bash scripts/push-to-github.sh "Episode N: Title exported"`.
 
-## Important rule
+## Important rules
 
-The artifact holds **one episode at a time**. If you build Episode 7 before exporting Episode 6, Episode 6's scenes will be overwritten. Plan exports accordingly, or explicitly tell the user which episode is currently live.
+- The artifact holds **one episode at a time**. If you build Episode 7 before exporting Episode 6, Episode 6's scenes will be overwritten.
+- Always export before moving to the next episode, or explicitly tell the user which episode is currently live.
+- Never commit API keys or tokens. Only `GITHUB_TOKEN` should live as a Replit Secret.
 
 ## Status definitions
 
-- `Uncomplete` — not yet built or exported (used when the queue is reset or an episode hasn't been started)
-- `Built — awaiting export` — scenes rendered in the artifact, waiting for user to export MP4/thumbnail
-- `Complete` — exported `episode.mp4` and `thumbnail.png` are in the episode's `exports/` folder and committed to git
+- `Uncomplete` — not yet built or exported.
+- `Built — awaiting export` — scenes are live in the artifact, waiting for MP4/thumbnail export.
+- `Complete` — `episode.mp4` and `thumbnail.png` are in the episode's `exports/` folder and committed to GitHub.

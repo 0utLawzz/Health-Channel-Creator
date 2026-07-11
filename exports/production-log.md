@@ -9,10 +9,10 @@ Persistent tracker for all BioMinute reel/short episodes. **Read this file befor
 | Episode # | Title | Status | Date Completed | Export Folder | Notes |
 |---|---|---|---|---|---|
 | 1 | Walk After Meals | Complete | 2026-07-11 | `exports/Episode-01-Walk-After-Meals/` | Rebuilt 2026-07-11: all 6 scenes fresh for 9:16. ThumbnailSlide added as Scene 6. Durations: 4500/9000/8000/5500/7500/6000/4000ms. CTA: "Do you walk after meals, or sit right down?" |
-| 2 | Drink Water Before Your Morning Coffee | Built — awaiting export | — | `exports/Episode-02-drink-water-before-your-morning/` | Rebuilt 2026-07-11: all 6 scenes fresh for 9:16. |
-| 3 | Are You Eating Protein at the Wrong Time? | Uncomplete | — | `exports/Episode-03-are-you-eating-protein-at/` | Queued for rebuild. |
-| 4 | Is 10,000 Steps Actually a Myth? | Uncomplete | — | `exports/Episode-04-is-10-000-steps-actually/` | Queued for rebuild. |
-| 5 | Why Sleep Matters More Than You Think | Uncomplete | — | `exports/Episode-05-why-sleep-matters-more-than/` | Queued for rebuild. |
+| 2 | Drink Water Before Your Morning Coffee | Uncomplete | — | `exports/Episode-02-drink-water-before-your-morning/` | Assets deleted on 2026-07-11; queued for fresh rebuild. |
+| 3 | Are You Eating Protein at the Wrong Time? | Uncomplete | — | `exports/Episode-03-are-you-eating-protein-at/` | Assets deleted on 2026-07-11; queued for fresh rebuild. |
+| 4 | Is 10,000 Steps Actually a Myth? | Uncomplete | — | `exports/Episode-04-is-10-000-steps-actually/` | Assets deleted on 2026-07-11; queued for fresh rebuild. |
+| 5 | Why Sleep Matters More Than You Think | Uncomplete | — | `exports/Episode-05-why-sleep-matters-more-than/` | Assets deleted on 2026-07-11; queued for fresh rebuild. |
 | 6 | Why Are You Still Hungry Right After Eating? | Uncomplete | — | `exports/Episode-06-why-are-you-still-hungry/` | Planned post date: Wed, Jul 22, 2026 |
 | 7 | How Deep Breathing Reduces Stress | Uncomplete | — | `exports/Episode-07-how-deep-breathing-reduces-stress/` | Planned post date: Fri, Jul 24, 2026 |
 | 8 | Does Drinking Water Really Boost Metabolism? | Uncomplete | — | `exports/Episode-08-does-drinking-water-really-boost/` | Planned post date: Mon, Jul 27, 2026 |
