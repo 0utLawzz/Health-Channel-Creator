@@ -29,13 +29,14 @@ async function startXvfb(): Promise<{ display: string; stop: () => void }> {
 }
 
 async function main() {
-  const xvfb = await startXvfb();
+  const isWindows = process.platform === 'win32';
+  const xvfb = isWindows ? { display: '', stop: () => {} } : await startXvfb();
   let browser;
   try {
     await fs.mkdir(OUT_DIR, { recursive: true });
     browser = await chromium.launch({
       headless: false,
-      env: { ...process.env, DISPLAY: xvfb.display },
+      env: isWindows ? { ...process.env } : { ...process.env, DISPLAY: xvfb.display },
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',

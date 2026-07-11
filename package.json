@@ -3,18 +3,26 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
+    "preinstall": "npx only-allow pnpm",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
     "dashboard:generate": "pnpm --filter @workspace/scripts generate-dashboard",
-    "verify-export": "pnpm --filter @workspace/scripts verify-export"
+    "export-video": "cross-env BIOMINUTE_EXPORT_URL=http://localhost:5173/ BIOMINUTE_EXPORT_DIR=\"exports/Episode-01-Walk-After-Meals\" pnpm --filter @workspace/scripts export-video",
+    "verify-export": "pnpm --filter @workspace/scripts verify-export",
+    "push": "git add -A && git commit -m \"update: latest BioMinute changes\" && git push",
+    "export-and-push": "pnpm run export-video && pnpm run push"
   },
   "private": true,
   "dependencies": {
     "@replit/connectors-sdk": "^0.4.1"
   },
   "devDependencies": {
+    "@esbuild/win32-x64": "0.27.3",
+    "@rollup/rollup-win32-x64-msvc": "4.62.2",
+    "@tailwindcss/oxide-win32-x64-msvc": "4.3.2",
+    "cross-env": "^10.1.0",
+    "lightningcss-win32-x64-msvc": "1.32.0",
     "prettier": "^3.9.4",
     "typescript": "~5.9.3"
   }
