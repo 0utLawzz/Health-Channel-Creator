@@ -28,5 +28,4 @@ export const SCENE_DURATIONS = {
   3: 3000, // "You don't need speed or distance."
   4: 5000, // "A relaxed 10-15 minute walk is enough..."
   5: 5000, // Outro CTA and citations
-  6: 4000, // ThumbnailSlide end card
 } as const;
