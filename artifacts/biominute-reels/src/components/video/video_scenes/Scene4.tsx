@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { Sun, Moon, CheckCircle2 } from 'lucide-react';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
 
@@ -16,71 +17,72 @@ export function Scene4() {
 
   return (
     <motion.div
-      className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden"
+      className="absolute inset-0 w-full h-full overflow-hidden flex flex-col items-center justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 0.8 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/swoosh.mp3`} preload="auto" />
+
+      {/* Moon to Sun gradient background */}
+      <motion.div
+        className="absolute inset-0 z-0"
+        animate={{
+          background: [
+            "linear-gradient(to bottom, #0F172A, #1e3a8a)",
+            "linear-gradient(to bottom, #1e3a8a, #0ea5e9)",
+            "linear-gradient(to bottom, #0ea5e9, #10B981)"
+          ]
+        }}
+        transition={{ duration: 6, ease: "linear" }}
+      />
       
-      {/* Background Pattern */}
-      <div className="absolute inset-0 grid grid-cols-6 grid-rows-8 gap-4 p-8 opacity-10">
-         {Array.from({length: 48}).map((_, i) => (
-            <motion.div 
-               key={i} 
-               className="bg-white/20 rounded-full w-full pt-[100%]"
-               initial={{ opacity: 0, scale: 0 }}
-               animate={{ opacity: 1, scale: 1 }}
-               transition={{ duration: 0.5, delay: i * 0.02 }}
-            />
-         ))}
+      {/* Sun/Moon Orbit */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center opacity-30">
+        <motion.div
+          className="w-[120vw] h-[120vw] rounded-full border border-white/20 relative"
+          animate={{ rotate: 180 }}
+          transition={{ duration: 6, ease: "linear" }}
+        >
+          <div className="absolute top-[-50px] left-1/2 -translate-x-1/2 text-white">
+            <Sun size={100} fill="currentColor" />
+          </div>
+          <div className="absolute bottom-[-50px] left-1/2 -translate-x-1/2 text-white">
+            <Moon size={100} fill="currentColor" />
+          </div>
+        </motion.div>
       </div>
 
-      {/* Stacking Steps Visualization */}
-      <div className="relative z-10 flex items-end justify-center w-full h-[40%] mb-32 gap-6">
-         {[1, 2, 3, 4].map((bar, index) => (
-            <motion.div 
-               key={bar}
-               className="w-24 bg-gradient-to-t from-[#2F6FED] to-[#10B981] rounded-t-2xl relative"
-               initial={{ height: "10%" }}
-               animate={{ height: `${20 + (index * 25)}%` }}
-               transition={{ duration: 1.5, delay: 0.5 + (index * 0.3), ease: "easeOut" }}
-            >
-               {/* Plus indicator */}
-               <motion.div 
-                  className="absolute -top-16 left-1/2 -translate-x-1/2 text-3xl font-bold text-[#10B981]"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1 + (index * 0.3) }}
-               >
-                  +{index > 0 ? (index * 2) + "00" : "0"}
-               </motion.div>
-            </motion.div>
-         ))}
+      <div className="relative z-20 flex flex-col items-center justify-center w-full mb-32">
+        {/* 7-9 hr Badge that glows */}
+        <motion.div
+          className="bg-[#0F172A]/80 backdrop-blur-xl px-16 py-12 rounded-[3rem] border-4 border-[#2F6FED] flex flex-col items-center gap-6 shadow-[0_0_80px_rgba(47,111,237,0.6)]"
+          initial={{ scale: 0.8, y: 50, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5, type: "spring" }}
+        >
+          <div className="flex items-center gap-4 text-[#2F6FED]">
+            <CheckCircle2 size={60} strokeWidth={3} />
+            <span className="text-7xl font-black uppercase tracking-widest">7-9 hrs</span>
+          </div>
+          <div className="text-white/80 text-3xl font-bold tracking-widest uppercase">
+            Consistent Window
+          </div>
+        </motion.div>
       </div>
 
       {/* Text Content */}
-      <div className="absolute bottom-32 w-full px-16 text-center z-20">
+      <div className="absolute bottom-32 w-full px-16 text-center z-30">
         <motion.p
-          className="text-white text-5xl font-bold leading-tight font-sans tracking-tight"
+          className="text-white text-5xl font-bold leading-tight drop-shadow-lg"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 2.5 }}
+          transition={{ duration: 0.8, delay: 1.5 }}
         >
-          Gradually adding a few hundred <br/>
-          more steps each week...
-        </motion.p>
-        <motion.p
-          className="text-[#10B981] text-6xl font-black leading-tight mt-8 drop-shadow-lg"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 4, type: "spring" }}
-        >
-          matters more than hitting an arbitrary number.
+          Prioritizing a consistent <span className="text-[#10B981]">7 to 9 hour window</span> may do more for your energy than any productivity hack.
         </motion.p>
       </div>
-
     </motion.div>
   );
 }

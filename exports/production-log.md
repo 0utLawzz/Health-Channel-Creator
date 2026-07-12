@@ -12,7 +12,7 @@ Persistent tracker for all BioMinute reel/short episodes. **Read this file befor
 | 2 | Drink Water Before Your Morning Coffee | Built — awaiting export | — | `exports/Episode-02-drink-water-before-your-morning/` | Scenes built for 9:16. Durations updated: 4500/7500/8000/8000/7500/6000/4000ms. CTA: "Do you reach for water or coffee first thing?" |
 | 3 | Are You Eating Protein at the Wrong Time? | Complete | — | `exports/Episode-03-are-you-eating-protein-at/` | Scenes built for 9:16. Durations: 3500/6500/3000/6500/7000/5000/4000ms. CTA: "Which meal has the most protein for you right now?" |
 | 4 | Is 10,000 Steps Actually a Myth? | Built — awaiting export | 2026-07-12 | `exports/Episode-04-is-10-000-steps-actually/` | Scenes built for 9:16. Durations: 4500/4500/7000/5000/6500/5000/4000ms. CTA: "How many steps do you average each day?" |
-| 5 | Why Sleep Matters More Than You Think | Uncomplete | — | `exports/Episode-05-why-sleep-matters-more-than/` | Assets deleted on 2026-07-11; queued for fresh rebuild. |
+| 5 | Why Sleep Matters More Than You Think | Built — awaiting export | 2026-07-12 | `exports/Episode-05-why-sleep-matters-more-than/` | Scenes built for 9:16. Durations: 2500/6500/6500/4000/6500/5000/4000ms. CTA: "What time did you go to bed last night?" |
 | 6 | Why Are You Still Hungry Right After Eating? | Uncomplete | — | `exports/Episode-06-why-are-you-still-hungry/` | Planned post date: Wed, Jul 22, 2026 |
 | 7 | How Deep Breathing Reduces Stress | Uncomplete | — | `exports/Episode-07-how-deep-breathing-reduces-stress/` | Planned post date: Fri, Jul 24, 2026 |
 | 8 | Does Drinking Water Really Boost Metabolism? | Uncomplete | — | `exports/Episode-08-does-drinking-water-really-boost/` | Planned post date: Mon, Jul 27, 2026 |

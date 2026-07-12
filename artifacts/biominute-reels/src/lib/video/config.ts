@@ -20,11 +20,11 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // "The 10,000 step goal started as a 1965 marketing campaign..."
-  1: 4500, // "...for a Japanese pedometer, not a medical guideline."
-  2: 7000, // "Research suggests health benefits begin well below 10,000 steps for many adults, with gains starting around 6,000 to 7,500 steps before leveling off."
-  3: 5000, // "If you're only getting 3,000 steps a day, don't chase perfection."
-  4: 6500, // "Gradually adding a few hundred more steps each week matters more than hitting an arbitrary number."
+  0: 2500, // "Sleep isn't downtime."
+  1: 6500, // "It's when your brain consolidates memory, your body repairs tissue, and hormones that regulate hunger and stress reset."
+  2: 6500, // "Consistently sleeping under 7 hours is linked with reduced focus, slower reaction time, and greater long-term health risk."
+  3: 4000, // "You also can't fully make up lost sleep over a weekend."
+  4: 6500, // "Prioritizing a consistent 7 to 9 hour window may do more for your energy than any productivity hack."
   5: 5000, // Outro CTA and citations
   6: 4000, // ThumbnailSlide end card
 } as const;

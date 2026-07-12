@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
+import { BookOpen } from 'lucide-react';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
 
@@ -24,65 +25,73 @@ export function Scene5() {
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/pop.mp3`} preload="auto" />
       
-      {/* Background Pulse */}
+      {/* Parallax Stars background preserved */}
+      <div className="absolute inset-0 overflow-hidden opacity-30">
+         {[...Array(30)].map((_, i) => (
+           <motion.div
+             key={i}
+             className="absolute bg-white rounded-full"
+             style={{
+               width: Math.random() * 3 + 1,
+               height: Math.random() * 3 + 1,
+               top: `${Math.random() * 100}%`,
+               left: `${Math.random() * 100}%`,
+               opacity: Math.random() * 0.5 + 0.1
+             }}
+           />
+         ))}
+      </div>
+
+      {/* Logo mark */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-t from-[#2F6FED]/20 to-transparent"
-        animate={{ opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-      
-      {/* Logo & Branding */}
-      <motion.div 
-        className="relative z-10 flex flex-col items-center mb-32"
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, type: "spring", bounce: 0.4 }}
+        className="relative z-10 w-40 h-40 mb-16 rounded-full bg-gradient-to-tr from-[#14b8a6] to-[#2F6FED] flex items-center justify-center p-1"
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
       >
-        <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-[#10B981] to-[#2F6FED] p-1 flex items-center justify-center shadow-[0_0_40px_rgba(47,111,237,0.5)]">
-           <div className="w-full h-full bg-[#0F172A] rounded-[22px] flex items-center justify-center">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="url(#gradient)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                 <defs>
-                   <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                     <stop offset="0%" stopColor="#10B981" />
-                     <stop offset="100%" stopColor="#2F6FED" />
-                   </linearGradient>
-                 </defs>
-                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-              </svg>
-           </div>
+        <div className="w-full h-full bg-[#0F172A] rounded-full flex items-center justify-center">
+          <svg viewBox="0 0 24 24" className="w-20 h-20 text-[#14b8a6]" fill="none" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
         </div>
-        <motion.div 
-           className="text-white text-5xl font-black mt-8 tracking-widest uppercase"
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 1 }}
-           transition={{ delay: 0.8 }}
-        >
-           BioMinute
-        </motion.div>
       </motion.div>
 
-      {/* CTA Prompt */}
-      <motion.div
-        className="absolute bottom-60 w-full px-16 text-center z-20"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1.5, type: "spring" }}
+      <motion.h2 
+        className="text-white text-6xl font-black uppercase tracking-[0.2em] mb-32 z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
       >
-         <div className="inline-block bg-[#f97316] text-white px-10 py-5 rounded-full text-4xl font-bold shadow-[0_10px_30px_rgba(249,115,22,0.3)]">
-            How many steps do you average each day? 👇
-         </div>
+        BioMinute
+      </motion.h2>
+
+      {/* CTA Box */}
+      <motion.div
+        className="z-10 bg-white/5 border border-white/10 p-12 rounded-3xl backdrop-blur-sm max-w-[85%] text-center"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+      >
+        <h3 className="text-[#10B981] text-4xl font-bold mb-4 uppercase tracking-wider">Join the Conversation</h3>
+        <p className="text-white text-5xl font-medium leading-tight">
+          What time did you go to bed last night? 👇
+        </p>
       </motion.div>
 
-      {/* Citation End Card */}
-      <motion.div
-        className="absolute bottom-12 w-full text-center px-12 z-20 text-white/40 text-xl font-mono"
+      {/* Citation */}
+      <motion.div 
+        className="absolute bottom-12 w-full px-12 z-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2.5 }}
+        transition={{ delay: 1.5, duration: 1 }}
       >
-        Source: Paluch AZ et al. (2021), JAMA Network Open; Lee IM et al. (2019), JAMA Internal Medicine
+        <div className="flex items-start gap-4 text-white/50 text-xl font-medium">
+          <BookOpen className="shrink-0 mt-1" size={24} />
+          <p className="leading-relaxed">
+            Source: Watson NF et al. (2015), Sleep — AASM/SRS Recommended Sleep Duration Consensus
+          </p>
+        </div>
       </motion.div>
-
     </motion.div>
   );
 }
