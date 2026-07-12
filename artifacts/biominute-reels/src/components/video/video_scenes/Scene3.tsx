@@ -14,116 +14,84 @@ export function Scene3() {
     }
   }, []);
 
-  const plates = [
-    { label: "BREAKFAST", delay: 0.5, icon: "🍳" },
-    { label: "LUNCH", delay: 1.5, icon: "🥗" },
-    { label: "DINNER", delay: 2.5, icon: "🥩" },
-  ];
-
   return (
     <motion.div
       className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, y: -50 }}
+      exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.8 }}
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/pop.mp3`} preload="auto" />
       
-      <div className="flex flex-col items-center justify-center gap-12 w-full px-16 -mt-20">
-        {plates.map((plate, i) => (
-          <motion.div 
-            key={i}
-            className="flex items-center w-full gap-8"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: plate.delay, type: "spring" }}
-          >
-            {/* Plate Icon */}
-            <motion.div 
-              className="relative w-32 h-32 flex-shrink-0 bg-[#1e293b] rounded-full flex items-center justify-center border-4 border-white/10"
-              animate={{ 
-                boxShadow: ["0px 0px 0px rgba(16,185,129,0)", "0px 0px 30px rgba(16,185,129,0.4)", "0px 0px 0px rgba(16,185,129,0)"],
-                borderColor: ["rgba(255,255,255,0.1)", "rgba(16,185,129,0.5)", "rgba(255,255,255,0.1)"]
-              }}
-              transition={{ duration: 2, delay: 4.5, repeat: Infinity }}
-            >
-              <span className="text-6xl">{plate.icon}</span>
-              
-              {/* Progress Ring Background */}
-              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-              </svg>
-              
-              {/* Progress Ring Fill */}
-              <motion.svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" viewBox="0 0 100 100">
-                <motion.circle 
-                  cx="50" cy="50" r="46" 
-                  fill="none" 
-                  stroke="#10b981" 
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1, delay: plate.delay + 0.5, ease: "easeOut" }}
-                />
-              </motion.svg>
-              
-              {/* Orange Accent Dot */}
-              <motion.div 
-                className="absolute top-0 right-0 w-8 h-8 bg-[#f97316] rounded-full border-4 border-[#0F172A] z-10"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.4, delay: plate.delay + 1.5, type: "spring", stiffness: 300 }}
-              />
-            </motion.div>
-            
-            {/* Progress Bar & Label */}
-            <div className="flex-1">
-              <div className="flex justify-between items-end mb-2">
-                <span className="text-white text-3xl font-bold tracking-widest">{plate.label}</span>
-                <motion.span 
-                  className="text-[#10b981] text-4xl font-black"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: plate.delay + 1 }}
-                >
-                  30g
-                </motion.span>
-              </div>
-              <div className="h-6 w-full bg-[#1e293b] rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-[#14b8a6] to-[#10b981]"
-                  initial={{ width: "0%" }}
-                  animate={{ width: "100%" }}
-                  transition={{ duration: 1, delay: plate.delay + 0.5, ease: "easeOut" }}
-                />
-              </div>
+      {/* Background noise/texture */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}></div>
+
+      {/* Visual content: 3000 steps emphasis */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full mb-20">
+         <motion.div
+            className="flex items-center gap-6"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+         >
+            <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center">
+               <motion.div 
+                 className="w-16 h-16 border-t-4 border-r-4 border-[#2F6FED] rounded-tr-xl rotate-45"
+                 animate={{ y: [-5, 5, -5] }}
+                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+               />
             </div>
-          </motion.div>
-        ))}
+            <div className="text-[120px] font-black text-white tracking-tighter tabular-nums drop-shadow-2xl">
+               3,000
+            </div>
+         </motion.div>
+         <motion.div
+            className="text-4xl font-bold text-[#2F6FED] uppercase tracking-widest mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+         >
+            Steps a day
+         </motion.div>
+
+         {/* Crossed out "Perfection" */}
+         <motion.div 
+            className="mt-20 relative"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.5, type: "spring" }}
+         >
+            <span className="text-[80px] font-black text-white/40 uppercase tracking-tight">Perfection</span>
+            <motion.div 
+               className="absolute top-1/2 left-[-10%] w-[120%] h-4 bg-[#f97316] rotate-[-5deg]"
+               initial={{ scaleX: 0, transformOrigin: "left" }}
+               animate={{ scaleX: 1 }}
+               transition={{ duration: 0.5, delay: 2.2, ease: "easeOut" }}
+            />
+         </motion.div>
       </div>
 
-      <div className="absolute bottom-32 w-full px-16 text-center z-20">
+      {/* Text Content */}
+      <div className="absolute bottom-40 w-full px-16 text-center z-20">
         <motion.p
-          className="text-white text-4xl font-bold leading-tight font-sans tracking-tight mb-8"
+          className="text-white text-5xl font-bold leading-tight font-sans tracking-tight"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 3.5 }}
+          transition={{ duration: 0.8, delay: 2.8 }}
         >
-          ...try roughly <span className="text-[#10b981]">30 grams</span><br/>
-          at breakfast, lunch, and dinner.
+          If you're only getting 3,000 steps a day, <br/>
+          <motion.span 
+            className="text-[#f97316] block mt-6 text-6xl"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 3.5, type: "spring" }}
+          >
+            don't chase perfection.
+          </motion.span> 
         </motion.p>
-        
-        <motion.div
-          className="bg-[#2F6FED]/20 border-2 border-[#2F6FED] rounded-full py-4 px-10 inline-block text-white text-5xl font-black"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 5.5, type: "spring", bounce: 0.5 }}
-        >
-          90g TOTAL
-        </motion.div>
       </div>
+
     </motion.div>
   );
 }

@@ -19,114 +19,73 @@ export function Scene1() {
       className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, x: -100 }}
+      exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.8 }}
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/pop.mp3`} preload="auto" />
       
-      {/* Background */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none" 
-        style={{
-          backgroundImage: `linear-gradient(#14b8a6 1px, transparent 1px), linear-gradient(90deg, #14b8a6 1px, transparent 1px)`,
-          backgroundSize: '40px 40px',
-        }}
+      {/* Background elements */}
+      <motion.div
+        className="absolute top-[20%] left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#f97316]/15 blur-[120px]"
+        animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0.8, 0.5] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
-
-      <div className="relative z-10 w-full px-16 -mt-32">
-        <motion.div
-          className="flex items-end justify-between h-[500px] border-b-4 border-l-4 border-white/20 pb-4 pl-4 relative"
-          initial={{ opacity: 0, scaleY: 0 }}
-          animate={{ opacity: 1, scaleY: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{ transformOrigin: "bottom" }}
+      
+      {/* Visual content: Vintage Badge Stamp */}
+      <motion.div 
+        className="relative z-10 flex flex-col items-center justify-center w-full max-w-[80%] aspect-square mt-20"
+        initial={{ rotateY: 90, scale: 0.5, opacity: 0 }}
+        animate={{ rotateY: 0, scale: 1, opacity: 1 }}
+        transition={{ duration: 1.2, type: "spring", stiffness: 100, damping: 15 }}
+      >
+        <motion.div 
+          className="absolute inset-0 rounded-full border-[16px] border-[#f97316] flex flex-col items-center justify-center bg-[#0F172A] shadow-[0_0_80px_rgba(249,115,22,0.4)]"
         >
-          {/* Y Axis Label */}
-          <div className="absolute -left-20 top-1/2 -translate-y-1/2 -rotate-90 text-white/50 font-bold text-2xl tracking-widest w-64 text-center">
-            SYNTHESIS
-          </div>
+          {/* Inner ring */}
+          <div className="absolute inset-4 rounded-full border-4 border-dashed border-[#f97316]/60"></div>
           
-          {/* Bars */}
-          {[
-            { label: "BFAST", typical: 10, ideal: 30, delay: 0.5 },
-            { label: "LUNCH", typical: 20, ideal: 30, delay: 0.7 },
-            { label: "DINNER", typical: 60, ideal: 30, delay: 0.9 },
-          ].map((bar, i) => (
-            <div key={i} className="flex flex-col items-center w-1/3 group">
-              <div className="relative w-24 h-[400px] flex items-end justify-center mb-4">
-                {/* Typical loading (red/orange) - animate out */}
-                <motion.div
-                  className="absolute bottom-0 w-24 bg-white/10 rounded-t-xl"
-                  initial={{ height: 0 }}
-                  animate={{ height: `${bar.typical}%`, opacity: [1, 1, 0] }}
-                  transition={{ 
-                    height: { duration: 0.8, delay: bar.delay, ease: "easeOut" },
-                    opacity: { duration: 0.5, delay: 3.5 }
-                  }}
-                />
-                {/* Ideal spreading (emerald) - animate in later */}
-                <motion.div
-                  className="absolute bottom-0 w-24 bg-gradient-to-t from-[#10b981] to-[#34d399] rounded-t-xl"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: `${bar.ideal}%`, opacity: [0, 0, 1] }}
-                  transition={{ 
-                    height: { duration: 0.8, delay: 3.5 + i * 0.2, type: "spring", stiffness: 100 },
-                    opacity: { duration: 0.1, delay: 3.5 }
-                  }}
-                />
-              </div>
-              <motion.span 
-                className="text-white/80 font-bold text-2xl"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: bar.delay + 0.3 }}
-              >
-                {bar.label}
-              </motion.span>
-            </div>
-          ))}
-          
-          {/* Target Line */}
           <motion.div 
-            className="absolute bottom-[30%] left-0 w-full border-t-4 border-dashed border-[#f97316]"
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ duration: 1, delay: 4.5, ease: "easeInOut" }}
-            style={{ transformOrigin: "left" }}
+            className="text-[#f97316] font-black text-8xl uppercase tracking-tighter leading-none text-center"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.8, type: "spring", bounce: 0.5 }}
           >
-            <span className="absolute -top-8 right-0 text-[#f97316] font-bold text-2xl bg-[#0F172A] px-2">OPTIMAL THRESHOLD</span>
+            NOT
+          </motion.div>
+          <motion.div 
+            className="text-white font-bold text-4xl uppercase tracking-widest mt-4 text-center px-8"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
+          >
+            Medicine
           </motion.div>
         </motion.div>
-      </div>
+        
+        {/* Grunge overlay texture simulated with CSS */}
+        <div className="absolute inset-0 rounded-full mix-blend-overlay opacity-30 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiLz48cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjMDAwIi8+PC9zdmc+')] pointer-events-none rounded-full" style={{ backgroundSize: '10px 10px' }}></div>
+      </motion.div>
 
+      {/* Text Content */}
       <div className="absolute bottom-40 w-full px-16 text-center z-20">
         <motion.p
           className="text-white text-5xl font-bold leading-tight font-sans tracking-tight"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
+          transition={{ duration: 0.8, delay: 1.5 }}
         >
-          Research suggests spreading protein 
+          ...for a Japanese pedometer,
           <motion.span 
-            className="text-[#10b981] block mt-4 text-6xl"
+            className="text-[#f97316] block mt-4 text-6xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 3.8, type: "spring" }}
+            transition={{ duration: 0.5, delay: 2.2, type: "spring" }}
           >
-            across meals
+            not a medical guideline.
           </motion.span> 
         </motion.p>
       </div>
 
-      {/* Citation */}
-      <motion.div 
-        className="absolute bottom-8 right-8 text-white/40 text-xl font-mono text-right max-w-lg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2 }}
-      >
-        Morton RW et al. (2018)<br/>
-        Am J Clin Nutr
-      </motion.div>
     </motion.div>
   );
 }

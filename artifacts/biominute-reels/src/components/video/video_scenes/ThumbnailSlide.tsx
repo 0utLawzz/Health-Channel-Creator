@@ -12,7 +12,7 @@ export function ThumbnailSlide() {
       transition={{ duration: 0.6 }}
     >
       <img
-        src={`${BASE_URL}images/episode-thumbnail-ep3.png`}
+        src={`${BASE_URL}images/episode-thumbnail.png`}
         alt="Episode Thumbnail Background"
         className="absolute inset-0 w-full h-full object-cover opacity-80"
         draggable={false}
@@ -24,9 +24,8 @@ export function ThumbnailSlide() {
       {/* Title overlay to match thumbnail spec */}
       <div className="absolute inset-0 flex flex-col items-center justify-start pt-40 px-16 text-center">
         <h1 className="text-white text-[80px] font-black leading-tight tracking-tight drop-shadow-2xl">
-          Are You Eating<br />
-          Protein at the<br />
-          <span className="text-[#f97316]">Wrong Time?</span>
+          Is 10,000 Steps<br />
+          Actually a <span className="text-[#f97316]">Myth?</span>
         </h1>
       </div>
 

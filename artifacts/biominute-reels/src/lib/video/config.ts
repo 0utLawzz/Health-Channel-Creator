@@ -20,11 +20,11 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 3500, // "Most people only think about how much protein they eat."
-  1: 6500, // "But research suggests spreading protein across meals may support muscle protein synthesis better than loading most of it at dinner."
-  2: 3000, // "If you're aiming for 90 grams a day..."
-  3: 6500, // "...try roughly 30 grams at breakfast, lunch, and dinner."
-  4: 7000, // "Total protein still matters most — but timing may give your muscles an extra advantage, especially if you strength train."
+  0: 4500, // "The 10,000 step goal started as a 1965 marketing campaign..."
+  1: 4500, // "...for a Japanese pedometer, not a medical guideline."
+  2: 7000, // "Research suggests health benefits begin well below 10,000 steps for many adults, with gains starting around 6,000 to 7,500 steps before leveling off."
+  3: 5000, // "If you're only getting 3,000 steps a day, don't chase perfection."
+  4: 6500, // "Gradually adding a few hundred more steps each week matters more than hitting an arbitrary number."
   5: 5000, // Outro CTA and citations
   6: 4000, // ThumbnailSlide end card
 } as const;
