@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { BatteryWarning, AlertTriangle } from 'lucide-react';
+import { Sparkles, PersonStanding } from 'lucide-react';
+import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
 
@@ -10,74 +11,68 @@ export function Scene2() {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
-      audioRef.current.volume = 0.5;
+      audioRef.current.volume = 0.25;
       audioRef.current.play().catch(() => {});
     }
   }, []);
 
   return (
     <motion.div
-      className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
+      className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden font-body"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0, x: -100 }}
       transition={{ duration: 0.8 }}
     >
-      <audio ref={audioRef} src={`${BASE_URL}audio/swoosh.mp3`} preload="auto" />
+      <audio ref={audioRef} src={`${BASE_URL}audio/sfx-sparkle.mp3`} preload="auto" />
       
-      {/* Background patterns */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="w-full h-full" style={{ backgroundImage: 'radial-gradient(#14b8a6 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
-      </div>
+      {/* Background gradient */}
+      <motion.div 
+        className="absolute top-[20%] w-[800px] h-[800px] bg-gradient-to-tr from-[#14b8a6]/20 to-[#f97316]/20 rounded-full blur-[100px]"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      />
 
-      {/* Visual content */}
-      <div className="relative z-10 flex flex-col items-center justify-center w-full mb-32">
+      <div className="absolute top-[350px] flex items-center justify-center z-10 w-full">
         <motion.div
-          className="relative w-[600px] h-[600px] rounded-full border-4 border-[#14b8a6]/20 flex items-center justify-center bg-[#0F172A]"
-          initial={{ scale: 0.8, opacity: 0 }}
+          className="relative flex items-center justify-center w-[350px] h-[350px] bg-[#0F172A] border-8 border-[#14b8a6] rounded-full drop-shadow-[0_0_50px_rgba(20,184,166,0.3)]"
+          initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ duration: 1, type: "spring" }}
         >
-          {/* Badge */}
+          <PersonStanding size={180} color="#14b8a6" />
           <motion.div
-            className="absolute top-[-40px] bg-[#0F172A] px-8 border-4 border-[#2F6FED] rounded-full drop-shadow-[0_0_20px_rgba(47,111,237,0.5)] z-20"
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5, type: "spring" }}
+            className="absolute top-10 right-10"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.5, type: "spring" }}
           >
-            <span className="text-[#2F6FED] text-5xl font-black uppercase tracking-widest whitespace-nowrap leading-loose block">7-9 hrs</span>
-          </motion.div>
-
-          <motion.div 
-            className="flex flex-col items-center justify-center gap-8 text-[#f97316]"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 1, type: "spring", stiffness: 100 }}
-          >
-            <BatteryWarning size={200} strokeWidth={1} />
-            <motion.div
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="flex items-center gap-4 text-4xl font-bold uppercase tracking-widest bg-[#f97316]/10 px-8 py-4 rounded-full border border-[#f97316]/30"
-            >
-              <AlertTriangle size={40} /> Under 7 Hours
-            </motion.div>
+            <Sparkles size={80} color="#f97316" />
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Text Content */}
-      <div className="absolute bottom-32 w-full px-12 text-center z-20">
-        <motion.p
-          className="text-white text-5xl font-medium leading-tight"
+      <div 
+        className="absolute w-full px-16 text-center z-20"
+        style={{ bottom: BOTTOM_SAFE_ZONE_PX + 120 }}
+      >
+        <motion.h2
+          className="text-[#f8fafc] text-[90px] font-bold uppercase tracking-wider font-display"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.5 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
         >
-          Consistently sleeping <span className="text-[#f97316] font-bold">under 7 hours</span> is linked with reduced focus, slower reaction time, and greater long-term health risk.
+          Aid Digestion
+        </motion.h2>
+        <motion.p
+          className="text-[#94a3b8] text-[40px] mt-8 font-medium leading-tight"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1 }}
+        >
+          Reduce the post-meal slump
         </motion.p>
       </div>
-
     </motion.div>
   );
 }

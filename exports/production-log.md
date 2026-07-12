@@ -8,7 +8,7 @@ Persistent tracker for all BioMinute reel/short episodes. **Read this file befor
 
 | Episode # | Title | Status | Date Completed | Export Folder | Notes |
 |---|---|---|---|---|---|
-| 1 | Walk After Meals | Complete | 2026-07-11 | `exports/Episode-01-Walk-After-Meals/` | Rebuilt 2026-07-11: all 6 scenes fresh for 9:16. ThumbnailSlide added as Scene 6. Durations: 4500/9000/8000/5500/7500/6000/4000ms. CTA: "Do you walk after meals, or sit right down?" |
+| 1 | Walk After Meals | Built — awaiting export | 2026-07-11 | `exports/Episode-01-Walk-After-Meals/` | Rebuilt 2026-07-11: all 6 scenes fresh for 9:16. ThumbnailSlide added as Scene 6. Durations: 4500/7000/4000/3000/5000/5000/4000ms. CTA: "Do you walk after meals, or sit right down?" |
 | 2 | Drink Water Before Your Morning Coffee | Built — awaiting export | — | `exports/Episode-02-drink-water-before-your-morning/` | Scenes built for 9:16. Durations updated: 4500/7500/8000/8000/7500/6000/4000ms. CTA: "Do you reach for water or coffee first thing?" |
 | 3 | Are You Eating Protein at the Wrong Time? | Built — awaiting export | — | `exports/Episode-03-are-you-eating-protein-at/` | Scenes built for 9:16. Durations: 3500/6500/3000/6500/7000/5000/4000ms. CTA: "Which meal has the most protein for you right now?" |
 | 4 | Is 10,000 Steps Actually a Myth? | Built — awaiting export | 2026-07-12 | `exports/Episode-04-is-10-000-steps-actually/` | Scenes built for 9:16. Durations: 4500/4500/7000/5000/6500/5000/4000ms. CTA: "How many steps do you average each day?" |

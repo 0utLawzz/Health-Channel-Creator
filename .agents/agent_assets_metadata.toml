@@ -24,3 +24,15 @@ id = "mCs1cVrueuOI7HvuRso-P"
 uri = "file://exports/Episode-01-Walk-After-Meals/preview-1080x1920.jpg"
 type = "image"
 title = "Episode 1 preview at 1080x1920"
+
+[[outputs]]
+id = "kRHgEAJrCnAe5nPB776KK"
+uri = "file://artifacts/biominute-reels/public/audio/sfx-sparkle.mp3"
+type = "audio"
+title = "soft sparkle chime"
+
+[[outputs]]
+id = "E_BQ6KU4X5Vm4CKhPCu8f"
+uri = "file://artifacts/biominute-reels/public/audio/sfx-pop.mp3"
+type = "audio"
+title = "clean ui pop"

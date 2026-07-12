@@ -98,15 +98,6 @@ export default function VideoTemplate({
         volume={0.35}
         assets={{
           background: 'audio/background.mp3',
-          sceneSfx: {
-            '0': 'audio/swoosh.mp3',
-            '1': 'audio/pop.mp3',
-            '2': 'audio/swoosh.mp3',
-            '3': 'audio/pop.mp3',
-            '4': 'audio/swoosh.mp3',
-            '5': 'audio/pop.mp3',
-            default: 'audio/swoosh.mp3',
-          },
         }}
       />
     </div>

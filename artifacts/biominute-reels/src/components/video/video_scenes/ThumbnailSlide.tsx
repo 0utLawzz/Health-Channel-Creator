@@ -13,27 +13,9 @@ export function ThumbnailSlide() {
     >
       <img
         src={`${BASE_URL}images/episode-thumbnail.png`}
-        alt="Episode Thumbnail Background"
-        className="absolute inset-0 w-full h-full object-cover opacity-80"
+        alt="Episode Thumbnail"
+        className="absolute inset-0 w-full h-full object-cover"
         draggable={false}
-      />
-      
-      {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/80 via-transparent to-[#0F172A]/90" />
-
-      {/* Title overlay to match thumbnail spec */}
-      <div className="absolute inset-0 flex flex-col items-center justify-start pt-40 px-16 text-center">
-        <h1 className="text-white text-[80px] font-black leading-tight tracking-tight drop-shadow-2xl">
-          Why Sleep Matters<br />
-          <span className="text-[#10B981]">More</span> Than You Think
-        </h1>
-      </div>
-
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
       />
     </motion.div>
   );

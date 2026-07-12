@@ -4,7 +4,6 @@ const BASE_URL = import.meta.env.BASE_URL ?? '/';
 
 export interface AudioAssets {
   background?: string;
-  sceneSfx?: Record<string, string>;
 }
 
 interface AudioEngineProps {
@@ -36,18 +35,14 @@ export function useAudioState() {
 }
 
 export function AudioEngine({
-  currentSceneKey,
   assets,
   muted = true,
-  volume = 0.45,
+  volume = 0.35,
 }: AudioEngineProps) {
   const bgRef = useRef<HTMLAudioElement | null>(null);
-  const sfxRef = useRef<HTMLAudioElement | null>(null);
-  const lastSceneRef = useRef<string>(currentSceneKey);
   const [audioCtxReady, setAudioCtxReady] = useState(false);
 
   const bgPath = assets?.background ? `${BASE_URL}${assets.background}` : null;
-  const sceneSfx = assets?.sceneSfx;
 
   // Initialize background music once
   useEffect(() => {
@@ -57,10 +52,6 @@ export function AudioEngine({
     bg.volume = volume;
     bg.preload = 'auto';
     bgRef.current = bg;
-
-    const sfx = new Audio();
-    sfx.preload = 'auto';
-    sfxRef.current = sfx;
 
     const tryPlay = () => {
       setAudioCtxReady(true);
@@ -84,9 +75,7 @@ export function AudioEngine({
       window.removeEventListener('keydown', tryPlay);
       window.removeEventListener('touchstart', tryPlay);
       bg.pause();
-      sfx.pause();
       bgRef.current = null;
-      sfxRef.current = null;
     };
   }, [bgPath, volume]);
 
@@ -99,24 +88,6 @@ export function AudioEngine({
       bg.play().catch(() => {});
     }
   }, [muted, audioCtxReady]);
-
-  // Trigger scene-change SFX
-  useEffect(() => {
-    if (!sceneSfx || !sfxRef.current) return;
-    const cleanKey = currentSceneKey.replace(/_r[12]$/, '');
-    const lastClean = lastSceneRef.current.replace(/_r[12]$/, '');
-    if (cleanKey === lastClean) return;
-    lastSceneRef.current = currentSceneKey;
-
-    const path = sceneSfx[cleanKey] || sceneSfx['default'];
-    if (!path) return;
-
-    const sfx = sfxRef.current;
-    sfx.src = `${BASE_URL}${path}`;
-    sfx.volume = muted ? 0 : 0.6;
-    sfx.currentTime = 0;
-    sfx.play().catch(() => {});
-  }, [currentSceneKey, sceneSfx, muted]);
 
   return null;
 }
