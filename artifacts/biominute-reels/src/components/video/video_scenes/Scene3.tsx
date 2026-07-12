@@ -1,121 +1,128 @@
 import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
-const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 400, damping: 30 };
-const SPRING_SMOOTH = { type: 'spring' as const, stiffness: 120, damping: 25 };
-
-function CoffeeBalanceGraphic() {
-  return (
-    <div className="w-full flex justify-center items-center gap-[calc(var(--cvw)*6)]" style={{ height: 'calc(var(--cvh)*20)' }}>
-      {/* Water Side */}
-      <motion.div 
-        className="flex flex-col items-center relative"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ ...SPRING_SNAPPY, delay: 0.5 }}
-      >
-        <svg viewBox="0 0 60 60" className="w-[calc(var(--cvw)*18)] h-[calc(var(--cvw)*18)]" preserveAspectRatio="xMidYMid meet">
-          <motion.path 
-            d="M30,5 C30,5 10,30 30,50 C50,30 30,5 30,5 Z" 
-            fill="none" stroke="#10b981" strokeWidth="3"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.5, delay: 1 }}
-          />
-          <motion.path 
-            d="M30,5 C30,5 10,30 30,50 C50,30 30,5 30,5 Z" 
-            fill="#10b981"
-            initial={{ scale: 0, transformOrigin: '50% 100%', opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.5, delay: 2 }}
-          />
-        </svg>
-        <span className="text-brand-emerald font-bold text-sm mt-3">Hydration Base</span>
-      </motion.div>
-
-      {/* Balance Scale / Plus */}
-      <motion.div 
-        className="text-white/30 font-bold"
-        style={{ fontSize: 'calc(var(--cvw)*8)' }}
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ ...SPRING_SNAPPY, delay: 1.5 }}
-      >
-        +
-      </motion.div>
-
-      {/* Coffee side */}
-      <motion.div 
-        className="flex flex-col items-center"
-        initial={{ opacity: 0.3, filter: 'grayscale(100%)' }}
-        animate={{ opacity: 1, filter: 'grayscale(0%)' }}
-        transition={{ duration: 1.5, delay: 3.5 }}
-      >
-        <svg viewBox="0 0 60 60" className="w-[calc(var(--cvw)*18)] h-[calc(var(--cvw)*18)]" preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <linearGradient id="coffeeGrad" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stopColor="#2F6FED" />
-              <stop offset="100%" stopColor="#10b981" />
-            </linearGradient>
-          </defs>
-          <motion.path 
-            d="M10,15 L45,15 C45,15 45,45 27.5,45 C10,45 10,15 10,15 Z M45,20 L50,20 C55,20 55,30 50,30 L45,30" 
-            fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"
-            className="text-brand-orange"
-          />
-          <motion.path 
-            d="M10,15 L45,15 C45,15 45,45 27.5,45 C10,45 10,15 10,15 Z M45,20 L50,20 C55,20 55,30 50,30 L45,30" 
-            fill="url(#coffeeGrad)"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5, delay: 4 }}
-          />
-          {/* Steam */}
-          <motion.path d="M20,5 Q25,-5 20,-10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/50" 
-            initial={{ opacity: 0, pathLength: 0 }} animate={{ opacity: 1, pathLength: 1 }} transition={{ duration: 1, delay: 4.5 }} />
-          <motion.path d="M35,5 Q30,-5 35,-10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-white/50" 
-            initial={{ opacity: 0, pathLength: 0 }} animate={{ opacity: 1, pathLength: 1 }} transition={{ duration: 1, delay: 4.7 }} />
-        </svg>
-        <span className="text-brand-orange font-bold text-sm mt-3">Mild Diuretic</span>
-      </motion.div>
-
-    </div>
-  );
-}
+const BASE_URL = import.meta.env.BASE_URL ?? '/';
 
 export function Scene3() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(() => {});
+    }
+  }, []);
+
+  const plates = [
+    { label: "BREAKFAST", delay: 0.5, icon: "🍳" },
+    { label: "LUNCH", delay: 1.5, icon: "🥗" },
+    { label: "DINNER", delay: 2.5, icon: "🥩" },
+  ];
+
   return (
     <motion.div
-      className="absolute inset-0 w-full h-full font-display bg-brand-navy overflow-hidden"
+      className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.05 }}
+      exit={{ opacity: 0, y: -50 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="absolute inset-0 w-full h-full flex flex-col justify-center items-center p-[8%] gap-[calc(var(--cvh)*5)]">
+      <audio ref={audioRef} src={`${BASE_URL}audio/pop.mp3`} preload="auto" />
+      
+      <div className="flex flex-col items-center justify-center gap-12 w-full px-16 -mt-20">
+        {plates.map((plate, i) => (
+          <motion.div 
+            key={i}
+            className="flex items-center w-full gap-8"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: plate.delay, type: "spring" }}
+          >
+            {/* Plate Icon */}
+            <motion.div 
+              className="relative w-32 h-32 flex-shrink-0 bg-[#1e293b] rounded-full flex items-center justify-center border-4 border-white/10"
+              animate={{ 
+                boxShadow: ["0px 0px 0px rgba(16,185,129,0)", "0px 0px 30px rgba(16,185,129,0.4)", "0px 0px 0px rgba(16,185,129,0)"],
+                borderColor: ["rgba(255,255,255,0.1)", "rgba(16,185,129,0.5)", "rgba(255,255,255,0.1)"]
+              }}
+              transition={{ duration: 2, delay: 4.5, repeat: Infinity }}
+            >
+              <span className="text-6xl">{plate.icon}</span>
+              
+              {/* Progress Ring Background */}
+              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+              </svg>
+              
+              {/* Progress Ring Fill */}
+              <motion.svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]" viewBox="0 0 100 100">
+                <motion.circle 
+                  cx="50" cy="50" r="46" 
+                  fill="none" 
+                  stroke="#10b981" 
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 1, delay: plate.delay + 0.5, ease: "easeOut" }}
+                />
+              </motion.svg>
+              
+              {/* Orange Accent Dot */}
+              <motion.div 
+                className="absolute top-0 right-0 w-8 h-8 bg-[#f97316] rounded-full border-4 border-[#0F172A] z-10"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.4, delay: plate.delay + 1.5, type: "spring", stiffness: 300 }}
+              />
+            </motion.div>
+            
+            {/* Progress Bar & Label */}
+            <div className="flex-1">
+              <div className="flex justify-between items-end mb-2">
+                <span className="text-white text-3xl font-bold tracking-widest">{plate.label}</span>
+                <motion.span 
+                  className="text-[#10b981] text-4xl font-black"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: plate.delay + 1 }}
+                >
+                  30g
+                </motion.span>
+              </div>
+              <div className="h-6 w-full bg-[#1e293b] rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-gradient-to-r from-[#14b8a6] to-[#10b981]"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 1, delay: plate.delay + 0.5, ease: "easeOut" }}
+                />
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="absolute bottom-32 w-full px-16 text-center z-20">
+        <motion.p
+          className="text-white text-4xl font-bold leading-tight font-sans tracking-tight mb-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 3.5 }}
+        >
+          ...try roughly <span className="text-[#10b981]">30 grams</span><br/>
+          at breakfast, lunch, and dinner.
+        </motion.p>
         
         <motion.div
-          className="bg-brand-orange/10 border border-brand-orange/20 rounded-[calc(var(--cvw)*3)] p-[calc(var(--cvw)*5)] w-full"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...SPRING_SMOOTH, delay: 0.2 }}
+          className="bg-[#2F6FED]/20 border-2 border-[#2F6FED] rounded-full py-4 px-10 inline-block text-white text-5xl font-black"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 5.5, type: "spring", bounce: 0.5 }}
         >
-          <span className="text-white/90 font-medium leading-snug text-center block" style={{ fontSize: 'calc(var(--cvw)*6.5)' }}>
-            Coffee has a <span className="text-brand-orange font-bold">mild diuretic effect</span> too...
-          </span>
+          90g TOTAL
         </motion.div>
-
-        <CoffeeBalanceGraphic />
-
-        <motion.span
-          className="text-white font-bold leading-tight text-center"
-          style={{ fontSize: 'calc(var(--cvw)*7.5)' }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...SPRING_SNAPPY, delay: 5.5 }}
-        >
-          Starting hydrated helps <span className="text-brand-blue">balance</span> that out.
-        </motion.span>
-
       </div>
     </motion.div>
   );

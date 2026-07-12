@@ -1,82 +1,141 @@
 import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
-const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 400, damping: 30 };
-const SPRING_SMOOTH = { type: 'spring' as const, stiffness: 120, damping: 25 };
+const BASE_URL = import.meta.env.BASE_URL ?? '/';
 
 export function Scene4() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(() => {});
+    }
+  }, []);
+
   return (
     <motion.div
-      className="absolute inset-0 w-full h-full font-display bg-brand-navy overflow-hidden"
+      className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.05 }}
+      exit={{ opacity: 0, scale: 1.1 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="absolute inset-0 w-full h-full flex flex-col justify-center p-[8%] gap-[calc(var(--cvh)*4)]">
+      <audio ref={audioRef} src={`${BASE_URL}audio/swoosh.mp3`} preload="auto" />
 
-        <motion.span
-          className="text-white/80 font-medium"
-          style={{ fontSize: 'calc(var(--cvw)*6)' }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ ...SPRING_SNAPPY, delay: 0.2 }}
-        >
-          Total caffeine intake still matters most...
-        </motion.span>
+      {/* Dynamic Background */}
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-b from-[#14b8a6]/20 to-transparent"
+        initial={{ y: "-100%" }}
+        animate={{ y: "0%" }}
+        transition={{ duration: 2, ease: "easeOut" }}
+      />
 
-        <motion.div
-          className="flex flex-col gap-[calc(var(--cvh)*1.5)] bg-white/5 border border-white/10 rounded-[calc(var(--cvw)*4)] p-[calc(var(--cvw)*6)] relative overflow-hidden"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...SPRING_SMOOTH, delay: 1 }}
+      <div className="relative z-10 w-full px-16 -mt-20">
+        <motion.div 
+          className="relative w-full aspect-square bg-[#1e293b] rounded-[3rem] border border-white/10 p-12 overflow-hidden"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1, type: "spring", bounce: 0.4 }}
         >
-          <div className="absolute top-0 right-0 w-[50%] h-[100%] bg-gradient-to-l from-brand-emerald/15 to-transparent blur-xl" />
-          
-          <span className="text-brand-teal font-bold uppercase tracking-widest text-sm mb-2 relative z-10">This one small swap</span>
-          
-          <div className="flex items-center justify-between gap-[calc(var(--cvw)*3)] relative z-10 font-extrabold" style={{ fontSize: 'calc(var(--cvw)*7.5)' }}>
+          {/* Animated Muscle/DNA abstract background */}
+          <motion.svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <motion.path 
+              d="M0,50 Q25,20 50,50 T100,50" 
+              fill="none" 
+              stroke="#f97316" 
+              strokeWidth="4"
+              initial={{ pathLength: 0, pathOffset: 1 }}
+              animate={{ pathLength: 1, pathOffset: 0 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            />
+            <motion.path 
+              d="M0,50 Q25,80 50,50 T100,50" 
+              fill="none" 
+              stroke="#10b981" 
+              strokeWidth="4"
+              initial={{ pathLength: 0, pathOffset: 1 }}
+              animate={{ pathLength: 1, pathOffset: 0 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear", delay: 1 }}
+            />
+          </motion.svg>
+
+          {/* Central Scales Graphic */}
+          <div className="relative h-full flex flex-col items-center justify-center z-10">
             <motion.div 
-              className="flex items-center gap-2 bg-brand-emerald/20 border border-brand-emerald/30 text-brand-emerald px-4 py-2 rounded-xl"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ ...SPRING_SNAPPY, delay: 2 }}
+              className="text-white text-5xl font-black mb-8 text-center uppercase tracking-widest"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
             >
-              <span>1.</span>
-              <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current"><path d="M12 2C12 2 6 9 6 14C6 17.3137 8.68629 20 12 20C15.3137 20 18 17.3137 18 14C18 9 12 2 12 2Z"/></svg>
+              The Formula
             </motion.div>
             
-            <motion.span 
-              className="text-white/40"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 2.5 }}
-            >
-              ➜
-            </motion.span>
+            <div className="flex items-center justify-center w-full gap-8">
+              <motion.div 
+                className="flex-1 bg-[#0F172A] rounded-2xl p-8 border-2 border-[#2F6FED]"
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 1, type: "spring" }}
+              >
+                <div className="text-[#2F6FED] font-bold text-3xl mb-2 text-center">TOTAL</div>
+                <div className="text-white/50 text-xl text-center">Most Important</div>
+              </motion.div>
+              
+              <div className="text-white/30 text-5xl font-black">+</div>
+              
+              <motion.div 
+                className="flex-1 bg-[#0F172A] rounded-2xl p-8 border-2 border-[#f97316]"
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 1.5, type: "spring" }}
+              >
+                <div className="text-[#f97316] font-bold text-3xl mb-2 text-center">TIMING</div>
+                <div className="text-white/50 text-xl text-center">The Advantage</div>
+              </motion.div>
+            </div>
             
             <motion.div 
-              className="flex items-center gap-2 bg-brand-orange/20 border border-brand-orange/30 text-brand-orange px-4 py-2 rounded-xl"
-              initial={{ scale: 0.8, opacity: 0 }}
+              className="mt-12 bg-[#10b981]/20 text-[#10b981] px-8 py-4 rounded-full text-3xl font-bold tracking-wider uppercase border border-[#10b981]/50"
+              initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ ...SPRING_SNAPPY, delay: 3 }}
+              transition={{ delay: 2.5, type: "spring", bounce: 0.6 }}
             >
-              <span>2.</span>
-              <svg viewBox="0 0 24 24" className="w-8 h-8 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8H19C20.1046 8 21 8.89543 21 10C21 11.1046 20.1046 12 19 12H18M6 2V4M10 2V4M14 2V4M6 20H18C19.1046 20 20 19.1046 20 18V8H4V18C4 19.1046 4.89543 20 6 20Z"/></svg>
+              Max Muscle Synthesis
             </motion.div>
           </div>
         </motion.div>
-
-        <motion.span
-          className="text-white font-bold leading-tight mt-[calc(var(--cvh)*2)] text-center"
-          style={{ fontSize: 'calc(var(--cvw)*7.5)' }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...SPRING_SNAPPY, delay: 4.5 }}
-        >
-          May give your morning an <span className="text-brand-emerald">extra edge.</span>
-        </motion.span>
-
       </div>
+
+      <div className="absolute bottom-32 w-full px-16 text-center z-20">
+        <motion.p
+          className="text-white text-5xl font-bold leading-tight font-sans tracking-tight"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          Total protein still matters most — <br/>
+          <motion.span 
+            className="text-[#f97316] block mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 3 }}
+          >
+            but timing gives you an edge
+          </motion.span>
+        </motion.p>
+      </div>
+      
+      {/* Citation */}
+      <motion.div 
+        className="absolute bottom-8 left-8 text-white/40 text-xl font-mono text-left max-w-lg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 2 }}
+      >
+        Specially for strength training
+      </motion.div>
     </motion.div>
   );
 }

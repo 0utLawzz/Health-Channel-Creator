@@ -1,75 +1,100 @@
 import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
-const SPRING_SNAPPY = { type: 'spring' as const, stiffness: 400, damping: 30 };
-const SPRING_SMOOTH = { type: 'spring' as const, stiffness: 120, damping: 25 };
 
 export function Scene5() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = 0.5;
+      audioRef.current.play().catch(() => {});
+    }
+  }, []);
+
   return (
     <motion.div
-      className="absolute inset-0 w-full h-full font-display bg-brand-navy overflow-hidden"
+      className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.8 }}
     >
-      <div className="absolute inset-0 w-full h-full flex flex-col justify-center items-center p-[8%]">
+      <audio ref={audioRef} src={`${BASE_URL}audio/pop.mp3`} preload="auto" />
 
-        {/* Citation Chip */}
+      {/* Background Particles/Noise */}
+      <motion.div 
+        className="absolute inset-0 opacity-30"
+        animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        style={{
+          backgroundImage: `radial-gradient(circle, #2F6FED 1px, transparent 1px)`,
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* Main Content Area */}
+      <div className="relative z-10 w-full px-16 flex flex-col items-center">
+        {/* Logo Lockup */}
         <motion.div
-          className="absolute top-[8%] left-[8%] right-[8%] bg-white/5 border border-white/10 rounded-xl p-3 text-center"
-          initial={{ opacity: 0, y: -20 }}
+          className="flex items-center gap-6 mb-16"
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...SPRING_SMOOTH, delay: 0.5 }}
+          transition={{ duration: 0.8, type: "spring", bounce: 0.5 }}
         >
-          <p className="text-white/40 text-[10px] uppercase tracking-wider mb-1">Source</p>
-          <p className="text-white/70 text-[11px] leading-tight">
-            Popkin BM et al. (2010), Nutrition Reviews — Water, hydration and health
-          </p>
-        </motion.div>
-
-        {/* Logo Mark */}
-        <motion.div
-          className="relative w-[30%] aspect-square mb-[calc(var(--cvh)*4)] flex items-center justify-center mt-[calc(var(--cvh)*5)]"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ ...SPRING_SNAPPY, delay: 1 }}
-        >
-          <div className="absolute inset-0 bg-brand-emerald/20 blur-[30px] rounded-full" />
-          <div className="absolute w-[80%] h-[80%] rounded-full border-[3px] border-brand-teal flex items-center justify-center relative overflow-hidden bg-brand-navy">
-            {/* DNA/Heartbeat Logo abstraction */}
-            <svg viewBox="0 0 100 100" className="w-[60%] h-[60%]">
-              <path d="M 10 50 L 30 50 L 40 20 L 60 80 L 70 50 L 90 50" fill="none" stroke="#10b981" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+          {/* DNA/Heartbeat Motif Logo */}
+          <div className="relative w-24 h-24 bg-[#14b8a6] rounded-3xl flex items-center justify-center rotate-3 overflow-hidden shadow-[0_0_40px_rgba(20,184,166,0.3)]">
+            <svg className="w-16 h-16 text-white -rotate-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-white text-6xl font-black tracking-tight leading-none">BioMinute</span>
+            <span className="text-[#14b8a6] text-2xl font-bold tracking-[0.2em] uppercase mt-1">Science Simplified</span>
           </div>
         </motion.div>
 
-        {/* Wordmark */}
+        {/* CTA Card */}
         <motion.div
-          className="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal to-brand-emerald font-black tracking-tight"
-          style={{ fontSize: 'calc(var(--cvw)*12)' }}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ...SPRING_SNAPPY, delay: 1.4 }}
+          className="w-full bg-[#1e293b] rounded-[3rem] p-12 border-2 border-white/10 text-center shadow-2xl relative overflow-hidden"
+          initial={{ opacity: 0, scale: 0.8, y: 50 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8, type: "spring", bounce: 0.4 }}
         >
-          BioMinute
-        </motion.div>
+          {/* Accent glow behind CTA */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[#f97316]/10 blur-[100px] pointer-events-none" />
 
-        {/* CTA */}
-        <motion.div
-          className="mt-[calc(var(--cvh)*8)] bg-white/5 border border-white/10 rounded-2xl p-[calc(var(--cvw)*5)] text-center w-full relative overflow-hidden"
-          initial={{ scale: 0.9, opacity: 0, y: 30 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ ...SPRING_SMOOTH, delay: 2.8 }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-tr from-brand-orange/10 to-transparent opacity-50" />
-          <span className="text-brand-orange font-bold text-[11px] uppercase tracking-widest block mb-3 relative z-10">Join the discussion</span>
-          <span className="text-white font-bold leading-tight drop-shadow-md relative z-10" style={{ fontSize: 'calc(var(--cvw)*7)' }}>
-            Do you reach for water or coffee first thing?
-          </span>
-        </motion.div>
+          <motion.div 
+            className="text-[#f97316] font-bold text-3xl uppercase tracking-widest mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+          >
+            Question of the day
+          </motion.div>
+          
+          <motion.h2 
+            className="text-white text-5xl font-black leading-tight"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.8 }}
+          >
+            Which meal has the most protein for you right now?
+          </motion.h2>
 
+          <motion.div
+            className="mt-10 flex justify-center gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 2.2 }}
+          >
+            <div className="bg-[#0F172A] text-white px-8 py-4 rounded-full text-2xl font-bold border border-white/20">💬 Drop a comment</div>
+          </motion.div>
+        </motion.div>
       </div>
+
     </motion.div>
   );
 }

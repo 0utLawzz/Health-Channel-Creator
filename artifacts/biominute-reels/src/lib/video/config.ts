@@ -20,11 +20,11 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500,
-  1: 7500,
-  2: 8000,
-  3: 8000,
-  4: 7500,
-  5: 6000,
+  0: 3500, // "Most people only think about how much protein they eat."
+  1: 6500, // "But research suggests spreading protein across meals may support muscle protein synthesis better than loading most of it at dinner."
+  2: 3000, // "If you're aiming for 90 grams a day..."
+  3: 6500, // "...try roughly 30 grams at breakfast, lunch, and dinner."
+  4: 7000, // "Total protein still matters most — but timing may give your muscles an extra advantage, especially if you strength train."
+  5: 5000, // Outro CTA and citations
   6: 4000, // ThumbnailSlide end card
 } as const;
