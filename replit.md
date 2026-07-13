@@ -4,10 +4,12 @@ A workspace for producing short animated health-science YouTube Shorts/Reels for
 
 ## Current state
 
-- **Episode 1 — Walk After Meals:** `Complete` (exported and in `exports/Episode-01-Walk-After-Meals/`).
-- **Episodes 2–5:** `Uncomplete` — export folders removed, queued for fresh rebuilds.
+- **Episode 1 — Walk After Meals:** `Complete` — `episode.mp4` exported and verified (1080×1920) in `exports/Episode-01-Walk-After-Meals/`. `thumbnail.png` still pending from the user.
+- **Episode 2 — Drink Water Before Your Morning Coffee:** `Complete` — rebuilt from the master plan and exported in `exports/Episode-02-drink-water-before-your-morning/`. `thumbnail.png` still pending from the user.
+- **Episodes 3–5:** `Built — awaiting export` per the production log, but note the artifact only holds one episode's scenes at a time — verify/rebuild before trusting that status.
 - **Episodes 6–36:** `Uncomplete` (planned queue).
-- **Live artifact:** `artifacts/biominute-reels` currently holds **Episode 1** scenes.
+- **Live artifact:** `artifacts/biominute-reels` currently holds **Episode 2** scenes.
+- Neither exported episode has been pushed to GitHub yet — `GITHUB_TOKEN` is not set as a Replit Secret in this environment.
 
 ## Run & Operate
 

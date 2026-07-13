@@ -11,10 +11,11 @@ A simple workspace for making short animated health-science videos (YouTube Shor
 
 ## Current state
 
-- **Episode 1 — Walk After Meals:** `Complete` (exported and in `exports/Episode-01-Walk-After-Meals/`).
-- **Episodes 2–5:** `Uncomplete`. Their export folders were removed and are queued for fresh rebuilds.
+- **Episode 1 — Walk After Meals:** `Complete` (exported and verified in `exports/Episode-01-Walk-After-Meals/`; thumbnail still pending from the user).
+- **Episode 2 — Drink Water Before Your Morning Coffee:** `Complete` (rebuilt and exported in `exports/Episode-02-drink-water-before-your-morning/`; thumbnail still pending from the user).
+- **Episodes 3–5:** `Built — awaiting export` per the log — re-verify before trusting, since only one episode's scenes live in the artifact at a time.
 - **Episodes 6–36:** `Uncomplete` (planned queue with post dates).
-- **Live artifact:** `artifacts/biominute-reels` currently holds **Episode 1** scenes.
+- **Live artifact:** `artifacts/biominute-reels` currently holds **Episode 2** scenes.
 
 > **Format reminder:** every BioMinute video is **9:16 vertical** (1080×1920), not 16:9. The generic video-js skill defaults to 16:9 — this project overrides that.
 
