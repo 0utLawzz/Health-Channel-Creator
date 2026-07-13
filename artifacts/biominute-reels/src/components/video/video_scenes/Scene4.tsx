@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { BookOpen, MessageCircle, Moon } from 'lucide-react';
+import { BookOpen, MessageCircle, Clock, Utensils } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -28,7 +28,6 @@ export function Scene4() {
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/sfx-pop.mp3`} preload="auto" />
 
-      {/* CTA Card */}
       <div className="absolute top-[240px] z-10 w-[90%]">
         <motion.div
           className="bg-[#1e293b]/90 border border-[#334155] rounded-[40px] p-12 flex flex-col items-center text-center shadow-2xl relative overflow-hidden"
@@ -36,7 +35,6 @@ export function Scene4() {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ...SPRING_SMOOTH }}
         >
-          {/* Orange accent dot */}
           <div className="absolute top-6 right-8 w-4 h-4 bg-[#f97316] rounded-full" />
 
           <motion.div
@@ -44,7 +42,9 @@ export function Scene4() {
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.6, ...SPRING_SNAPPY }}
           >
-            <Moon size={90} color="#2F6FED" strokeWidth={1.5} fill="#2F6FED" fillOpacity={0.2} />
+            <div className="w-24 h-24 rounded-full bg-[#10b981] flex items-center justify-center">
+              <Clock size={48} color="#0F172A" strokeWidth={2} />
+            </div>
           </motion.div>
 
           <motion.h2
@@ -53,9 +53,9 @@ export function Scene4() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
           >
-            What Time Did You
-            <span className="text-[#2F6FED] block mt-2">Go to Bed</span>
-            <span className="text-[#10b981] block mt-2">Last Night?</span>
+            Eat Slower
+            <span className="text-[#10b981] block mt-2">Let Your Body</span>
+            <span className="text-[#f97316] block mt-2">Catch Up</span>
           </motion.h2>
 
           <motion.div
@@ -64,13 +64,12 @@ export function Scene4() {
             animate={{ opacity: 1 }}
             transition={{ delay: 2.0, duration: 1 }}
           >
-            <MessageCircle size={28} color="#14b8a6" />
-            <span className="text-[#94a3b8] text-[24px] font-medium">Drop your bedtime below 👇</span>
+            <Utensils size={28} color="#f97316" />
+            <span className="text-[#94a3b8] text-[24px] font-medium">What food keeps you full the longest? 👇</span>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Citation */}
       <motion.div
         className="absolute w-full px-12 z-30 flex justify-center"
         style={{ bottom: BOTTOM_SAFE_ZONE_PX + 60 }}
@@ -81,7 +80,7 @@ export function Scene4() {
         <div className="flex items-center gap-4 text-[#94a3b8] text-[22px] font-medium bg-[#0F172A]/90 px-6 py-4 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
           <BookOpen className="shrink-0" size={28} />
           <p className="leading-relaxed text-left">
-            Source: Watson NF et al. (2015), Sleep — AASM/SRS Recommended Sleep Duration Consensus
+            Source: General satiety/nutrition research; fiber and protein satiety studies (e.g., Nutrients journal reviews)
           </p>
         </div>
       </motion.div>

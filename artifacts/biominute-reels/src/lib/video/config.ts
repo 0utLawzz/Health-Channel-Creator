@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 2500, // Hook: "Why Sleep Matters More Than You Think"
-  1: 6500, // Sleep repairs brain, body, and hormones
-  2: 6500, // Under 7 hours is linked to reduced focus and long-term risk
-  3: 4000, // You can't make up lost sleep over a weekend; aim for 7-9 hrs
-  4: 6500, // CTA: "What time did you go to bed last night?" + citation
+  0: 3000, // Hook: "Why Are You Still Hungry Right After Eating?"
+  1: 6500, // Meals low in protein or fiber are less filling
+  2: 6500, // Ultra-processed foods make it easy to overeat before fullness registers
+  3: 5000, // Build meals around protein, vegetables, whole grains, healthy fats
+  4: 6500, // CTA: "What food keeps you full the longest?" + citation
   5: 5000, // Thumbnail end card
 } as const;
