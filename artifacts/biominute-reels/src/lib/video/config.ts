@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Walk After Meals"
-  1: 7000, // "Research shows that light movement within 30 minutes..."
-  2: 4000, // "It can also aid digestion and reduce that post-meal slump."
-  3: 3000, // "You don't need speed or distance."
-  4: 5000, // "A relaxed 10-15 minute walk is enough..."
-  5: 5000, // Outro CTA and citations
+  0: 4500, // Hook: "Drink Water Before Your Morning Coffee"
+  1: 7000, // "You wake up already dehydrated — ~1L lost overnight via breathing & sweating"
+  2: 6000, // "Replace overnight losses — support hydration & alertness"
+  3: 5000, // "Balance the effect — water first, coffee mild diuretic"
+  4: 6500, // "One small swap for an extra edge" + citation
+  5: 6000, // Outro CTA: "Do you reach for water or coffee first thing?"
 } as const;
