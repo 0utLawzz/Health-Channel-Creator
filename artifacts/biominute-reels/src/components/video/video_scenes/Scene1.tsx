@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Beef, Moon, Sun, Sunset } from 'lucide-react';
+import { Calendar, ShoppingBag, Stethoscope } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -28,62 +28,62 @@ export function Scene1() {
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/sfx-pop.mp3`} preload="auto" />
 
-      {/* Three plates visual */}
-      <div className="absolute top-[260px] flex items-end justify-center gap-8 z-10 w-full px-10">
-        {/* Breakfast - small/empty */}
+      {/* Vintage badge + pedometer visual */}
+      <div className="absolute top-[240px] flex items-center justify-center z-10 w-full">
         <motion.div
-          className="flex flex-col items-center gap-4"
-          initial={{ y: 60, opacity: 0 }}
-          animate={{ y: 0, opacity: 0.4 }}
-          transition={{ delay: 0.3, ...SPRING_SMOOTH }}
+          className="relative w-[320px] h-[320px] rounded-full bg-[#0F172A] border-8 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_60px_rgba(249,115,22,0.35)]"
+          initial={{ scale: 0.6, opacity: 0, rotate: -10 }}
+          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+          transition={{ delay: 0.2, ...SPRING_SMOOTH }}
         >
-          <div className="w-[140px] h-[140px] rounded-full border-4 border-[#475569] bg-[#0F172A] flex items-center justify-center">
-            <Sun size={50} color="#475569" />
-          </div>
-          <span className="text-[#475569] font-display uppercase tracking-widest text-[20px] font-bold">Breakfast</span>
-          <div className="w-24 h-2 bg-[#475569]/30 rounded-full overflow-hidden">
-            <motion.div className="h-full bg-[#475569]" initial={{ width: 0 }} animate={{ width: "20%" }} transition={{ delay: 1.0, duration: 1 }} />
-          </div>
-        </motion.div>
-
-        {/* Lunch - medium */}
-        <motion.div
-          className="flex flex-col items-center gap-4"
-          initial={{ y: 60, opacity: 0 }}
-          animate={{ y: 0, opacity: 0.6 }}
-          transition={{ delay: 0.5, ...SPRING_SMOOTH }}
-        >
-          <div className="w-[160px] h-[160px] rounded-full border-4 border-[#64748b] bg-[#0F172A] flex items-center justify-center">
-            <Sunset size={55} color="#64748b" />
-          </div>
-          <span className="text-[#64748b] font-display uppercase tracking-widest text-[22px] font-bold">Lunch</span>
-          <div className="w-28 h-2 bg-[#64748b]/30 rounded-full overflow-hidden">
-            <motion.div className="h-full bg-[#64748b]" initial={{ width: 0 }} animate={{ width: "35%" }} transition={{ delay: 1.3, duration: 1 }} />
-          </div>
-        </motion.div>
-
-        {/* Dinner - large/full (the problem) */}
-        <motion.div
-          className="flex flex-col items-center gap-4"
-          initial={{ y: 60, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.7, ...SPRING_SMOOTH }}
-        >
-          <div className="relative w-[200px] h-[200px] rounded-full border-8 border-[#f97316] bg-[#0F172A] flex items-center justify-center drop-shadow-[0_0_40px_rgba(249,115,22,0.4)]">
-            <Moon size={70} color="#f97316" fill="#f97316" />
+          <div className="text-center">
             <motion.div
-              className="absolute -top-4 -right-4 bg-[#f97316] text-[#0F172A] font-display font-bold text-[18px] px-3 py-1 rounded-full"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 2.0, ...SPRING_SNAPPY }}
+              className="text-[#f97316] font-display font-black text-[80px] leading-none"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, ...SPRING_SNAPPY }}
             >
-              60g+
+              1965
+            </motion.div>
+            <motion.div
+              className="text-[#f8fafc] font-display font-bold text-[26px] uppercase tracking-widest mt-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9, duration: 0.6 }}
+            >
+              Japan
             </motion.div>
           </div>
-          <span className="text-[#f97316] font-display uppercase tracking-widest text-[26px] font-bold">Dinner</span>
-          <div className="w-36 h-3 bg-[#f97316]/20 rounded-full overflow-hidden">
-            <motion.div className="h-full bg-[#f97316]" initial={{ width: 0 }} animate={{ width: "85%" }} transition={{ delay: 1.6, duration: 1.5 }} />
-          </div>
+          <motion.div
+            className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full bg-[#10b981] flex items-center justify-center"
+            initial={{ scale: 0, rotate: -45 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 1.2, ...SPRING_SNAPPY }}
+          >
+            <ShoppingBag size={40} color="#0F172A" strokeWidth={2} />
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Icon row */}
+      <div className="absolute top-[620px] flex items-center justify-center gap-8 z-10 w-full">
+        <motion.div
+          className="flex items-center gap-3 bg-[#1e293b] border border-[#334155] px-5 py-3 rounded-xl"
+          initial={{ x: -30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 1.4, ...SPRING_SMOOTH }}
+        >
+          <Calendar size={28} color="#14b8a6" />
+          <span className="text-[#f8fafc] font-display font-bold text-[20px] uppercase tracking-wider">1965</span>
+        </motion.div>
+        <motion.div
+          className="flex items-center gap-3 bg-[#1e293b] border border-[#f97316] px-5 py-3 rounded-xl"
+          initial={{ x: 30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 1.7, ...SPRING_SMOOTH }}
+        >
+          <Stethoscope size={28} color="#f97316" />
+          <span className="text-[#f97316] font-display font-bold text-[20px] uppercase tracking-wider">Not Medicine</span>
         </motion.div>
       </div>
 
@@ -96,16 +96,16 @@ export function Scene1() {
           className="text-[#f8fafc] text-[60px] font-bold uppercase tracking-wider font-display leading-tight"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 2.2 }}
+          transition={{ duration: 0.8, delay: 1.8 }}
         >
-          Most People Load
+          It Started as a
           <motion.span
             className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 3.0, ...SPRING_SNAPPY }}
+            transition={{ delay: 2.4, ...SPRING_SNAPPY }}
           >
-            Protein at Dinner
+            Marketing Campaign
           </motion.span>
         </motion.h2>
       </div>

@@ -2,957 +2,493 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BioMinute — Production Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --black: #111111;
-    --bg: #F8F4E8;
-    --bg-alt: #EEE4CC;
-    --panel: #FFFDF7;
-    --accent: #D9481C;
-    --success: #00A878;
-    --success-dark: #176B4D;
-    --warning: #F4B400;
-    --info: #2C8FFF;
-    --published: #7B3FE4;
-    --border: #111111;
-    --text: #111111;
-    --text-muted: #555555;
-    --radius-sm: 6px;
-    --radius: 6px;
-    --shadow: 5px 5px 0 #111111;
-    --shadow-hover: 7px 7px 0 #111111;
-    --shadow-sm: 3px 3px 0 #111111;
+    --dark: #0F172A; --blue: #2F6FED; --emerald: #10B981; --orange: #F97316; --white: #FFFFFF;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
+  * { box-sizing: border-box; }
   body {
-    font-family: 'Manrope', Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
+    margin: 0; background: var(--dark); color: var(--white);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 32px 24px 64px;
   }
-
-  /* ===== NAVBAR ===== */
-  .navbar {
-    background: var(--black);
-    padding: 16px 24px;
-    border-bottom: 4px solid var(--black);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  header { max-width: 1200px; margin: 0 auto 28px; }
+  h1 {
+    font-size: 28px; margin: 0 0 6px; font-weight: 700;
+    background: linear-gradient(90deg, var(--blue), var(--emerald));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .navbar-inner {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
+  .sub { color: #94a3b8; font-size: 14px; margin-bottom: 18px; }
+  .stats { display: flex; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+  .stat {
+    background: #16213e; border: 1px solid #1e2a4a; border-radius: 10px;
+    padding: 10px 16px; font-size: 13px; color: #cbd5e1;
   }
-  .brand {
-    font-family: 'Anton', sans-serif;
-    font-size: 28px;
-    color: var(--panel);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .brand span {
-    color: var(--accent);
-  }
-  .nav-stats {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .nav-stat {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    background: var(--panel);
-    color: var(--black);
-    padding: 6px 12px;
-    border: 3px solid var(--black);
-    border-radius: var(--radius-sm);
-  }
-
-  /* ===== FILTERS ===== */
-  .filters-bar {
-    max-width: 1400px;
-    margin: 24px auto 16px;
-    padding: 0 24px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+  .stat b { color: var(--white); font-size: 16px; display: block; }
+  .filters { display: flex; gap: 8px; margin: 18px 0; }
   .filter-btn {
-    font-family: 'Manrope', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 16px;
-    border: 3px solid var(--black);
-    border-radius: var(--radius);
-    background: var(--panel);
-    color: var(--black);
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.1s, box-shadow 0.1s;
+    background: #16213e; border: 1px solid #1e2a4a; color: #cbd5e1;
+    padding: 7px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
   }
-  .filter-btn:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow);
-  }
-  .filter-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: none;
-  }
-  .filter-btn.active {
-    background: var(--black);
-    color: var(--panel);
-  }
-
-  /* ===== GRID ===== */
+  .filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
   .grid {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 24px 64px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 24px;
+    max-width: 1200px; margin: 0 auto; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px;
   }
-
-  /* ===== CARD ===== */
   .card {
-    background: var(--panel);
-    border: 4px solid var(--black);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    transition: transform 0.15s, box-shadow 0.15s;
-    display: flex;
-    flex-direction: column;
+    background: #131c33; border: 1px solid #1e2a4a; border-radius: 14px; overflow: hidden;
+    transition: transform 0.15s ease;
   }
-  .card:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: var(--shadow-hover);
+  .card:hover { transform: translateY(-3px); border-color: var(--emerald); }
+  .card-num {
+    position: absolute; margin: 10px; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; color: var(--emerald); font-family: monospace;
   }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    background: var(--bg-alt);
-    border-bottom: 3px solid var(--black);
+  .thumb {
+    width: 100%; aspect-ratio: 9/16; background: #0a0f1e; object-fit: cover; display: block;
   }
-  .card-ep {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+  .thumb.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    color: #475569; font-size: 12px; text-align: center; padding: 16px;
   }
-
-  /* Status badges */
-  .badge {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border: 2px solid var(--black);
-    border-radius: var(--radius-sm);
-  }
-  .badge.complete {
-    background: var(--success);
-    color: white;
-    border-color: var(--success-dark);
-  }
-  .badge.built {
-    background: var(--warning);
-    color: var(--black);
-    border-color: var(--black);
-  }
-  .badge.queued {
-    background: var(--bg-alt);
-    color: var(--text-muted);
-    border-color: var(--black);
-  }
-  .badge.published {
-    background: var(--published);
-    color: white;
-    border-color: var(--black);
-  }
-
-  /* Video / thumbnail area */
-  .thumb-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 9 / 16;
-    background: var(--black);
-    border-bottom: 3px solid var(--black);
-    overflow: hidden;
-  }
-  .thumb-wrap video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .thumb-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .thumb-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    font-size: 13px;
-    text-align: center;
-    gap: 8px;
-    padding: 16px;
-  }
-  .thumb-placeholder svg {
-    opacity: 0.4;
-  }
-
-  /* Play overlay */
-  .play-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.3);
-    opacity: 0;
-    transition: opacity 0.2s;
-    cursor: pointer;
-  }
-  .thumb-wrap:hover .play-overlay {
-    opacity: 1;
-  }
-  .play-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--panel);
-    border: 3px solid var(--black);
-    border-radius: 50%;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .play-icon::after {
-    content: '';
-    width: 0;
-    height: 0;
-    border-left: 18px solid var(--black);
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    margin-left: 4px;
-  }
-
-  /* Card body */
-  .card-body {
-    padding: 14px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .card-title {
-    font-family: 'Anton', sans-serif;
-    font-size: 20px;
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--black);
-  }
-  .card-meta {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-
-  /* Copy section */
-  .copy-section {
-    margin-top: 4px;
-    padding-top: 10px;
-    border-top: 2px dashed var(--bg-alt);
-  }
-  .copy-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-  .copy-row {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-  .copy-btn {
-    font-family: 'Manrope', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 6px 10px;
-    border: 2px solid var(--black);
-    border-radius: var(--radius-sm);
-    background: var(--panel);
-    color: var(--black);
-    cursor: pointer;
-    box-shadow: 2px 2px 0 var(--black);
-    transition: transform 0.08s, box-shadow 0.08s;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .copy-btn:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0 var(--black);
-  }
-  .copy-btn:active {
-    transform: translate(1px, 1px);
-    box-shadow: none;
-  }
-  .copy-btn.copied {
-    background: var(--success);
-    color: white;
-    border-color: var(--success-dark);
-    box-shadow: 2px 2px 0 var(--success-dark);
-  }
-  .copy-btn svg {
-    width: 12px;
-    height: 12px;
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--black);
-    color: var(--panel);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    padding: 12px 18px;
-    border: 3px solid var(--black);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    z-index: 200;
-    transform: translateY(120px);
-    transition: transform 0.3s ease;
-  }
-  .toast.show {
-    transform: translateY(0);
-  }
-
-  /* Empty state */
-  .empty-state {
-    max-width: 1400px;
-    margin: 48px auto;
-    padding: 0 24px;
-    text-align: center;
-  }
-  .empty-state h3 {
-    font-family: 'Anton', sans-serif;
-    font-size: 32px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .empty-state p {
-    color: var(--text-muted);
-    font-size: 14px;
-  }
-
-  @media (max-width: 640px) {
-    .grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 0 12px 32px;
-    }
-    .navbar-inner {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .card-title { font-size: 16px; }
-  }
+  .card-body { padding: 12px 14px 14px; position: relative; }
+  .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin-bottom: 8px; min-height: 36px; }
+  .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+  .badge { padding: 3px 9px; border-radius: 20px; font-weight: 700; letter-spacing: 0.3px; }
+  .badge.complete { background: rgba(16,185,129,0.18); color: var(--emerald); }
+  .badge.queued { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .date { color: #64748b; }
 </style>
 </head>
 <body>
-
-<!-- Toast -->
-<div id="toast" class="toast">Copied to clipboard!</div>
-
-<!-- Navbar -->
-<nav class="navbar">
-  <div class="navbar-inner">
-    <div class="brand">Bio<span>Minute</span> Dashboard</div>
-    <div class="nav-stats">
-      <span class="nav-stat">36 Total</span>
-      <span class="nav-stat" style="background:#00A878;color:#fff;border-color:#176B4D;">2 Complete</span>
-      <span class="nav-stat" style="background:#F4B400;color:#111;border-color:#111;">3 Built</span>
-      <span class="nav-stat">31 Planned</span>
-    </div>
+<header>
+  <h1>BioMinute Production Dashboard</h1>
+  <div class="sub">Self-contained repo preview — scripts, status, and finished videos travel together. Re-import into any Replit account and this still works.</div>
+  <div class="stats">
+    <div class="stat"><b>36</b>Total episodes</div>
+    <div class="stat"><b>3</b>Complete</div>
+    <div class="stat"><b>33</b>Uncomplete</div>
   </div>
-</nav>
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+    <button class="filter-btn" onclick="filterCards('Complete', this)">Complete</button>
+    <button class="filter-btn" onclick="filterCards('Uncomplete', this)">Uncomplete</button>
+  </div>
+</header>
+<div class="grid" id="grid">
 
-<!-- Filters -->
-<div class="filters-bar">
-  <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
-  <button class="filter-btn" onclick="filterCards('Complete', this)">Complete</button>
-  <button class="filter-btn" onclick="filterCards('Built', this)">Built</button>
-  <button class="filter-btn" onclick="filterCards('Uncomplete', this)">Planned</button>
-</div>
-
-<!-- Grid -->
-<div class="grid" id="grid"></div>
-
-<script>
-// ===== EPISODE DATA =====
-const EPISODES = [
-  {
-    num: 1,
-    title: "Walk After Meals",
-    status: "Complete",
-    date: "2026-07-12",
-    folder: "Episode-01-Walk-After-Meals",
-    cta: "Do you walk after meals, or sit right down?",
-    hashtags: "#BioMinute #WalkingTips #PostMealWalk #HealthyHabits #WellnessShorts",
-    desc: "Research shows that light movement within 30 minutes after eating can help your body process glucose more efficiently. Do you walk after meals, or sit right down?",
-    duration: "~30s"
-  },
-  {
-    num: 2,
-    title: "Drink Water Before Your Morning Coffee",
-    status: "Complete",
-    date: "2026-07-13",
-    folder: "Episode-02-drink-water-before-your-morning",
-    cta: "Do you reach for water or coffee first thing?",
-    hashtags: "#BioMinute #Hydration #MorningRoutine #WaterFirst #WellnessTips",
-    desc: "You wake up already dehydrated — ~1L lost overnight. Starting your day with water before coffee supports hydration and alertness. Do you reach for water or coffee first thing?",
-    duration: "~35s"
-  },
-  {
-    num: 3,
-    title: "Are You Eating Protein at the Wrong Time?",
-    status: "Built",
-    date: "Not scheduled",
-    folder: "Episode-03-are-you-eating-protein-at",
-    cta: "Which meal has the most protein for you right now?",
-    hashtags: "#BioMinute #ProteinTiming #MuscleBuilding #NutritionTips #FitnessShorts",
-    desc: "Timing matters when it comes to protein. Which meal has the most protein for you right now?",
-    duration: "~35s"
-  },
-  {
-    num: 4,
-    title: "Is 10,000 Steps Actually a Myth?",
-    status: "Built",
-    date: "2026-07-12",
-    folder: "Episode-04-is-10-000-steps-actually",
-    cta: "How many steps do you average each day?",
-    hashtags: "#BioMinute #DailySteps #Walking #FitnessFacts #HealthMyths",
-    desc: "The 10,000-step goal was originally a marketing number. How many steps do you average each day?",
-    duration: "~35s"
-  },
-  {
-    num: 5,
-    title: "Why Sleep Matters More Than You Think",
-    status: "Built",
-    date: "2026-07-12",
-    folder: "Episode-05-why-sleep-matters-more-than",
-    cta: "What time did you go to bed last night?",
-    hashtags: "#BioMinute #SleepHealth #RestAndRecovery #HealthySleep #WellnessTips",
-    desc: "Quality sleep is the foundation of everything — recovery, focus, metabolism, mood. What time did you go to bed last night?",
-    duration: "~40s"
-  },
-  {
-    num: 6,
-    title: "Why Are You Still Hungry Right After Eating?",
-    status: "Uncomplete",
-    date: "Wed, Jul 22, 2026",
-    folder: "Episode-06-why-are-you-still-hungry",
-    cta: "What do you usually reach for when hunger strikes?",
-    hashtags: "#BioMinute #HungerCues #Satiety #Nutrition #MindfulEating",
-    desc: "Feeling hungry after a meal? It might be what you're eating, not how much. What do you usually reach for when hunger strikes?",
-    duration: "TBD"
-  },
-  {
-    num: 7,
-    title: "How Deep Breathing Reduces Stress",
-    status: "Uncomplete",
-    date: "Fri, Jul 24, 2026",
-    folder: "Episode-07-how-deep-breathing-reduces-stress",
-    cta: "When was the last time you took 3 deep breaths on purpose?",
-    hashtags: "#BioMinute #Breathing #StressRelief #Mindfulness #MentalHealth",
-    desc: "Your breath is a built-in stress switch. When was the last time you took 3 deep breaths on purpose?",
-    duration: "TBD"
-  },
-  {
-    num: 8,
-    title: "Does Drinking Water Really Boost Metabolism?",
-    status: "Uncomplete",
-    date: "Mon, Jul 27, 2026",
-    folder: "Episode-08-does-drinking-water-really-boost",
-    cta: "How much water did you drink today?",
-    hashtags: "#BioMinute #Water #Metabolism #Hydration #HealthFacts",
-    desc: "Water is essential, but does it actually speed up your metabolism? How much water did you drink today?",
-    duration: "TBD"
-  },
-  {
-    num: 9,
-    title: "Morning Sunlight for Better Sleep",
-    status: "Uncomplete",
-    date: "Wed, Jul 29, 2026",
-    folder: "Episode-09-morning-sunlight-for-better-sleep",
-    cta: "Did you get outside this morning?",
-    hashtags: "#BioMinute #Sunlight #CircadianRhythm #SleepQuality #MorningRoutine",
-    desc: "Morning light sets your internal clock for better sleep at night. Did you get outside this morning?",
-    duration: "TBD"
-  },
-  {
-    num: 10,
-    title: "Can You Build Muscle Without Supplements?",
-    status: "Uncomplete",
-    date: "Fri, Jul 31, 2026",
-    folder: "Episode-10-can-you-build-muscle-without",
-    cta: "Whole foods or supplements — which do you trust more?",
-    hashtags: "#BioMinute #MuscleBuilding #NaturalNutrition #Protein #Fitness",
-    desc: "You don't need a supplement stack to build muscle. Whole foods or supplements — which do you trust more?",
-    duration: "TBD"
-  },
-  {
-    num: 11,
-    title: "Are Healthy Snacks Secretly Making You Gain Weight?",
-    status: "Uncomplete",
-    date: "Mon, Aug 3, 2026",
-    folder: "Episode-11-are-healthy-snacks-secretly-making",
-    cta: "What's your go-to 'healthy' snack?",
-    hashtags: "#BioMinute #HealthySnacks #WeightManagement #NutritionMyths #MindfulEating",
-    desc: "Not all 'healthy' snacks are created equal. What's your go-to 'healthy' snack?",
-    duration: "TBD"
-  },
-  {
-    num: 12,
-    title: "Sitting Too Long Harms Your Body",
-    status: "Uncomplete",
-    date: "Wed, Aug 5, 2026",
-    folder: "Episode-12-sitting-too-long-harms-your",
-    cta: "How long have you been sitting today?",
-    hashtags: "#BioMinute #Sedentary #Movement #DeskJob #HealthRisks",
-    desc: "Sitting is the new smoking. How long have you been sitting today?",
-    duration: "TBD"
-  },
-  {
-    num: 13,
-    title: "Is Breakfast Really the Most Important Meal?",
-    status: "Uncomplete",
-    date: "Fri, Aug 7, 2026",
-    folder: "Episode-13-is-breakfast-really-the-most",
-    cta: "Do you eat breakfast every day?",
-    hashtags: "#BioMinute #Breakfast #IntermittentFasting #NutritionFacts #HealthMyths",
-    desc: "The 'most important meal' idea is more marketing than science. Do you eat breakfast every day?",
-    duration: "TBD"
-  },
-  {
-    num: 14,
-    title: "Do You Really Need 8 Glasses of Water a Day?",
-    status: "Uncomplete",
-    date: "Mon, Aug 10, 2026",
-    folder: "Episode-14-do-you-really-need-8",
-    cta: "How do you know when you're actually thirsty?",
-    hashtags: "#BioMinute #Hydration #WaterIntake #HealthMyths #WellnessTips",
-    desc: "8 glasses is a rough estimate, not a rule. How do you know when you're actually thirsty?",
-    duration: "TBD"
-  },
-  {
-    num: 15,
-    title: "Does Eating Late at Night Cause Weight Gain?",
-    status: "Uncomplete",
-    date: "Wed, Aug 12, 2026",
-    folder: "Episode-15-does-eating-late-at-night",
-    cta: "What's the latest you eat?",
-    hashtags: "#BioMinute #LateNightEating #WeightGain #Metabolism #Nutrition",
-    desc: "Late-night eating isn't automatically bad. What's the latest you eat?",
-    duration: "TBD"
-  },
-  {
-    num: 16,
-    title: "Can You Lose Belly Fat with Ab Exercises?",
-    status: "Uncomplete",
-    date: "Fri, Aug 14, 2026",
-    folder: "Episode-16-can-you-lose-belly-fat",
-    cta: "What's your go-to core move?",
-    hashtags: "#BioMinute #BellyFat #AbsWorkout #SpotReduction #FitnessMyths",
-    desc: "Spot reduction doesn't work. What's your go-to core move?",
-    duration: "TBD"
-  },
-  {
-    num: 17,
-    title: "What's the Best Food to Eat Before a Workout?",
-    status: "Uncomplete",
-    date: "Mon, Aug 17, 2026",
-    folder: "Episode-17-whats-the-best-food-to",
-    cta: "What do you eat before training?",
-    hashtags: "#BioMinute #PreWorkout #Nutrition #FitnessFuel #WorkoutTips",
-    desc: "The right pre-workout fuel depends on your goal. What do you eat before training?",
-    duration: "TBD"
-  },
-  {
-    num: 18,
-    title: "Does More Sweat Mean More Fat Burned?",
-    status: "Uncomplete",
-    date: "Wed, Aug 19, 2026",
-    folder: "Episode-18-does-more-sweat-mean-more",
-    cta: "Do you judge a workout by how sweaty you get?",
-    hashtags: "#BioMinute #Sweat #FatBurn #FitnessMyths #WorkoutTips",
-    desc: "Sweat is cooling, not fat leaving your body. Do you judge a workout by how sweaty you get?",
-    duration: "TBD"
-  },
-  {
-    num: 19,
-    title: "Can You Lose Fat Without Doing Cardio?",
-    status: "Uncomplete",
-    date: "Fri, Aug 21, 2026",
-    folder: "Episode-19-can-you-lose-fat-without",
-    cta: "What's your favorite way to train?",
-    hashtags: "#BioMinute #FatLoss #StrengthTraining #NoCardio #Fitness",
-    desc: "Fat loss is about calories, not cardio. What's your favorite way to train?",
-    duration: "TBD"
-  },
-  {
-    num: 20,
-    title: "How Much Protein Do You Really Need?",
-    status: "Uncomplete",
-    date: "Mon, Aug 24, 2026",
-    folder: "Episode-20-how-much-protein-do-you",
-    cta: "How much protein are you getting daily?",
-    hashtags: "#BioMinute #Protein #Muscle #Nutrition #Fitness",
-    desc: "Protein needs vary by person and goal. How much protein are you getting daily?",
-    duration: "TBD"
-  },
-  {
-    num: 21,
-    title: "Does Lifting Weights Make Women Bulky?",
-    status: "Uncomplete",
-    date: "Wed, Aug 26, 2026",
-    folder: "Episode-21-does-lifting-weights-make-women",
-    cta: "Women: do you lift?",
-    hashtags: "#BioMinute #WomenLift #StrengthTraining #FitnessMyths #GirlsWhoLift",
-    desc: "Women don't have the hormones to get 'bulky' easily. Women: do you lift?",
-    duration: "TBD"
-  },
-  {
-    num: 22,
-    title: "Is Creatine Safe?",
-    status: "Uncomplete",
-    date: "Fri, Aug 28, 2026",
-    folder: "Episode-22-is-creatine-safe",
-    cta: "Have you ever tried creatine?",
-    hashtags: "#BioMinute #Creatine #Supplements #Fitness #Muscle",
-    desc: "Creatine is one of the most researched supplements. Have you ever tried creatine?",
-    duration: "TBD"
-  },
-  {
-    num: 23,
-    title: "Why Is Sleep Secretly Affecting Your Fitness?",
-    status: "Uncomplete",
-    date: "Mon, Aug 31, 2026",
-    folder: "Episode-23-why-is-sleep-secretly-affecting",
-    cta: "How many hours did you sleep last night?",
-    hashtags: "#BioMinute #Sleep #Recovery #Fitness #Wellness",
-    desc: "Poor sleep sabotages muscle recovery and fat loss. How many hours did you sleep last night?",
-    duration: "TBD"
-  },
-  {
-    num: 24,
-    title: "Is Stretching Before Exercise Enough?",
-    status: "Uncomplete",
-    date: "Wed, Sep 2, 2026",
-    folder: "Episode-24-is-stretching-before-exercise-enough",
-    cta: "Do you warm up before workouts?",
-    hashtags: "#BioMinute #Stretching #WarmUp #InjuryPrevention #Fitness",
-    desc: "Stretching is only part of the warm-up story. Do you warm up before workouts?",
-    duration: "TBD"
-  },
-  {
-    num: 25,
-    title: "Can You Turn Fat Into Muscle?",
-    status: "Uncomplete",
-    date: "Fri, Sep 4, 2026",
-    folder: "Episode-25-can-you-turn-fat-into",
-    cta: "What's your body recomposition goal?",
-    hashtags: "#BioMinute #FatToMuscle #BodyRecomp #FitnessMyths #Muscle",
-    desc: "Fat and muscle are different tissues — you can't convert one into the other. What's your body recomposition goal?",
-    duration: "TBD"
-  },
-  {
-    num: 26,
-    title: "Should You Work Out Every Day?",
-    status: "Uncomplete",
-    date: "Mon, Sep 7, 2026",
-    folder: "Episode-26-should-you-work-out-every",
-    cta: "How many rest days do you take per week?",
-    hashtags: "#BioMinute #RestDays #Recovery #WorkoutSchedule #Fitness",
-    desc: "Rest is when progress happens. How many rest days do you take per week?",
-    duration: "TBD"
-  },
-  {
-    num: 27,
-    title: "Why Does Your Weight Change Overnight?",
-    status: "Uncomplete",
-    date: "Wed, Sep 9, 2026",
-    folder: "Episode-27-why-does-your-weight-change",
-    cta: "Do you weigh yourself daily?",
-    hashtags: "#BioMinute #WeightFluctuation #BodyScience #HealthFacts #Wellness",
-    desc: "Water, food, salt, hormones — all shift the scale overnight. Do you weigh yourself daily?",
-    duration: "TBD"
-  },
-  {
-    num: 28,
-    title: "Can Your Metabolism Be 'Broken'?",
-    status: "Uncomplete",
-    date: "Fri, Sep 11, 2026",
-    folder: "Episode-28-can-your-metabolism-be-broken",
-    cta: "Have you ever blamed your metabolism?",
-    hashtags: "#BioMinute #Metabolism #HealthMyths #WeightLoss #Nutrition",
-    desc: "Your metabolism adapts, but it doesn't 'break.' Have you ever blamed your metabolism?",
-    duration: "TBD"
-  },
-  {
-    num: 29,
-    title: "Are Eggs Actually Bad for Your Heart?",
-    status: "Uncomplete",
-    date: "Mon, Sep 14, 2026",
-    folder: "Episode-29-are-eggs-actually-bad-for",
-    cta: "How do you like your eggs?",
-    hashtags: "#BioMinute #Eggs #Cholesterol #HeartHealth #NutritionFacts",
-    desc: "For most people, dietary cholesterol has minimal impact. How do you like your eggs?",
-    duration: "TBD"
-  },
-  {
-    num: 30,
-    title: "Do Detox Drinks Really Clean Your Body?",
-    status: "Uncomplete",
-    date: "Wed, Sep 16, 2026",
-    folder: "Episode-30-do-detox-drinks-really-clean",
-    cta: "Have you ever tried a detox?",
-    hashtags: "#BioMinute #Detox #HealthMyths #Nutrition #Wellness",
-    desc: "Your liver and kidneys do the detoxing. Have you ever tried a detox?",
-    duration: "TBD"
-  },
-  {
-    num: 31,
-    title: "Should You Eat Before or After a Workout?",
-    status: "Uncomplete",
-    date: "Fri, Sep 18, 2026",
-    folder: "Episode-31-should-you-eat-before-or",
-    cta: "Fasted or fueled — what's your preference?",
-    hashtags: "#BioMinute #PreWorkout #PostWorkout #Nutrition #FitnessFuel",
-    desc: "Timing depends on your goals and how you feel. Fasted or fueled — what's your preference?",
-    duration: "TBD"
-  },
-  {
-    num: 32,
-    title: "Does Coffee Help You Burn Fat?",
-    status: "Uncomplete",
-    date: "Mon, Sep 21, 2026",
-    folder: "Episode-32-does-coffee-help-you-burn",
-    cta: "How many cups do you drink?",
-    hashtags: "#BioMinute #Coffee #FatBurn #Caffeine #HealthFacts",
-    desc: "Caffeine gives a small metabolic bump, but it's not a fat-burner. How many cups do you drink?",
-    duration: "TBD"
-  },
-  {
-    num: 33,
-    title: "What's the Healthiest Cooking Oil?",
-    status: "Uncomplete",
-    date: "Wed, Sep 23, 2026",
-    folder: "Episode-33-whats-the-healthiest-cooking-oil",
-    cta: "Which oil do you cook with?",
-    hashtags: "#BioMinute #CookingOil #HealthyFats #Nutrition #Wellness",
-    desc: "The healthiest oil depends on the heat and the dish. Which oil do you cook with?",
-    duration: "TBD"
-  },
-  {
-    num: 34,
-    title: "Is Walking Enough to Stay Healthy?",
-    status: "Uncomplete",
-    date: "Fri, Sep 25, 2026",
-    folder: "Episode-34-is-walking-enough-to-stay",
-    cta: "Walk or lift — what's your main move?",
-    hashtags: "#BioMinute #Walking #Fitness #Health #Wellness",
-    desc: "Walking is a great start, but variety matters. Walk or lift — what's your main move?",
-    duration: "TBD"
-  },
-  {
-    num: 35,
-    title: "What's the Biggest Nutrition Mistake After Age 40?",
-    status: "Uncomplete",
-    date: "Mon, Sep 28, 2026",
-    folder: "Episode-35-whats-the-biggest-nutrition-mistake",
-    cta: "What's one food you eat less of now?",
-    hashtags: "#BioMinute #Nutrition #Over40 #HealthyAging #Wellness",
-    desc: "Protein needs go up as muscle goes down. What's one food you eat less of now?",
-    duration: "TBD"
-  },
-  {
-    num: 36,
-    title: "What's the #1 Habit That Improves Your Health?",
-    status: "Uncomplete",
-    date: "Wed, Sep 30, 2026",
-    folder: "Episode-36-whats-the-1-habit-that",
-    cta: "What's your #1 health habit?",
-    hashtags: "#BioMinute #HealthyHabits #Wellness #Lifestyle #Health",
-    desc: "Small habits compound into big results. What's your #1 health habit?",
-    duration: "TBD"
-  }
-];
-
-// ===== UTILS =====
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-async function copyText(text, btn) {
-  try {
-    await navigator.clipboard.writeText(text);
-    const original = btn.textContent;
-    btn.classList.add('copied');
-    btn.textContent = 'Copied!';
-    showToast('Copied to clipboard!');
-    setTimeout(() => {
-      btn.classList.remove('copied');
-      btn.textContent = original;
-    }, 1500);
-  } catch (e) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('Copied!');
-  }
-}
-
-function getStatusClass(status) {
-  if (status === 'Complete') return 'complete';
-  if (status === 'Built') return 'built';
-  if (status === 'Published') return 'published';
-  return 'queued';
-}
-
-function hasVideo(ep) {
-  return ep.status === 'Complete' || ep.status === 'Built' || ep.status === 'Published';
-}
-
-// ===== RENDER =====
-function renderGrid(filter) {
-  const grid = document.getElementById('grid');
-  const filtered = filter === 'all' ? EPISODES : EPISODES.filter(e => e.status === filter);
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1;">
-        <h3>No episodes found</h3>
-        <p>Try a different filter.</p>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = filtered.map(ep => {
-    const thumb = hasVideo(ep)
-      ? `<video class="thumb" poster="${ep.folder}/thumbnail.png" controls preload="none" onplay="this.closest('.thumb-wrap').querySelector('.play-overlay').style.display='none'">
-           <source src="${ep.folder}/episode.mp4" type="video/mp4">
-         </video>
-         <div class="play-overlay" onclick="this.previousElementSibling.play();this.style.display='none'">
-           <div class="play-icon"></div>
-         </div>`
-      : `<div class="thumb-placeholder">
-           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-             <line x1="12" y1="8" x2="12" y2="16"/>
-             <line x1="8" y1="12" x2="16" y2="12"/>
-           </svg>
-           Not produced yet
-         </div>`;
-
-    const copySection = hasVideo(ep) ? `
-      <div class="copy-section">
-        <div class="copy-label">Copy for YouTube</div>
-        <div class="copy-row">
-          <button class="copy-btn" onclick="copyText('${escapeJS(ep.title)}', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Title
-          </button>
-          <button class="copy-btn" onclick="copyText('${escapeJS(ep.desc + ' ' + ep.hashtags)}', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Description
-          </button>
-          <button class="copy-btn" onclick="copyText('${escapeJS(ep.hashtags)}', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Hashtags
-          </button>
-          <button class="copy-btn" onclick="copyText('${escapeJS(ep.cta)}', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            CTA
-          </button>
-        </div>
-      </div>` : '';
-
-    return `
-      <div class="card" data-status="${ep.status}">
-        <div class="card-header">
-          <span class="card-ep">EP ${ep.num}</span>
-          <span class="badge ${getStatusClass(ep.status)}">${ep.status}</span>
-        </div>
-        <div class="thumb-wrap">
-          ${thumb}
-        </div>
+      <div class="card" data-status="Complete">
+        <div class="card-num">EP 1</div>
+        <video class="thumb" poster="Episode-01-Walk-After-Meals/thumbnail.png" controls preload="none">
+          <source src="Episode-01-Walk-After-Meals/episode.mp4" type="video/mp4">
+        </video>
         <div class="card-body">
-          <div class="card-title">${ep.title}</div>
-          <div class="card-meta">${ep.date} · ${ep.duration}</div>
-          ${copySection}
+          <div class="card-title">Walk After Meals</div>
+          <div class="card-meta">
+            <span class="badge complete">Complete</span>
+            <span class="date">2026-07-12</span>
+          </div>
         </div>
-      </div>`;
-  }).join('');
-}
-
-function escapeJS(str) {
-  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ');
-}
-
+      </div>
+      <div class="card" data-status="Complete">
+        <div class="card-num">EP 2</div>
+        <video class="thumb" poster="Episode-02-drink-water-before-your-morning/thumbnail.png" controls preload="none">
+          <source src="Episode-02-drink-water-before-your-morning/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Drink Water Before Your Morning Coffee</div>
+          <div class="card-meta">
+            <span class="badge complete">Complete</span>
+            <span class="date">2026-07-13</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Complete">
+        <div class="card-num">EP 3</div>
+        <video class="thumb" poster="Episode-03-are-you-eating-protein-at/thumbnail.png" controls preload="none">
+          <source src="Episode-03-are-you-eating-protein-at/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Are You Eating Protein at the Wrong Time?</div>
+          <div class="card-meta">
+            <span class="badge complete">Complete</span>
+            <span class="date">2026-07-13</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 4</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is 10,000 Steps Actually a Myth?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Not scheduled</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 5</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Why Sleep Matters More Than You Think</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Not scheduled</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 6</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Why Are You Still Hungry Right After Eating?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Jul 22, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 7</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">How Deep Breathing Reduces Stress</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Jul 24, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 8</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Drinking Water Really Boost Metabolism?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Jul 27, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 9</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Morning Sunlight for Better Sleep</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Jul 29, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 10</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can You Build Muscle Without Supplements?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Jul 31, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 11</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Are Healthy Snacks Secretly Making You Gain Weight?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Aug 3, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 12</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Sitting Too Long Harms Your Body</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Aug 5, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 13</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is Breakfast Really the Most Important Meal?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Aug 7, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 14</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Do You Really Need 8 Glasses of Water a Day?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Aug 10, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 15</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Eating Late at Night Cause Weight Gain?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Aug 12, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 16</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can You Lose Belly Fat with Ab Exercises?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Aug 14, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 17</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">What's the Best Food to Eat Before a Workout?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Aug 17, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 18</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does More Sweat Mean More Fat Burned?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Aug 19, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 19</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can You Lose Fat Without Doing Cardio?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Aug 21, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 20</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">How Much Protein Do You Really Need?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Aug 24, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 21</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Lifting Weights Make Women Bulky?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Aug 26, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 22</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is Creatine Safe?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Aug 28, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 23</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Why Is Sleep Secretly Affecting Your Fitness?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Aug 31, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 24</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is Stretching Before Exercise Enough?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Sep 2, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 25</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can You Turn Fat Into Muscle?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Sep 4, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 26</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Should You Work Out Every Day?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Sep 7, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 27</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Why Does Your Weight Change Overnight?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Sep 9, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 28</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can Your Metabolism Be "Broken"?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Sep 11, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 29</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Are Eggs Actually Bad for Your Heart?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Sep 14, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 30</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Do Detox Drinks Really Clean Your Body?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Sep 16, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 31</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Should You Eat Before or After a Workout?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Sep 18, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 32</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Coffee Help You Burn Fat?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Sep 21, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 33</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">What's the Healthiest Cooking Oil?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Sep 23, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 34</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is Walking Enough to Stay Healthy?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Fri, Sep 25, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 35</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">What's the Biggest Nutrition Mistake After Age 40?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Mon, Sep 28, 2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="card" data-status="Uncomplete">
+        <div class="card-num">EP 36</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">What's the #1 Habit That Improves Your Health?</div>
+          <div class="card-meta">
+            <span class="badge queued">Uncomplete</span>
+            <span class="date">Wed, Sep 30, 2026</span>
+          </div>
+        </div>
+      </div>
+</div>
+<script>
 function filterCards(status, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderGrid(status);
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = (status === 'all' || c.dataset.status === status) ? '' : 'none';
+  });
 }
-
-// Init
-renderGrid('all');
 </script>
 </body>
 </html>

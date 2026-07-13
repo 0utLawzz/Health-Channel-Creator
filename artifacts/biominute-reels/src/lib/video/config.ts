@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Are You Eating Protein at the Wrong Time?"
-  1: 7000, // "Most people load protein at dinner"
-  2: 6000, // "Spreading protein boosts muscle protein synthesis" — 3 plates with 30g bars
-  3: 5000, // "Aim for 30g at each meal" — 90g total counter
-  4: 6500, // CTA: "Which meal has the most protein for you?" + citation
-  5: 2000, // Thumbnail end card (2s) — shown in preview as final scene
+  0: 4500, // Hook: "Is 10,000 Steps Actually a Myth?"
+  1: 4500, // 1965 marketing campaign origin
+  2: 7000, // Research: benefits begin below 10k, sweet spot 6-7.5k
+  3: 5000, // Don't chase perfection; gradual progress
+  4: 6500, // CTA: "How many steps do you average each day?" + citation
+  5: 5000, // Thumbnail end card
 } as const;

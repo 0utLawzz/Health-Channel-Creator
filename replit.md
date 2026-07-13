@@ -8,7 +8,7 @@ A workspace for producing short animated health-science YouTube Shorts/Reels for
 - **Episode 4 — Is 10,000 Steps Actually a Myth?:** `Built — awaiting export` (needs scenes rebuilt in the artifact, then MP4 export).
 - **Episode 5 — Why Sleep Matters More Than You Think:** `Built — awaiting export` (needs scenes rebuilt in the artifact, then MP4 export).
 - **Episodes 6–36:** `Uncomplete` (planned queue).
-- **Live artifact:** `artifacts/biominute-reels` currently holds **Episode 3** scenes.
+- **Live artifact:** `artifacts/biominute-reels` currently holds **Episode 4** scenes.
 - **GitHub:** `scripts/push-to-github.sh` uses `GITHUB_TOKEN` (falls back to `GITHUB_ACCESS_TOKEN`).
 
 ## Run & Operate
