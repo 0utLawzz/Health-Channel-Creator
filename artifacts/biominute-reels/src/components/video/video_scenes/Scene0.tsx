@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Wind } from 'lucide-react';
+import { Droplets } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -41,7 +41,7 @@ export function Scene0() {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ...SPRING_SMOOTH }}
         >
-          <Wind size={140} color="#2F6FED" strokeWidth={1.5} />
+          <Droplets size={140} color="#2F6FED" strokeWidth={1.5} />
           <motion.div
             className="absolute inset-0 rounded-full border-4 border-[#14b8a6] opacity-0"
             animate={{ scale: [1, 1.2], opacity: [0.6, 0] }}
@@ -60,14 +60,14 @@ export function Scene0() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          How Deep Breathing
+          Does Drinking Water
           <motion.span
             className="text-[#2F6FED] block mt-3 drop-shadow-md"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1.2, ...SPRING_SNAPPY }}
           >
-            Reduces Stress
+            Really Boost Metabolism?
           </motion.span>
         </motion.h1>
       </div>

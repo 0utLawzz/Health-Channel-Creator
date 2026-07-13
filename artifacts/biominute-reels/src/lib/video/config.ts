@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 3000, // Hook: "How Deep Breathing Reduces Stress"
-  1: 6000, // Stress triggers fight-or-flight and shallow breathing
-  2: 6500, // Deep breathing activates the vagus nerve and calms the nervous system
-  3: 6500, // In for 4, out for 6 — lowers heart rate and eases stress
-  4: 5000, // CTA: "Try it now: in for 4, out for 6. How do you feel?" + citation
+  0: 3000, // Hook: "Does Drinking Water Really Boost Metabolism?"
+  1: 6000, // Water doesn't magically burn fat but supports metabolism
+  2: 5000, // Avoid mistaking thirst for hunger
+  3: 6000, // 500ml water temporarily increases metabolic rate
+  4: 5000, // CTA: "How much water do you drink in a day?" + citation
   5: 5000, // Thumbnail end card
 } as const;

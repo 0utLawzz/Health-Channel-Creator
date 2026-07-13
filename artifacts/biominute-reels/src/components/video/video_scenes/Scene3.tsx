@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Heart, Wind } from 'lucide-react';
+import { GlassWater, Thermometer, Flame } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -26,53 +26,64 @@ export function Scene3() {
       exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.1 }}
       transition={{ duration: 0.8 }}
     >
-      <audio ref={audioRef} src={`${BASE_URL}audio/sfx-whoosh.mp3`} preload="auto" />
+      <audio ref={audioRef} src={`${BASE_URL}audio/sfx-sparkle.mp3`} preload="auto" />
 
       <div className="absolute top-[240px] flex flex-col items-center z-10 w-full">
         <div className="relative w-[340px] h-[340px] flex items-center justify-center">
           <motion.div
             className="w-[260px] h-[260px] rounded-full bg-[#0F172A] border-8 border-[#2F6FED] flex items-center justify-center drop-shadow-[0_0_60px_rgba(47,111,237,0.35)]"
             initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: [1, 1.05, 1], opacity: 1 }}
-            transition={{ delay: 0.2, duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <Wind size={110} color="#2F6FED" strokeWidth={1.5} />
+            <GlassWater size={100} color="#2F6FED" strokeWidth={1.5} />
+            <motion.div
+              className="absolute bottom-4 w-[160px] h-[80px] rounded-b-full bg-[#2F6FED]/20"
+              initial={{ height: 0 }}
+              animate={{ height: 80 }}
+              transition={{ delay: 0.8, duration: 1.5 }}
+            />
           </motion.div>
-          <motion.div
-            className="absolute inset-0 rounded-full border-4 border-[#14b8a6] opacity-0"
-            animate={{ scale: [1, 1.3], opacity: [0.5, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          />
         </div>
 
-        <div className="mt-10 flex items-center gap-6">
+        <div className="mt-8 flex items-center gap-6">
           <motion.div
-            className="flex flex-col items-center gap-2 bg-[#1e293b] border border-[#334155] px-6 py-4 rounded-2xl"
-            initial={{ x: -40, opacity: 0 }}
+            className="flex items-center gap-2 bg-[#1e293b] border border-[#334155] px-5 py-3 rounded-2xl"
+            initial={{ x: -30, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 1.2, ...SPRING_SMOOTH }}
           >
-            <span className="text-[#2F6FED] font-display font-black text-[48px]">4</span>
-            <span className="text-[#94a3b8] font-display font-bold text-[14px] uppercase tracking-wider">In</span>
+            <span className="text-[#2F6FED] font-display font-black text-[28px]">500</span>
+            <span className="text-[#94a3b8] font-display font-bold text-[14px] uppercase tracking-wider">ml</span>
           </motion.div>
           <motion.div
-            className="text-[#14b8a6] font-display font-black text-[48px]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            className="flex items-center gap-2 bg-[#1e293b] border border-[#334155] px-5 py-3 rounded-2xl"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1.5, ...SPRING_SNAPPY }}
           >
-            →
+            <Thermometer size={28} color="#f97316" />
+            <span className="text-[#f8fafc] font-display font-bold text-[18px] uppercase tracking-wider">Warming</span>
           </motion.div>
           <motion.div
-            className="flex flex-col items-center gap-2 bg-[#1e293b] border border-[#334155] px-6 py-4 rounded-2xl"
-            initial={{ x: 40, opacity: 0 }}
+            className="flex items-center gap-2 bg-[#1e293b] border border-[#334155] px-5 py-3 rounded-2xl"
+            initial={{ x: 30, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 1.8, ...SPRING_SMOOTH }}
           >
-            <span className="text-[#14b8a6] font-display font-black text-[48px]">6</span>
-            <span className="text-[#94a3b8] font-display font-bold text-[14px] uppercase tracking-wider">Out</span>
+            <Flame size={28} color="#f97316" />
+            <span className="text-[#f8fafc] font-display font-bold text-[18px] uppercase tracking-wider">+Metabolic Rate</span>
           </motion.div>
         </div>
+
+        <motion.div
+          className="mt-8 bg-[#f97316]/10 border border-[#f97316]/30 px-6 py-4 rounded-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.2, ...SPRING_SMOOTH }}
+        >
+          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">The Effect Is Real But Modest</span>
+        </motion.div>
       </div>
 
       <div
@@ -85,14 +96,14 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          In for 4, Out for 6
+          500ml of Water
           <motion.span
-            className="text-[#2F6FED] block mt-2 drop-shadow-md"
+            className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Lowers Heart Rate & Eases Stress
+            Temporarily Raises Metabolic Rate
           </motion.span>
         </motion.h2>
       </div>
