@@ -13,7 +13,11 @@ const CONFIG_PATH = path.resolve(__dirname, '../../artifacts/biominute-reels/src
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
-const BROWSER_URL = (process.env.BIOMINUTE_EXPORT_URL || 'http://localhost:5173/').replace(/\/?$/, '');
+const rawBrowserUrl = process.env.BIOMINUTE_EXPORT_URL || 'http://localhost:5173/';
+const parsedBrowserUrl = new URL(rawBrowserUrl);
+const BROWSER_URL = parsedBrowserUrl.pathname === '/'
+  ? rawBrowserUrl.replace(/\/+$/, '')
+  : rawBrowserUrl.replace(/\/+$/, '') + '/';
 const OUT_DIR = process.env.BIOMINUTE_EXPORT_DIR || (process.platform === 'win32' ? path.join(process.env.TEMP || 'C:\\Temp', 'biominute-export') : '/tmp/biominute-export');
 const FALLBACK_DURATION_MS = 43500;
 
