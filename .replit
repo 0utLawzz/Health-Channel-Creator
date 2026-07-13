@@ -23,3 +23,7 @@ defaultBucketID = "replit-objstore-8623ddf9-21bb-4bbf-a2c5-4c2d0d90bff0"
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
