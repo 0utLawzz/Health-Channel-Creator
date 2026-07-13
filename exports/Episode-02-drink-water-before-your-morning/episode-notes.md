@@ -1,6 +1,6 @@
 # Episode 2 — Drink Water Before Your Morning Coffee
 
-## Status: Complete (video) — thumbnail pending
+## Status: Complete — exported, published, dashboard updated
 
 ## Build
 - Scenes: `Scene0.tsx` – `Scene5.tsx` + `ThumbnailSlide.tsx` in `artifacts/biominute-reels/src/components/video/video_scenes/`, rebuilt by a design subagent following the locked BioMinute brand system (colors, springs, transitions, typography) and the master-plan data for Episode 2.
