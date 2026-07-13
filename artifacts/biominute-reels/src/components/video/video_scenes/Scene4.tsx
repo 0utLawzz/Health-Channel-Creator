@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { BookOpen, MessageCircle, Footprints } from 'lucide-react';
+import { BookOpen, MessageCircle, Moon } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -44,7 +44,7 @@ export function Scene4() {
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.6, ...SPRING_SNAPPY }}
           >
-            <Footprints size={90} color="#10b981" strokeWidth={1.5} />
+            <Moon size={90} color="#2F6FED" strokeWidth={1.5} fill="#2F6FED" fillOpacity={0.2} />
           </motion.div>
 
           <motion.h2
@@ -53,9 +53,9 @@ export function Scene4() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
           >
-            How Many Steps
-            <span className="text-[#f97316] block mt-2">Do You Average</span>
-            <span className="text-[#10b981] block mt-2">Each Day?</span>
+            What Time Did You
+            <span className="text-[#2F6FED] block mt-2">Go to Bed</span>
+            <span className="text-[#10b981] block mt-2">Last Night?</span>
           </motion.h2>
 
           <motion.div
@@ -65,7 +65,7 @@ export function Scene4() {
             transition={{ delay: 2.0, duration: 1 }}
           >
             <MessageCircle size={28} color="#14b8a6" />
-            <span className="text-[#94a3b8] text-[24px] font-medium">Drop your number below 👇</span>
+            <span className="text-[#94a3b8] text-[24px] font-medium">Drop your bedtime below 👇</span>
           </motion.div>
         </motion.div>
       </div>
@@ -81,7 +81,7 @@ export function Scene4() {
         <div className="flex items-center gap-4 text-[#94a3b8] text-[22px] font-medium bg-[#0F172A]/90 px-6 py-4 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
           <BookOpen className="shrink-0" size={28} />
           <p className="leading-relaxed text-left">
-            Source: Paluch AZ et al. (2021), JAMA Network Open; Lee IM et al. (2019), JAMA Internal Medicine
+            Source: Watson NF et al. (2015), Sleep — AASM/SRS Recommended Sleep Duration Consensus
           </p>
         </div>
       </motion.div>

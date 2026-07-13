@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Footprints } from 'lucide-react';
+import { Moon, Brain } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -28,29 +28,29 @@ export function Scene0() {
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/sfx-whoosh.mp3`} preload="auto" />
 
-      {/* Radial glow */}
+      {/* Soft moon glow */}
       <motion.div
-        className="absolute top-[25%] w-[700px] h-[700px] bg-gradient-to-tr from-[#10b981]/12 to-[#f97316]/8 rounded-full blur-[120px]"
-        animate={{ scale: [1, 1.12, 1], opacity: [0.4, 0.7, 0.4] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[20%] w-[600px] h-[600px] bg-gradient-to-tr from-[#2F6FED]/15 to-[#10b981]/8 rounded-full blur-[120px]"
+        animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Central pedometer icon */}
+      {/* Central sleeping icon */}
       <div className="absolute top-[260px] flex items-center justify-center z-10 w-full">
         <motion.div
-          className="relative w-[300px] h-[300px] rounded-full bg-[#0F172A] border-8 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_60px_rgba(16,185,129,0.35)]"
-          initial={{ scale: 0.6, opacity: 0, rotate: -20 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+          className="relative w-[300px] h-[300px] rounded-full bg-[#0F172A] border-8 border-[#2F6FED] flex items-center justify-center drop-shadow-[0_0_60px_rgba(47,111,237,0.35)]"
+          initial={{ scale: 0.6, opacity: 0, y: 30 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ...SPRING_SMOOTH }}
         >
-          <Footprints size={140} color="#10b981" strokeWidth={1.5} />
+          <Moon size={140} color="#2F6FED" strokeWidth={1.5} fill="#2F6FED" fillOpacity={0.2} />
           <motion.div
-            className="absolute -top-5 -right-5 bg-[#f97316] text-[#0F172A] font-display font-bold text-[24px] px-4 py-2 rounded-full"
+            className="absolute -bottom-4 -left-4 w-20 h-20 rounded-full bg-[#10b981] flex items-center justify-center"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.8, ...SPRING_SNAPPY }}
           >
-            10,000?
+            <Brain size={40} color="#0F172A" strokeWidth={2} />
           </motion.div>
         </motion.div>
       </div>
@@ -64,26 +64,18 @@ export function Scene0() {
           className="text-[#f8fafc] text-[68px] font-bold uppercase tracking-wider font-display leading-tight"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
         >
-          Is 10,000 Steps
+          Why Sleep Matters
           <motion.span
-            className="text-[#f97316] block mt-3 drop-shadow-md"
+            className="text-[#2F6FED] block mt-3 drop-shadow-md"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.4, ...SPRING_SNAPPY }}
+            transition={{ delay: 1.2, ...SPRING_SNAPPY }}
           >
-            Actually a Myth?
+            More Than You Think
           </motion.span>
         </motion.h1>
-        <motion.p
-          className="text-[#94a3b8] text-[28px] font-medium mt-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.0, duration: 0.8 }}
-        >
-          The magic number everyone repeats
-        </motion.p>
       </div>
     </motion.div>
   );
