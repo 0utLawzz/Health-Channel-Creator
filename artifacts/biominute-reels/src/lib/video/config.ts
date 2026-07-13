@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 3000, // Hook: "Does Drinking Water Really Boost Metabolism?"
-  1: 6000, // Water doesn't magically burn fat but supports metabolism
-  2: 5000, // Avoid mistaking thirst for hunger
-  3: 6000, // 500ml water temporarily increases metabolic rate
-  4: 5000, // CTA: "How much water do you drink in a day?" + citation
+  0: 3000, // Hook: "Morning Sunlight for Better Sleep"
+  1: 6000, // Morning light sets your circadian rhythm
+  2: 6500, // Cortisol earlier, melatonin later
+  3: 5000, // 10-15 minutes outside, even on cloudy days
+  4: 5000, // CTA: "Do you get outside in the first hour after waking?" + citation
   5: 5000, // Thumbnail end card
 } as const;

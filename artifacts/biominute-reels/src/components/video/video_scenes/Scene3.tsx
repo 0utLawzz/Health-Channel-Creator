@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { GlassWater, Thermometer, Flame } from 'lucide-react';
+import { Sun, Cloud, Timer, CheckCircle } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -26,35 +26,37 @@ export function Scene3() {
       exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.1 }}
       transition={{ duration: 0.8 }}
     >
-      <audio ref={audioRef} src={`${BASE_URL}audio/sfx-sparkle.mp3`} preload="auto" />
+      <audio ref={audioRef} src={`${BASE_URL}audio/sfx-pop.mp3`} preload="auto" />
 
       <div className="absolute top-[240px] flex flex-col items-center z-10 w-full">
         <div className="relative w-[340px] h-[340px] flex items-center justify-center">
           <motion.div
-            className="w-[260px] h-[260px] rounded-full bg-[#0F172A] border-8 border-[#2F6FED] flex items-center justify-center drop-shadow-[0_0_60px_rgba(47,111,237,0.35)]"
+            className="w-[260px] h-[260px] rounded-full bg-[#0F172A] border-8 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_60px_rgba(249,115,22,0.35)]"
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <GlassWater size={100} color="#2F6FED" strokeWidth={1.5} />
-            <motion.div
-              className="absolute bottom-4 w-[160px] h-[80px] rounded-b-full bg-[#2F6FED]/20"
-              initial={{ height: 0 }}
-              animate={{ height: 80 }}
-              transition={{ delay: 0.8, duration: 1.5 }}
-            />
+            <Sun size={100} color="#f97316" strokeWidth={1.5} fill="#f97316" fillOpacity={0.2} />
+          </motion.div>
+          <motion.div
+            className="absolute top-4 right-4 w-20 h-20 rounded-full bg-[#94a3b8] flex items-center justify-center"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 1.0, ...SPRING_SNAPPY }}
+          >
+            <Cloud size={40} color="#0F172A" strokeWidth={2} />
           </motion.div>
         </div>
 
         <div className="mt-8 flex items-center gap-6">
           <motion.div
-            className="flex items-center gap-2 bg-[#1e293b] border border-[#334155] px-5 py-3 rounded-2xl"
+            className="flex flex-col items-center gap-2 bg-[#1e293b] border border-[#334155] px-6 py-4 rounded-2xl"
             initial={{ x: -30, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 1.2, ...SPRING_SMOOTH }}
           >
-            <span className="text-[#2F6FED] font-display font-black text-[28px]">500</span>
-            <span className="text-[#94a3b8] font-display font-bold text-[14px] uppercase tracking-wider">ml</span>
+            <span className="text-[#f97316] font-display font-black text-[48px]">10-15</span>
+            <span className="text-[#94a3b8] font-display font-bold text-[14px] uppercase tracking-wider">Minutes</span>
           </motion.div>
           <motion.div
             className="flex items-center gap-2 bg-[#1e293b] border border-[#334155] px-5 py-3 rounded-2xl"
@@ -62,8 +64,8 @@ export function Scene3() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1.5, ...SPRING_SNAPPY }}
           >
-            <Thermometer size={28} color="#f97316" />
-            <span className="text-[#f8fafc] font-display font-bold text-[18px] uppercase tracking-wider">Warming</span>
+            <Timer size={28} color="#2F6FED" />
+            <span className="text-[#f8fafc] font-display font-bold text-[18px] uppercase tracking-wider">First Hour</span>
           </motion.div>
           <motion.div
             className="flex items-center gap-2 bg-[#1e293b] border border-[#334155] px-5 py-3 rounded-2xl"
@@ -71,19 +73,10 @@ export function Scene3() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 1.8, ...SPRING_SMOOTH }}
           >
-            <Flame size={28} color="#f97316" />
-            <span className="text-[#f8fafc] font-display font-bold text-[18px] uppercase tracking-wider">+Metabolic Rate</span>
+            <CheckCircle size={28} color="#10b981" />
+            <span className="text-[#f8fafc] font-display font-bold text-[18px] uppercase tracking-wider">Even Cloudy</span>
           </motion.div>
         </div>
-
-        <motion.div
-          className="mt-8 bg-[#f97316]/10 border border-[#f97316]/30 px-6 py-4 rounded-2xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.2, ...SPRING_SMOOTH }}
-        >
-          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">The Effect Is Real But Modest</span>
-        </motion.div>
       </div>
 
       <div
@@ -96,14 +89,14 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          500ml of Water
+          Just 10–15 Minutes Outside
           <motion.span
             className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Temporarily Raises Metabolic Rate
+            Even on a Cloudy Day
           </motion.span>
         </motion.h2>
       </div>
