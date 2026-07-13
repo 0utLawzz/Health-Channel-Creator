@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 3000, // Hook: "Why Are You Still Hungry Right After Eating?"
-  1: 6500, // Meals low in protein or fiber are less filling
-  2: 6500, // Ultra-processed foods make it easy to overeat before fullness registers
-  3: 5000, // Build meals around protein, vegetables, whole grains, healthy fats
-  4: 6500, // CTA: "What food keeps you full the longest?" + citation
+  0: 3000, // Hook: "How Deep Breathing Reduces Stress"
+  1: 6000, // Stress triggers fight-or-flight and shallow breathing
+  2: 6500, // Deep breathing activates the vagus nerve and calms the nervous system
+  3: 6500, // In for 4, out for 6 — lowers heart rate and eases stress
+  4: 5000, // CTA: "Try it now: in for 4, out for 6. How do you feel?" + citation
   5: 5000, // Thumbnail end card
 } as const;
