@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { BookOpen, MessageCircle, Sun } from 'lucide-react';
+import { BookOpen, MessageCircle, Dumbbell } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -35,15 +35,15 @@ export function Scene4() {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ delay: 0.2, ...SPRING_SMOOTH }}
         >
-          <div className="absolute top-6 right-8 w-4 h-4 bg-[#f97316] rounded-full" />
+          <div className="absolute top-6 right-8 w-4 h-4 bg-[#10b981] rounded-full" />
 
           <motion.div
             initial={{ scale: 0, rotate: -45 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.6, ...SPRING_SNAPPY }}
           >
-            <div className="w-24 h-24 rounded-full bg-[#f97316] flex items-center justify-center">
-              <Sun size={48} color="#0F172A" strokeWidth={2} />
+            <div className="w-24 h-24 rounded-full bg-[#10b981] flex items-center justify-center">
+              <Dumbbell size={48} color="#0F172A" strokeWidth={2} />
             </div>
           </motion.div>
 
@@ -53,9 +53,9 @@ export function Scene4() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
           >
-            Do You Get Outside
-            <span className="text-[#f97316] block mt-2">In the First Hour</span>
-            <span className="text-[#2F6FED] block mt-2">After Waking?</span>
+            Food First or
+            <span className="text-[#10b981] block mt-2">Protein Shakes?</span>
+            <span className="text-[#f97316] block mt-2">Which Do You Prefer?</span>
           </motion.h2>
 
           <motion.div
@@ -65,7 +65,7 @@ export function Scene4() {
             transition={{ delay: 2.0, duration: 1 }}
           >
             <MessageCircle size={28} color="#14b8a6" />
-            <span className="text-[#94a3b8] text-[24px] font-medium">Let me know below 👇</span>
+            <span className="text-[#94a3b8] text-[24px] font-medium">Drop your answer below 👇</span>
           </motion.div>
         </motion.div>
       </div>
@@ -80,7 +80,7 @@ export function Scene4() {
         <div className="flex items-center gap-4 text-[#94a3b8] text-[22px] font-medium bg-[#0F172A]/90 px-6 py-4 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
           <BookOpen className="shrink-0" size={28} />
           <p className="leading-relaxed text-left">
-            Source: Circadian rhythm and light-exposure research (chronobiology consensus, e.g. Czeisler CA et al.)
+            Source: General resistance-training and nutrition research on muscle protein synthesis and hypertrophy
           </p>
         </div>
       </motion.div>
