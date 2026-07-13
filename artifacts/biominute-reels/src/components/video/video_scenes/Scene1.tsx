@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Droplets, Wind, Moon } from 'lucide-react';
+import { Beef, Moon, Sun, Sunset } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -28,100 +28,84 @@ export function Scene1() {
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/sfx-pop.mp3`} preload="auto" />
 
-      {/* Dim night-sky gradient */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-b from-[#1e293b] via-[#0F172A] to-[#0F172A] opacity-60"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.6 }}
-        transition={{ duration: 1.5 }}
-      />
-
-      {/* Moon icon — night context */}
-      <motion.div
-        className="absolute top-[200px] right-[80px] opacity-30"
-        initial={{ scale: 0, rotate: -45, opacity: 0 }}
-        animate={{ scale: 1, rotate: 0, opacity: 0.3 }}
-        transition={{ delay: 0.3, ...SPRING_SNAPPY }}
-      >
-        <Moon size={120} color="#f97316" fill="#f97316" />
-      </motion.div>
-
-      {/* Central stat card */}
-      <motion.div
-        className="absolute top-[280px] z-10 w-[85%] bg-[#1e293b]/80 backdrop-blur-md border border-[#334155] rounded-[40px] p-14 flex flex-col items-center shadow-2xl"
-        initial={{ scale: 0.85, opacity: 0, y: 40 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, ...SPRING_SMOOTH }}
-      >
-        {/* Orange accent dot */}
-        <div className="absolute top-6 right-8 w-4 h-4 bg-[#f97316] rounded-full" />
-
-        {/* Stat */}
+      {/* Three plates visual */}
+      <div className="absolute top-[260px] flex items-end justify-center gap-8 z-10 w-full px-10">
+        {/* Breakfast - small/empty */}
         <motion.div
-          className="flex items-end gap-3 mb-6"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.9, ...SPRING_SNAPPY }}
+          className="flex flex-col items-center gap-4"
+          initial={{ y: 60, opacity: 0 }}
+          animate={{ y: 0, opacity: 0.4 }}
+          transition={{ delay: 0.3, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#10b981] text-[130px] font-black leading-none font-display drop-shadow-[0_0_30px_rgba(16,185,129,0.5)]">~1L</span>
+          <div className="w-[140px] h-[140px] rounded-full border-4 border-[#475569] bg-[#0F172A] flex items-center justify-center">
+            <Sun size={50} color="#475569" />
+          </div>
+          <span className="text-[#475569] font-display uppercase tracking-widest text-[20px] font-bold">Breakfast</span>
+          <div className="w-24 h-2 bg-[#475569]/30 rounded-full overflow-hidden">
+            <motion.div className="h-full bg-[#475569]" initial={{ width: 0 }} animate={{ width: "20%" }} transition={{ delay: 1.0, duration: 1 }} />
+          </div>
         </motion.div>
 
-        <motion.p
-          className="text-[#94a3b8] text-[38px] font-bold font-display uppercase tracking-widest text-center leading-snug"
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.7 }}
+        {/* Lunch - medium */}
+        <motion.div
+          className="flex flex-col items-center gap-4"
+          initial={{ y: 60, opacity: 0 }}
+          animate={{ y: 0, opacity: 0.6 }}
+          transition={{ delay: 0.5, ...SPRING_SMOOTH }}
         >
-          of water lost<br />while you sleep
-        </motion.p>
+          <div className="w-[160px] h-[160px] rounded-full border-4 border-[#64748b] bg-[#0F172A] flex items-center justify-center">
+            <Sunset size={55} color="#64748b" />
+          </div>
+          <span className="text-[#64748b] font-display uppercase tracking-widest text-[22px] font-bold">Lunch</span>
+          <div className="w-28 h-2 bg-[#64748b]/30 rounded-full overflow-hidden">
+            <motion.div className="h-full bg-[#64748b]" initial={{ width: 0 }} animate={{ width: "35%" }} transition={{ delay: 1.3, duration: 1 }} />
+          </div>
+        </motion.div>
 
-        {/* How you lose it */}
-        <div className="flex gap-10 mt-12">
-          <motion.div
-            className="flex flex-col items-center gap-3"
-            initial={{ x: -30, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 2.0, ...SPRING_SMOOTH }}
-          >
-            <div className="w-20 h-20 rounded-2xl bg-[#14b8a6]/10 border border-[#14b8a6]/30 flex items-center justify-center">
-              <Wind size={36} color="#14b8a6" />
-            </div>
-            <span className="text-[#64748b] font-display uppercase tracking-widest text-[22px]">Breathing</span>
-          </motion.div>
-
-          <motion.div
-            className="flex flex-col items-center gap-3"
-            initial={{ x: 30, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 2.4, ...SPRING_SMOOTH }}
-          >
-            <div className="w-20 h-20 rounded-2xl bg-[#2F6FED]/10 border border-[#2F6FED]/30 flex items-center justify-center">
-              <Droplets size={36} color="#2F6FED" />
-            </div>
-            <span className="text-[#64748b] font-display uppercase tracking-widest text-[22px]">Sweating</span>
-          </motion.div>
-        </div>
-      </motion.div>
+        {/* Dinner - large/full (the problem) */}
+        <motion.div
+          className="flex flex-col items-center gap-4"
+          initial={{ y: 60, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.7, ...SPRING_SMOOTH }}
+        >
+          <div className="relative w-[200px] h-[200px] rounded-full border-8 border-[#f97316] bg-[#0F172A] flex items-center justify-center drop-shadow-[0_0_40px_rgba(249,115,22,0.4)]">
+            <Moon size={70} color="#f97316" fill="#f97316" />
+            <motion.div
+              className="absolute -top-4 -right-4 bg-[#f97316] text-[#0F172A] font-display font-bold text-[18px] px-3 py-1 rounded-full"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 2.0, ...SPRING_SNAPPY }}
+            >
+              60g+
+            </motion.div>
+          </div>
+          <span className="text-[#f97316] font-display uppercase tracking-widest text-[26px] font-bold">Dinner</span>
+          <div className="w-36 h-3 bg-[#f97316]/20 rounded-full overflow-hidden">
+            <motion.div className="h-full bg-[#f97316]" initial={{ width: 0 }} animate={{ width: "85%" }} transition={{ delay: 1.6, duration: 1.5 }} />
+          </div>
+        </motion.div>
+      </div>
 
       {/* Headline */}
       <div
-        className="absolute w-full px-16 text-center z-20"
+        className="absolute w-full px-14 text-center z-20"
         style={{ bottom: BOTTOM_SAFE_ZONE_PX + 100 }}
       >
         <motion.h2
-          className="text-[#f8fafc] text-[70px] font-bold uppercase tracking-wider font-display leading-tight"
+          className="text-[#f8fafc] text-[60px] font-bold uppercase tracking-wider font-display leading-tight"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 3.0 }}
+          transition={{ duration: 0.8, delay: 2.2 }}
         >
-          You Wake Up
+          Most People Load
           <motion.span
-            className="text-[#f97316] block mt-4 drop-shadow-md"
+            className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 3.5, ...SPRING_SNAPPY }}
+            transition={{ delay: 3.0, ...SPRING_SNAPPY }}
           >
-            Already Dehydrated
+            Protein at Dinner
           </motion.span>
         </motion.h2>
       </div>

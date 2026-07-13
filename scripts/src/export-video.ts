@@ -1,6 +1,7 @@
 import { spawn, execSync } from 'child_process';
 import { chromium } from 'playwright-chromium';
 import fs from 'fs/promises';
+import fsSync from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -8,12 +9,26 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Path to the public audio assets relative to this script
 const AUDIO_DIR = path.resolve(__dirname, '../../artifacts/biominute-reels/public/audio');
 const BG_MUSIC_PATH = path.join(AUDIO_DIR, 'background.mp3');
+const CONFIG_PATH = path.resolve(__dirname, '../../artifacts/biominute-reels/src/lib/video/config.ts');
 
 const VIDEO_WIDTH = 1080;
 const VIDEO_HEIGHT = 1920;
 const BROWSER_URL = (process.env.BIOMINUTE_EXPORT_URL || 'http://localhost:5173/').replace(/\/?$/, '');
 const OUT_DIR = process.env.BIOMINUTE_EXPORT_DIR || (process.platform === 'win32' ? path.join(process.env.TEMP || 'C:\\Temp', 'biominute-export') : '/tmp/biominute-export');
 const FALLBACK_DURATION_MS = 43500;
+
+function getConfigDurationMs(): number | null {
+  try {
+    const content = fsSync.readFileSync(CONFIG_PATH, 'utf8');
+    const match = content.match(/SCENE_DURATIONS\s*=\s*\{([^}]+)\}/s);
+    if (!match) return null;
+    const vals = [...match[1].matchAll(/:\s*(\d+)/g)].map((m) => Number(m[1]));
+    const total = vals.reduce((a, b) => a + b, 0);
+    return total > 0 ? total : null;
+  } catch {
+    return null;
+  }
+}
 
 async function startXvfb(): Promise<{ display: string; stop: () => void }> {
   const display = ':99';
@@ -49,7 +64,7 @@ async function main() {
     ];
 
     browser = await chromium.launch({
-      headless: false,
+      headless: true,
       env: isWindows ? { ...process.env } : { ...process.env, DISPLAY: xvfb.display },
       args: launchArgs,
     });
@@ -73,10 +88,14 @@ async function main() {
     console.log('Waiting for app to initialize...');
     await page.waitForTimeout(5000);
 
-    // Read the total video duration from the page; fall back to a safe value
-    const totalDurationMs = await page
+    // Read the total video duration from the page; fall back to config file, then safe value
+    let totalDurationMs = await page
       .evaluate(() => ((globalThis as any).__biominuteTotalDuration__ as number | undefined))
-      .then((d) => (d && d > 0 ? d : FALLBACK_DURATION_MS));
+      .then((d) => (d && d > 0 ? d : 0));
+    if (!totalDurationMs) {
+      totalDurationMs = getConfigDurationMs() ?? FALLBACK_DURATION_MS;
+      console.log('Duration from config file:', totalDurationMs);
+    }
     console.log(`Recording ${totalDurationMs}ms...`);
 
     // Wait for the full video loop plus buffer

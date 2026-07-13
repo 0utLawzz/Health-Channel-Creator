@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Droplets, Zap } from 'lucide-react';
+import { Sun, Sunset, Moon, TrendingUp } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -27,71 +27,84 @@ export function Scene2() {
       transition={{ duration: 0.8 }}
     >
       <audio ref={audioRef} src={`${BASE_URL}audio/sfx-sparkle.mp3`} preload="auto" />
-      
-      {/* Background gradient */}
-      <motion.div 
-        className="absolute top-[20%] w-[800px] h-[800px] bg-gradient-to-tr from-[#10b981]/15 to-[#14b8a6]/15 rounded-full blur-[100px]"
-        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
 
-      <div className="absolute top-[250px] flex items-center justify-center z-10 w-full">
-        <motion.div
-          className="relative flex items-center justify-center w-[300px] h-[300px] bg-[#0F172A] border-8 border-[#10b981] rounded-full drop-shadow-[0_0_50px_rgba(16,185,129,0.3)] overflow-hidden"
-          initial={{ y: 50, scale: 0.8, opacity: 0 }}
-          animate={{ y: 0, scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2, ...SPRING_SMOOTH }}
-        >
-          {/* Water filling up from bottom */}
+      {/* Three equal plates with 30g bars */}
+      <div className="absolute top-[240px] flex items-end justify-center gap-10 z-10 w-full px-8">
+        {[
+          { icon: Sun, label: 'Breakfast', color: '#10b981', delay: 0.3 },
+          { icon: Sunset, label: 'Lunch', color: '#14b8a6', delay: 0.6 },
+          { icon: Moon, label: 'Dinner', color: '#2F6FED', delay: 0.9 },
+        ].map(({ icon: Icon, label, color, delay }) => (
           <motion.div
-            className="absolute bottom-0 w-full bg-[#14b8a6]"
-            initial={{ height: "0%" }}
-            animate={{ height: "70%" }}
-            transition={{ delay: 1.0, duration: 2, ease: "easeInOut" }}
-          />
-          <Droplets size={120} color="#f8fafc" className="z-10 mix-blend-overlay opacity-80" />
-        </motion.div>
-
-        {/* Floating Droplets outside */}
-        <motion.div
-          className="absolute top-[50px]"
-          initial={{ y: -50, opacity: 0 }}
-          animate={{ y: 150, opacity: [0, 1, 0] }}
-          transition={{ delay: 0.8, duration: 1.5, ease: "easeIn" }}
-        >
-          <Droplets size={60} color="#14b8a6" />
-        </motion.div>
-
-        <motion.div
-          className="absolute top-[180px] right-[200px]"
-          initial={{ scale: 0, opacity: 0, rotate: -45 }}
-          animate={{ scale: 1, opacity: 1, rotate: 15 }}
-          transition={{ delay: 2.2, ...SPRING_SNAPPY }}
-        >
-          <Zap size={100} color="#f97316" fill="#f97316" className="drop-shadow-[0_0_30px_rgba(249,115,22,0.6)]" />
-        </motion.div>
+            key={label}
+            className="flex flex-col items-center gap-4"
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay, ...SPRING_SMOOTH }}
+          >
+            <motion.div
+              className="relative w-[170px] h-[170px] rounded-full border-4 flex items-center justify-center"
+              style={{ borderColor: color, boxShadow: `0 0 30px ${color}40` }}
+              initial={{ scale: 0.7 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: delay + 0.2, ...SPRING_SNAPPY }}
+            >
+              <Icon size={55} color={color} />
+            </motion.div>
+            <span className="font-display uppercase tracking-widest text-[20px] font-bold" style={{ color }}>{label}</span>
+            <div className="w-32 h-3 rounded-full overflow-hidden bg-white/10">
+              <motion.div
+                className="h-full rounded-full"
+                style={{ backgroundColor: color }}
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ delay: delay + 0.8, duration: 1.2, ease: "easeOut" }}
+              />
+            </div>
+            <motion.span
+              className="font-display font-black text-[28px]"
+              style={{ color }}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: delay + 1.5, ...SPRING_SNAPPY }}
+            >
+              30g
+            </motion.span>
+          </motion.div>
+        ))}
       </div>
 
-      <div 
-        className="absolute w-full px-16 text-center z-20"
-        style={{ bottom: BOTTOM_SAFE_ZONE_PX + 120 }}
+      {/* Trending up indicator */}
+      <motion.div
+        className="absolute top-[180px] right-[60px] z-10"
+        initial={{ scale: 0, opacity: 0, rotate: -30 }}
+        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+        transition={{ delay: 2.8, ...SPRING_SNAPPY }}
+      >
+        <TrendingUp size={80} color="#f97316" strokeWidth={2.5} />
+      </motion.div>
+
+      {/* Text */}
+      <div
+        className="absolute w-full px-14 text-center z-20"
+        style={{ bottom: BOTTOM_SAFE_ZONE_PX + 100 }}
       >
         <motion.h2
-          className="text-[#f8fafc] text-[80px] font-bold uppercase tracking-wider font-display leading-tight"
+          className="text-[#f8fafc] text-[58px] font-bold uppercase tracking-wider font-display leading-tight"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.8, delay: 1.5 }}
         >
-          Replace Overnight Losses
+          Spreading Protein
+          <motion.span
+            className="text-[#10b981] block mt-2 drop-shadow-md"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 2.5, ...SPRING_SNAPPY }}
+          >
+            Boosts Muscle Protein Synthesis
+          </motion.span>
         </motion.h2>
-        <motion.p
-          className="text-[#10b981] text-[45px] mt-6 font-bold font-display uppercase tracking-widest drop-shadow-md"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 2.5 }}
-        >
-          Support Hydration & Alertness
-        </motion.p>
       </div>
     </motion.div>
   );
