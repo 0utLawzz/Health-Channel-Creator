@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Does More Sweat Mean More Fat Burned?"
-  1: 7000, // Sweat is your body's cooling system
-  2: 6500, // Sweat more due to heat, humidity, genetics
-  3: 6000, // Fat loss comes from calorie balance
+  0: 4500, // Hook: "Can You Lose Fat Without Doing Cardio?"
+  1: 7000, // Cardio is great but not the only path
+  2: 6500, // Nutrition plays the biggest role
+  3: 6000, // Strength training preserves muscle
   4: 6500, // CTA + citation
   5: 5000, // Thumbnail end card
 } as const;
