@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Utensils, TrendingUp, Star } from 'lucide-react';
+import { Scale, Smartphone, X } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -31,36 +31,52 @@ export function Scene2() {
       <div className="absolute top-[240px] flex flex-col items-center z-10 w-full">
         <div className="relative w-[340px] h-[340px] flex items-center justify-center">
           <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#10b981]/15 to-[#2F6FED]/10 blur-[40px]"
+            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#f97316]/15 to-[#10b981]/10 blur-[40px]"
             animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 340 340">
+            <motion.line
+              x1="80" y1="170" x2="260" y2="170"
+              stroke="#334155" strokeWidth="6" strokeLinecap="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            />
+            <motion.line
+              x1="170" y1="80" x2="170" y2="260"
+              stroke="#334155" strokeWidth="6" strokeLinecap="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            />
+          </svg>
+
           <motion.div
-            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_60px_rgba(249,115,22,0.35)]"
-            initial={{ scale: 0.6, opacity: 0 }}
+            className="absolute left-[40px] top-1/2 -translate-y-1/2 w-[100px] h-[100px] rounded-full bg-[#0F172A] border-4 border-[#10b981] flex items-center justify-center z-10"
+            initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, ...SPRING_SMOOTH }}
+            transition={{ delay: 0.8, ...SPRING_SMOOTH }}
           >
-            <Utensils size={88} color="#f97316" strokeWidth={1.5} />
+            <Scale size={48} color="#10b981" strokeWidth={1.5} />
           </motion.div>
 
           <motion.div
-            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#10b981] flex items-center justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.8, ...SPRING_SNAPPY }}
+            className="absolute right-[40px] top-1/2 -translate-y-1/2 w-[140px] h-[140px] rounded-full bg-[#0F172A] border-4 border-[#f97316] flex items-center justify-center z-10"
+            initial={{ scale: 0, opacity: 0, rotate: 15 }}
+            animate={{ scale: 1, opacity: 1, rotate: 25 }}
+            transition={{ delay: 1.2, ...SPRING_SMOOTH }}
           >
-            <Star size={40} color="#0F172A" strokeWidth={2.5} />
-          </motion.div>
-
-          <motion.div
-            className="absolute bottom-0 left-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.1, ...SPRING_SNAPPY }}
-          >
-            <TrendingUp size={40} color="#0F172A" strokeWidth={2.5} />
+            <Smartphone size={60} color="#f97316" strokeWidth={1.5} />
+            <motion.div
+              className="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-[#f97316] flex items-center justify-center"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 1.8, ...SPRING_SNAPPY }}
+            >
+              <X size={24} color="#0F172A" strokeWidth={3} />
+            </motion.div>
           </motion.div>
         </div>
 
@@ -68,9 +84,9 @@ export function Scene2() {
           className="mt-8 bg-[#f97316]/10 border border-[#f97316]/30 px-6 py-4 rounded-2xl text-center max-w-[80%]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.6, ...SPRING_SMOOTH }}
+          transition={{ delay: 2.0, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Nutrition Plays the Biggest Role</span>
+          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Reality Is Less Than Social Hype</span>
         </motion.div>
       </div>
 
@@ -84,14 +100,14 @@ export function Scene2() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          It's Not the Only Path
+          Most Healthy Adults
           <motion.span
             className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Food Is the Biggest Lever
+            Need Far Less Than Hype
           </motion.span>
         </motion.h2>
       </div>

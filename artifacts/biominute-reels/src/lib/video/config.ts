@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Can You Lose Fat Without Doing Cardio?"
-  1: 7000, // Cardio is great but not the only path
-  2: 6500, // Nutrition plays the biggest role
-  3: 6000, // Strength training preserves muscle
+  0: 4500, // Hook: "How Much Protein Do You Really Need?"
+  1: 7000, // Protein needs depend on goals and activity
+  2: 6500, // Most adults need less than social posts suggest
+  3: 6000, // Higher for muscle/active, extremes unnecessary
   4: 6500, // CTA + citation
   5: 5000, // Thumbnail end card
 } as const;

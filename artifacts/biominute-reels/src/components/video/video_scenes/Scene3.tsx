@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Dumbbell, Shield, Heart } from 'lucide-react';
+import { Dumbbell, TrendingUp, Ban } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -51,7 +51,7 @@ export function Scene3() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.8, ...SPRING_SNAPPY }}
           >
-            <Shield size={40} color="#0F172A" strokeWidth={2.5} />
+            <TrendingUp size={40} color="#0F172A" strokeWidth={2.5} />
           </motion.div>
 
           <motion.div
@@ -60,7 +60,7 @@ export function Scene3() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1.1, ...SPRING_SNAPPY }}
           >
-            <Heart size={40} color="#0F172A" strokeWidth={2.5} />
+            <Ban size={40} color="#0F172A" strokeWidth={2.5} />
           </motion.div>
         </div>
 
@@ -70,7 +70,7 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Preserves Muscle in a Deficit</span>
+          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Higher Can Help, Extremes Don't</span>
         </motion.div>
       </div>
 
@@ -84,14 +84,14 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          Strength Training Helps
+          Building Muscle or Active?
           <motion.span
             className="text-[#2F6FED] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Keep Muscle While Losing Fat
+            More Helps, But Don't Overdo It
           </motion.span>
         </motion.h2>
       </div>

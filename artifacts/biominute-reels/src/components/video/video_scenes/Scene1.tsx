@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Heart, Zap, Footprints } from 'lucide-react';
+import { Target, Dumbbell, Activity } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -42,25 +42,25 @@ export function Scene1() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <Footprints size={88} color="#10b981" strokeWidth={1.5} />
+            <Target size={88} color="#10b981" strokeWidth={1.5} />
           </motion.div>
 
           <motion.div
-            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#f97316] flex items-center justify-center"
+            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
             initial={{ scale: 0, rotate: -45 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.8, ...SPRING_SNAPPY }}
           >
-            <Heart size={40} color="#0F172A" strokeWidth={2.5} />
+            <Dumbbell size={40} color="#0F172A" strokeWidth={2.5} />
           </motion.div>
 
           <motion.div
-            className="absolute bottom-0 left-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
+            className="absolute bottom-0 left-0 w-20 h-20 rounded-full bg-[#f97316] flex items-center justify-center"
             initial={{ scale: 0, rotate: -45 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 1.1, ...SPRING_SNAPPY }}
           >
-            <Zap size={40} color="#0F172A" strokeWidth={2.5} />
+            <Activity size={40} color="#0F172A" strokeWidth={2.5} />
           </motion.div>
         </div>
       </div>
@@ -75,14 +75,14 @@ export function Scene1() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          Cardio Is Great For
+          Protein Needs Depend On
           <motion.span
             className="text-[#10b981] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Heart Health & Calories
+            Your Goals & Activity Level
           </motion.span>
         </motion.h2>
       </div>
