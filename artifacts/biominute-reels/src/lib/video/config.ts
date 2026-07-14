@@ -22,7 +22,7 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Do Detox Drinks Really Clean Your Body?"
+  0: 4500, // Hook: "Can Your Metabolism Be 'Broken'?"
   1: 7000, // Liver & kidneys already filter — no evidence detox drinks do better
   2: 6500, // What actually helps: hydration, veg, exercise, limit alcohol
   3: 6000, // Trust your body's built-in filtration system
