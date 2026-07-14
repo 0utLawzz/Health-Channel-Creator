@@ -2,6 +2,8 @@ import { Router } from "express";
 import { eq } from "drizzle-orm";
 import { db, episodesTable } from "@workspace/db";
 import { PublishToYouTubeBody, PublishToYouTubeParams } from "@workspace/api-zod";
+import { findEpisodeVideoPath, uploadEpisodeVideo } from "../lib/youtube-upload";
+import { logger } from "../lib/logger";
 
 const router = Router();
 
@@ -115,15 +117,77 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  // Real YouTube publish — placeholder for when credentials arrive
-  // This will be wired up once YOUTUBE_CLIENT_ID + SECRET + REFRESH_TOKEN are set
-  res.json({
-    success: false,
-    youtubeVideoId: null,
-    youtubeUrl: null,
-    scheduledAt: null,
-    message: "YouTube publishing requires a video file. Export the episode first, then publish.",
-  });
+  // Real YouTube publish — credentials are configured.
+  const [episode] = await db
+    .select()
+    .from(episodesTable)
+    .where(eq(episodesTable.id, id));
+
+  if (!episode) {
+    res.status(400).json({ error: "Episode not found" });
+    return;
+  }
+
+  if (episode.status !== "approved") {
+    res.status(400).json({ error: "Episode must be approved before publishing" });
+    return;
+  }
+
+  let videoPath: string;
+  try {
+    videoPath = findEpisodeVideoPath(episode.epNumber);
+  } catch (err) {
+    logger.error({ err, epNumber: episode.epNumber }, "Episode video file not found");
+    res.status(400).json({
+      error:
+        err instanceof Error
+          ? err.message
+          : "Episode video file not found. Export the episode first, then publish.",
+    });
+    return;
+  }
+
+  try {
+    const { youtubeVideoId, youtubeUrl } = await uploadEpisodeVideo({
+      videoPath,
+      title: episode.youtubeTitle,
+      description: `${episode.citationCta}\n\n${episode.hashtags}`,
+      tags: episode.hashtags
+        .split(/[\s,]+/)
+        .map((tag: string) => tag.replace(/^#/, ""))
+        .filter(Boolean),
+      privacyStatus,
+      publishAt: scheduleAt ?? null,
+    });
+
+    const scheduledAt = scheduleAt ? new Date(scheduleAt) : new Date();
+
+    await db
+      .update(episodesTable)
+      .set({
+        status: scheduleAt ? "scheduled" : "published",
+        youtubeVideoId,
+        scheduledPublishAt: scheduleAt ? scheduledAt : null,
+        publishedAt: scheduleAt ? null : scheduledAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(episodesTable.id, id));
+
+    res.json({
+      success: true,
+      youtubeVideoId,
+      youtubeUrl,
+      scheduledAt: scheduleAt ? scheduledAt.toISOString() : null,
+      message: scheduleAt
+        ? `Uploaded and scheduled to publish at ${scheduledAt.toISOString()}.`
+        : "Uploaded and published to YouTube.",
+    });
+  } catch (err) {
+    logger.error({ err, episodeId: id }, "YouTube upload failed");
+    res.status(502).json({
+      error: err instanceof Error ? err.message : "YouTube upload failed",
+    });
+  }
 });
 
 export default router;

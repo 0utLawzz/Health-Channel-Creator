@@ -22,7 +22,7 @@ export default function EpisodeDetail() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const { data: episode, isLoading, refetch } = useGetEpisode(id, { query: { enabled: !!id } });
+  const { data: episode, isLoading, refetch } = useGetEpisode(id, { query: { enabled: !!id, queryKey: ["/api/episodes", id] } });
   const { data: ytStatus } = useGetYouTubeStatus();
   
   const updateMutation = useUpdateEpisode();
@@ -113,7 +113,11 @@ export default function EpisodeDetail() {
           toast({ title: "Published", description: res.message, className: "bg-[#8B2FC9] text-white border-2 border-black rounded-none" });
         },
         onError: (err) => {
-          toast({ title: "Publish Error", description: err.error || "Failed to publish", variant: "destructive" });
+          const description =
+            (err.data && typeof err.data === "object" && "error" in err.data
+              ? String((err.data as { error?: unknown }).error)
+              : undefined) || err.message || "Failed to publish";
+          toast({ title: "Publish Error", description, variant: "destructive" });
         }
       }
     );

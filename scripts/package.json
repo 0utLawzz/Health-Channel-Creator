@@ -17,6 +17,7 @@
     "tsx": "catalog:"
   },
   "dependencies": {
+    "@workspace/db": "workspace:*",
     "exceljs": "^4.4.0"
   }
 }

@@ -25,8 +25,17 @@ A workspace for producing short animated health-science YouTube Shorts/Reels for
 
 ## Environment secrets
 
-- `SESSION_SECRET` — already set; only needed for the optional API server sessions.
-- `GITHUB_TOKEN` — not yet set. Only needed for `scripts/push-to-github.sh` to auto-push exports to GitHub (classic PAT with `repo` scope, falls back to `GITHUB_ACCESS_TOKEN`).
+- `SESSION_SECRET` — set; only needed for the optional API server sessions.
+- `GITHUB_TOKEN` — set; used by `scripts/push-to-github.sh` to auto-push exports to GitHub.
+- `YOUTUBE_CLIENT_ID` / `YOUTUBE_CLIENT_SECRET` / `YOUTUBE_REFRESH_TOKEN` — set; used by the API server's `/api/youtube/publish/:id` route (googleapis resumable upload) to actually upload an approved episode's MP4 to YouTube.
+- `DATABASE_URL` — Replit-managed Postgres, provisioned automatically.
+
+## Setup done on import (2026-07-14)
+
+- Registered all 5 artifacts (`api-server`, `biominute-reels`, `publishing-dashboard`, `biominute-deck`, `mockup-sandbox`) and their workflows.
+- Ran `pnpm install`, pushed the Drizzle schema (`pnpm --filter @workspace/db run push`), and seeded the `episodes` table from the master XLSX + `exports/production-log.md` via the new one-off `scripts/src/seed-episodes.ts` (36 rows; episodes with an existing `exports/Episode-NN-*/episode.mp4` are marked `complete`, the rest `draft`).
+- Implemented the real YouTube publish flow in `artifacts/api-server/src/routes/youtube.ts` + new `artifacts/api-server/src/lib/youtube-upload.ts`: looks up the episode's export folder by episode number (globs `exports/Episode-{NN}-*`, since slug casing in folder names is inconsistent), then uploads `episode.mp4` via `googleapis` `youtube.videos.insert` (resumable upload). Supports immediate publish and scheduled publish (uploads as private + `publishAt`, YouTube auto-flips visibility at that time).
+- Fixed a pre-existing typecheck error in `publishing-dashboard/src/pages/EpisodeDetail.tsx` (missing `queryKey`, wrong error-body field access).
 
 ## Stack
 
