@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { Ruler, X } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -31,38 +31,36 @@ export function Scene1() {
       <div className="absolute top-[260px] flex items-center justify-center z-10 w-full">
         <div className="relative w-[340px] h-[340px] flex items-center justify-center">
           <motion.div
-            className="absolute left-0 flex flex-col items-center gap-2"
-            style={{ marginLeft: -10 }}
-            initial={{ x: -40, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
+            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#2F6FED]/15 to-[#10b981]/10 blur-[40px]"
+            animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          <motion.div
+            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#2F6FED] flex items-center justify-center drop-shadow-[0_0_60px_rgba(47,111,237,0.35)]"
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]">
-              <CheckCircle size={56} color="#10b981" strokeWidth={1.5} />
-            </div>
-            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#10b981]">Eat</span>
+            <Ruler size={88} color="#2F6FED" strokeWidth={1.5} />
           </motion.div>
 
           <motion.div
-            className="absolute right-0 flex flex-col items-center gap-2"
-            style={{ marginRight: -10 }}
-            initial={{ x: 40, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.5, ...SPRING_SMOOTH }}
+            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#f97316] flex items-center justify-center"
+            initial={{ scale: 0, rotate: -45 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.8, ...SPRING_SNAPPY }}
           >
-            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_30px_rgba(249,115,22,0.35)]">
-              <XCircle size={56} color="#f97316" strokeWidth={1.5} />
-            </div>
-            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#f97316]">Skip</span>
+            <X size={40} color="#0F172A" strokeWidth={3} />
           </motion.div>
 
           <motion.div
-            className="w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center z-10"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 1.0, ...SPRING_SNAPPY }}
+            className="absolute bottom-0 left-0 bg-[#10b981] px-4 py-2 rounded-xl"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 1.2, ...SPRING_SNAPPY }}
           >
-            <span className="text-[#0F172A] font-display font-black text-[24px]">OK</span>
+            <span className="text-[#0F172A] font-display font-black text-[18px]">NOT ONE SIZE</span>
           </motion.div>
         </div>
       </div>
@@ -75,16 +73,16 @@ export function Scene1() {
           className="text-[#f8fafc] text-[58px] font-bold uppercase tracking-wider font-display leading-tight"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
+          transition={{ duration: 0.8, delay: 1.0 }}
         >
-          Research Doesn't Say
+          Hydration Needs Vary
           <motion.span
-            className="text-[#10b981] block mt-2 drop-shadow-md"
+            className="text-[#2F6FED] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 2.0, ...SPRING_SNAPPY }}
+            transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Everyone Must Eat It
+            No Universal Rule
           </motion.span>
         </motion.h2>
       </div>
