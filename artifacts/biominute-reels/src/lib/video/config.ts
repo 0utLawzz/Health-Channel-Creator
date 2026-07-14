@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Is Creatine Safe?"
-  1: 7000, // Most studied sports supplement
-  2: 6500, // Improves high-intensity performance
-  3: 6000, // Safe for healthy adults; check with doctor if conditions
+  0: 4500, // Hook: "Why Is Sleep Secretly Affecting Your Fitness?"
+  1: 7000, // Sleep is when recovery happens
+  2: 6500, // Poor sleep reduces performance, eating, energy
+  3: 6000, // 7-9 hours for adults, especially training
   4: 6500, // CTA + citation
   5: 5000, // Thumbnail end card
 } as const;

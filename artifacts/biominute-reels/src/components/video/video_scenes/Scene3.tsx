@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { ShieldCheck, Stethoscope, Pill } from 'lucide-react';
+import { Moon, Clock, Dumbbell } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -37,21 +37,21 @@ export function Scene3() {
           />
 
           <motion.div
-            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#2F6FED] flex items-center justify-center drop-shadow-[0_0_60px_rgba(47,111,237,0.35)]"
+            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_60px_rgba(16,185,129,0.35)]"
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <ShieldCheck size={88} color="#2F6FED" strokeWidth={1.5} />
+            <Clock size={88} color="#10b981" strokeWidth={1.5} />
           </motion.div>
 
           <motion.div
-            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#10b981] flex items-center justify-center"
+            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.8, ...SPRING_SNAPPY }}
           >
-            <Pill size={40} color="#0F172A" strokeWidth={2.5} />
+            <Moon size={40} color="#0F172A" strokeWidth={2.5} />
           </motion.div>
 
           <motion.div
@@ -60,17 +60,17 @@ export function Scene3() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1.1, ...SPRING_SNAPPY }}
           >
-            <Stethoscope size={40} color="#0F172A" strokeWidth={2.5} />
+            <Dumbbell size={40} color="#0F172A" strokeWidth={2.5} />
           </motion.div>
         </div>
 
         <motion.div
-          className="mt-8 bg-[#2F6FED]/10 border border-[#2F6FED]/30 px-6 py-4 rounded-2xl text-center max-w-[80%]"
+          className="mt-8 bg-[#10b981]/10 border border-[#10b981]/30 px-6 py-4 rounded-2xl text-center max-w-[80%]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Generally Safe When Used as Directed</span>
+          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">7 to 9 Hours for Most Adults</span>
         </motion.div>
       </div>
 
@@ -84,14 +84,14 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          For Healthy Adults, It's Generally
+          Most Adults Benefit From
           <motion.span
-            className="text-[#2F6FED] block mt-2 drop-shadow-md"
+            className="text-[#10b981] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Considered Safe — Check With a Pro If Needed
+            7 to 9 Hours a Night
           </motion.span>
         </motion.h2>
       </div>

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Zap, Dumbbell, TrendingUp } from 'lucide-react';
+import { Dumbbell, BatteryWarning, Apple, Zap } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -18,6 +18,12 @@ export function Scene2() {
     }
   }, []);
 
+  const issues = [
+    { Icon: Dumbbell, label: 'Performance', color: '#f97316', delay: 0.2, angle: 0 },
+    { Icon: Apple, label: 'Eating', color: '#10b981', delay: 0.5, angle: 120 },
+    { Icon: Zap, label: 'Energy', color: '#2F6FED', delay: 0.8, angle: 240 },
+  ];
+
   return (
     <motion.div
       className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden font-body"
@@ -31,46 +37,52 @@ export function Scene2() {
       <div className="absolute top-[240px] flex flex-col items-center z-10 w-full">
         <div className="relative w-[340px] h-[340px] flex items-center justify-center">
           <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#2F6FED]/15 to-[#10b981]/10 blur-[40px]"
+            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#f97316]/15 to-[#2F6FED]/10 blur-[40px]"
             animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          <motion.div
-            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_60px_rgba(16,185,129,0.35)]"
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, ...SPRING_SMOOTH }}
-          >
-            <Zap size={88} color="#10b981" strokeWidth={1.5} />
-          </motion.div>
+          {issues.map(({ Icon, label, color, delay, angle }) => {
+            const rad = (angle * Math.PI) / 180;
+            const x = Math.cos(rad) * 130;
+            const y = Math.sin(rad) * 130;
+            return (
+              <motion.div
+                key={label}
+                className="absolute flex flex-col items-center gap-2"
+                style={{ left: '50%', top: '50%', marginLeft: -44, marginTop: -44 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
+                animate={{ x, y, opacity: 1, scale: 1 }}
+                transition={{ delay, ...SPRING_SMOOTH }}
+              >
+                <div
+                  className="w-[88px] h-[88px] rounded-full bg-[#0F172A] border-4 flex items-center justify-center"
+                  style={{ borderColor: color, boxShadow: `0 0 30px ${color}40` }}
+                >
+                  <Icon size={40} color={color} strokeWidth={2} />
+                </div>
+                <span className="font-display font-bold text-[14px] uppercase tracking-wider" style={{ color }}>{label}</span>
+              </motion.div>
+            );
+          })}
 
           <motion.div
-            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.8, ...SPRING_SNAPPY }}
+            className="w-24 h-24 rounded-full bg-[#f97316] flex items-center justify-center z-10"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 1.2, ...SPRING_SNAPPY }}
           >
-            <Dumbbell size={40} color="#0F172A" strokeWidth={2.5} />
-          </motion.div>
-
-          <motion.div
-            className="absolute bottom-0 left-0 w-20 h-20 rounded-full bg-[#f97316] flex items-center justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 1.1, ...SPRING_SNAPPY }}
-          >
-            <TrendingUp size={40} color="#0F172A" strokeWidth={2.5} />
+            <BatteryWarning size={48} color="#0F172A" strokeWidth={2} />
           </motion.div>
         </div>
 
         <motion.div
-          className="mt-8 bg-[#10b981]/10 border border-[#10b981]/30 px-6 py-4 rounded-2xl text-center max-w-[80%]"
+          className="mt-8 bg-[#f97316]/10 border border-[#f97316]/30 px-6 py-4 rounded-2xl text-center max-w-[80%]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Boosts High-Intensity Effort</span>
+          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Poor Sleep Dims All Three</span>
         </motion.div>
       </div>
 
@@ -84,14 +96,14 @@ export function Scene2() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          It Can Improve Performance
+          Poor Sleep Can Reduce
           <motion.span
-            className="text-[#10b981] block mt-2 drop-shadow-md"
+            className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            And Support Muscle Gains
+            Performance, Eating & Energy
           </motion.span>
         </motion.h2>
       </div>
