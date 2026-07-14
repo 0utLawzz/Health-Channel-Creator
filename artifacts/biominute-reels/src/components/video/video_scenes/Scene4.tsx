@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { BookOpen, MessageCircle, Dumbbell } from 'lucide-react';
+import { BookOpen, MessageCircle, FlaskConical } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -42,8 +42,8 @@ export function Scene4() {
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.6, ...SPRING_SNAPPY }}
           >
-            <div className="w-24 h-24 rounded-full bg-[#10b981] flex items-center justify-center">
-              <Dumbbell size={48} color="#0F172A" strokeWidth={2} />
+            <div className="w-24 h-24 rounded-full bg-[#2F6FED] flex items-center justify-center">
+              <FlaskConical size={48} color="#0F172A" strokeWidth={2} />
             </div>
           </motion.div>
 
@@ -53,9 +53,9 @@ export function Scene4() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
           >
-            Do You Enjoy
-            <span className="text-[#10b981] block mt-2">Strength</span>
-            <span className="text-[#f97316] block mt-2">Training?</span>
+            Have You Ever
+            <span className="text-[#2F6FED] block mt-2">Tried</span>
+            <span className="text-[#f97316] block mt-2">Creatine?</span>
           </motion.h2>
 
           <motion.div
@@ -80,7 +80,7 @@ export function Scene4() {
         <div className="flex items-center gap-4 text-[#94a3b8] text-[22px] font-medium bg-[#0F172A]/90 px-6 py-4 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
           <BookOpen className="shrink-0" size={28} />
           <p className="leading-relaxed text-left">
-            Source: General endocrinology/exercise science research on sex differences in testosterone and hypertrophy rates
+            Source: Kreider RB et al. (2017), Journal of the International Society of Sports Nutrition — Position stand on creatine safety and efficacy
           </p>
         </div>
       </motion.div>

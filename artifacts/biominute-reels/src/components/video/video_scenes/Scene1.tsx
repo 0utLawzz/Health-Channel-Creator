@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Dumbbell, X, Shield } from 'lucide-react';
+import { FlaskConical, ScrollText, Check } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -18,6 +18,12 @@ export function Scene1() {
     }
   }, []);
 
+  const papers = [
+    { color: '#10b981', delay: 0.2, x: -80, y: -40 },
+    { color: '#2F6FED', delay: 0.5, x: 80, y: -20 },
+    { color: '#f97316', delay: 0.8, x: 0, y: 60 },
+  ];
+
   return (
     <motion.div
       className="absolute inset-0 w-full h-full bg-[#0F172A] flex flex-col items-center justify-center overflow-hidden font-body"
@@ -31,37 +37,41 @@ export function Scene1() {
       <div className="absolute top-[260px] flex items-center justify-center z-10 w-full">
         <div className="relative w-[340px] h-[340px] flex items-center justify-center">
           <motion.div
-            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#10b981]/15 to-[#2F6FED]/10 blur-[40px]"
+            className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#2F6FED]/15 to-[#10b981]/10 blur-[40px]"
             animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
           <motion.div
-            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_60px_rgba(16,185,129,0.35)]"
+            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#2F6FED] flex items-center justify-center drop-shadow-[0_0_60px_rgba(47,111,237,0.35)]"
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <Dumbbell size={88} color="#10b981" strokeWidth={1.5} />
+            <FlaskConical size={88} color="#2F6FED" strokeWidth={1.5} />
           </motion.div>
 
-          <motion.div
-            className="absolute top-0 right-0 w-20 h-20 rounded-full bg-[#f97316] flex items-center justify-center"
-            initial={{ scale: 0, rotate: -45 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.8, ...SPRING_SNAPPY }}
-          >
-            <X size={40} color="#0F172A" strokeWidth={3} />
-          </motion.div>
-
-          <motion.div
-            className="absolute bottom-0 left-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
-            initial={{ scale: 0, rotate: -45 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 1.1, ...SPRING_SNAPPY }}
-          >
-            <Shield size={40} color="#0F172A" strokeWidth={2.5} />
-          </motion.div>
+          {papers.map(({ color, delay, x, y }, i) => (
+            <motion.div
+              key={i}
+              className="absolute flex items-center justify-center w-16 h-20 rounded-lg border-2"
+              style={{ borderColor: color, backgroundColor: `${color}15`, boxShadow: `0 0 20px ${color}40` }}
+              initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
+              animate={{ x, y, opacity: 1, scale: 1 }}
+              transition={{ delay, ...SPRING_SMOOTH }}
+            >
+              <ScrollText size={28} color={color} strokeWidth={2} />
+              <motion.div
+                className="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: color }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: delay + 0.4, ...SPRING_SNAPPY }}
+              >
+                <Check size={16} color="#0F172A" strokeWidth={3} />
+              </motion.div>
+            </motion.div>
+          ))}
         </div>
       </div>
 
@@ -75,14 +85,14 @@ export function Scene1() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          Strength Training Doesn't
+          One of the Most
           <motion.span
-            className="text-[#10b981] block mt-2 drop-shadow-md"
+            className="text-[#2F6FED] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Automatically Bulk You Up
+            Studied Supplements
           </motion.span>
         </motion.h2>
       </div>

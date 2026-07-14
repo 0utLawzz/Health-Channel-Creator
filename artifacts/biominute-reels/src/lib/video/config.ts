@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Does Lifting Weights Make Women Bulky?"
-  1: 7000, // Strength training doesn't automatically make women bulky
-  2: 6500, // Building muscle takes years, genetics, nutrition
-  3: 6000, // Lifting improves strength, bone health, body composition
+  0: 4500, // Hook: "Is Creatine Safe?"
+  1: 7000, // Most studied sports supplement
+  2: 6500, // Improves high-intensity performance
+  3: 6000, // Safe for healthy adults; check with doctor if conditions
   4: 6500, // CTA + citation
   5: 5000, // Thumbnail end card
 } as const;
