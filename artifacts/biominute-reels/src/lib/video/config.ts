@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Can You Turn Fat Into Muscle?"
-  1: 7000, // Fat & muscle are completely different tissue types
-  2: 6500, // Fat is lost through a calorie deficit
-  3: 6000, // Muscle grows through training & protein
-  4: 6500, // CTA: "Have you heard this myth before?" + citation
+  0: 4500, // Hook: "Do Detox Drinks Really Clean Your Body?"
+  1: 7000, // Liver & kidneys already filter — no evidence detox drinks do better
+  2: 6500, // What actually helps: hydration, veg, exercise, limit alcohol
+  3: 6000, // Trust your body's built-in filtration system
+  4: 6500, // CTA: "Have you ever tried a detox drink?" + citation
   5: 5000, // Thumbnail end card
 } as const;

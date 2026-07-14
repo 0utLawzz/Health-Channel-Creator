@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { BookOpen, MessageCircle, Dumbbell } from 'lucide-react';
+import { BookOpen, MessageCircle, Filter } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -43,19 +43,19 @@ export function Scene4() {
             transition={{ delay: 0.6, ...SPRING_SNAPPY }}
           >
             <div className="w-24 h-24 rounded-full bg-[#10b981] flex items-center justify-center">
-              <Dumbbell size={48} color="#0F172A" strokeWidth={2} />
+              <Filter size={48} color="#0F172A" strokeWidth={2} />
             </div>
           </motion.div>
 
           <motion.h2
-            className="text-[#f8fafc] text-[52px] font-bold uppercase tracking-wider font-display leading-tight mt-8"
+            className="text-[#f8fafc] text-[50px] font-bold uppercase tracking-wider font-display leading-tight mt-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
           >
-            Have You Heard
-            <span className="text-[#f97316] block mt-2">This Myth</span>
-            <span className="text-[#10b981] block mt-2">Before?</span>
+            Have You Ever
+            <span className="text-[#10b981] block mt-2">Tried a</span>
+            <span className="text-[#f97316] block mt-2">Detox Drink?</span>
           </motion.h2>
 
           <motion.div
@@ -65,7 +65,7 @@ export function Scene4() {
             transition={{ delay: 2.0, duration: 1 }}
           >
             <MessageCircle size={28} color="#14b8a6" />
-            <span className="text-[#94a3b8] text-[24px] font-medium">Share your thoughts 👇</span>
+            <span className="text-[#94a3b8] text-[24px] font-medium">Share your experience 👇</span>
           </motion.div>
         </motion.div>
       </div>
@@ -80,7 +80,7 @@ export function Scene4() {
         <div className="flex items-center gap-4 text-[#94a3b8] text-[22px] font-medium bg-[#0F172A]/90 px-6 py-4 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
           <BookOpen className="shrink-0" size={28} />
           <p className="leading-relaxed text-left">
-            Source: Basic physiology — adipose and muscle are distinct tissue types; general body composition research
+            Source: General physiology of liver/kidney detoxification; lack of clinical evidence for commercial detox products
           </p>
         </div>
       </motion.div>

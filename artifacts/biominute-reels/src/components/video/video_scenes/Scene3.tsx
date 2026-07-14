@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Dumbbell, TrendingUp, Beef } from 'lucide-react';
+import { Filter, CheckCircle, X } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -29,75 +29,40 @@ export function Scene3() {
       <audio ref={audioRef} src={`${BASE_URL}audio/sfx-whoosh.mp3`} preload="auto" />
 
       <div className="absolute top-[190px] flex flex-col items-center gap-7 z-10 w-full px-10">
-
-        {/* How muscle building works */}
         <motion.div
-          className="bg-[#10b981]/10 border border-[#10b981]/30 px-8 py-4 rounded-2xl"
+          className="bg-[#2F6FED]/10 border border-[#2F6FED]/30 px-8 py-4 rounded-2xl"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#10b981] font-display font-bold text-[24px] uppercase tracking-wider">Building Muscle</span>
+          <span className="text-[#2F6FED] font-display font-bold text-[24px] uppercase tracking-wider">The Reality</span>
         </motion.div>
 
-        {/* Growing muscle bars */}
-        <motion.div
-          className="flex items-end gap-4 h-[100px] w-full justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {[0.3, 0.5, 0.65, 0.8, 1.0].map((h, i) => (
+        {[
+          { icon: Filter, color: '#10b981', check: true,  title: 'Liver & Kidneys', body: 'Natural filtration working 24/7' },
+          { icon: CheckCircle, color: '#2F6FED', check: true,  title: 'Hydration + Whole Foods', body: 'Proven support for your system' },
+          { icon: X, color: '#f97316', check: false, title: 'Detox Drinks', body: 'No strong clinical evidence' },
+        ].map((item, i) => {
+          const Icon = item.icon;
+          return (
             <motion.div
               key={i}
-              className="w-[60px] bg-[#10b981] rounded-t-xl"
-              initial={{ height: 0 }}
-              animate={{ height: `${h * 90}px` }}
-              transition={{ delay: 0.6 + i * 0.15, duration: 0.7, ease: 'easeOut' }}
-              style={{ alignSelf: 'flex-end' }}
-            />
-          ))}
-          <motion.div
-            className="flex items-end pb-1"
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.5, ...SPRING_SNAPPY }}
-          >
-            <TrendingUp size={52} color="#10b981" strokeWidth={2.5} />
-          </motion.div>
-        </motion.div>
-
-        {/* Strength training card */}
-        <motion.div
-          className="bg-[#1e293b]/90 border border-[#334155] rounded-[32px] px-8 py-7 flex items-center gap-6 w-full"
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ delay: 1.0, ...SPRING_SMOOTH }}
-        >
-          <div className="w-[80px] h-[80px] rounded-full bg-[#10b981]/15 flex items-center justify-center shrink-0">
-            <Dumbbell size={44} color="#10b981" strokeWidth={1.5} />
-          </div>
-          <div>
-            <p className="text-[#f8fafc] font-display font-bold text-[28px] uppercase leading-tight">Strength Training</p>
-            <p className="text-[#94a3b8] font-body text-[22px] leading-snug mt-1">Progressive resistance loads</p>
-          </div>
-        </motion.div>
-
-        {/* Protein card */}
-        <motion.div
-          className="bg-[#1e293b]/90 border border-[#334155] rounded-[32px] px-8 py-7 flex items-center gap-6 w-full"
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, ...SPRING_SMOOTH }}
-        >
-          <div className="w-[80px] h-[80px] rounded-full bg-[#2F6FED]/15 flex items-center justify-center shrink-0">
-            <Beef size={44} color="#2F6FED" strokeWidth={1.5} />
-          </div>
-          <div>
-            <p className="text-[#f8fafc] font-display font-bold text-[28px] uppercase leading-tight">Adequate Protein</p>
-            <p className="text-[#94a3b8] font-body text-[22px] leading-snug mt-1">Plus proper recovery</p>
-          </div>
-        </motion.div>
+              className="bg-[#1e293b] border border-[#334155] rounded-[28px] px-8 py-6 flex items-center gap-6 w-full"
+              initial={{ x: -40, opacity: 0 }}
+              animate={{ x: 0, opacity: item.check ? 1 : 0.55 }}
+              transition={{ delay: 0.5 + i * 0.3, ...SPRING_SMOOTH }}
+            >
+              <div className="w-[70px] h-[70px] rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: `${item.color}20`, border: `3px solid ${item.color}40` }}>
+                <Icon size={34} color={item.color} strokeWidth={1.8} />
+              </div>
+              <div>
+                <p className="font-display font-bold text-[24px] uppercase leading-tight" style={{ color: item.color }}>{item.title}</p>
+                <p className="text-[#94a3b8] font-body text-[20px] leading-snug mt-1">{item.body}</p>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
       <div
@@ -110,14 +75,14 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Muscle Grows Through
+          Trust Your Body's
           <motion.span
             className="text-[#10b981] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.6, ...SPRING_SNAPPY }}
           >
-            Training & Protein
+            Built-In System
           </motion.span>
         </motion.h2>
       </div>
