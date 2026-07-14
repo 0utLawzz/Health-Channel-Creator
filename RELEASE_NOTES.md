@@ -7,7 +7,7 @@
 `v1.0-final` (updated to latest commit)
 
 ## Includes
-All **15 Episodes** from the BioMinute Health Reels channel are now fully scripted, animated, exported as 1080×1920 vertical MP4s, and pushed to the GitHub repository:
+All **20 Episodes** from the BioMinute Health Reels channel are now fully scripted, animated, exported as 1080×1920 vertical MP4s, and pushed to the GitHub repository:
 
 | Episode | Title | Duration | Export Folder |
 |---|---|---|---|
@@ -26,6 +26,11 @@ All **15 Episodes** from the BioMinute Health Reels channel are now fully script
 | 13 | Is Breakfast Really the Most Important Meal? | 35.5s | `exports/Episode-13-*/` |
 | 14 | Do You Really Need 8 Glasses of Water a Day? | 36.5s | `exports/Episode-14-*/` |
 | 15 | Does Eating Late at Night Cause Weight Gain? | 35.5s | `exports/Episode-15-*/` |
+| 16 | Are Saunas Actually Good for You? | 35.5s | `exports/Episode-16-*/` |
+| 17 | What's the Best Food to Eat Before a Workout? | 35.5s | `exports/Episode-17-*/` |
+| 18 | Does More Sweat Mean More Fat Burned? | 35.5s | `exports/Episode-18-*/` |
+| 19 | Can You Lose Fat Without Doing Cardio? | 35.5s | `exports/Episode-19-*/` |
+| 20 | How Much Protein Do You Really Need? | 35.5s | `exports/Episode-20-*/` |
 
 ## What's in the repo
 - **React + Vite video renderer** at `artifacts/biominute-reels/`.
