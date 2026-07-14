@@ -5,10 +5,18 @@
   "type": "module",
   "scripts": {
     "hello": "tsx ./src/hello.ts",
+    "generate-dashboard": "tsx ./src/generate-dashboard.ts",
+    "verify-export": "tsx ./src/verify-export.ts",
+    "export-video": "tsx ./src/export-video.ts",
+    "read-master-sheet": "tsx ./src/read-master-sheet.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",
+    "playwright-chromium": "^1.61.1",
     "tsx": "catalog:"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
   }
 }

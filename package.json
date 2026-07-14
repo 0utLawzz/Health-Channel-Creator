@@ -6,13 +6,17 @@
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
+    "dashboard:generate": "pnpm --filter @workspace/scripts generate-dashboard",
+    "export-video": "cross-env BIOMINUTE_EXPORT_URL=http://localhost:5173/ pnpm --filter @workspace/scripts export-video",
+    "verify-export": "pnpm --filter @workspace/scripts verify-export"
   },
   "private": true,
   "dependencies": {
     "@replit/connectors-sdk": "^0.4.1"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "prettier": "^3.9.5",
     "typescript": "~5.9.3"
   }

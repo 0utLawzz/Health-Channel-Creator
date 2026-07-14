@@ -1,0 +1,1 @@
+- [Importing an external artifacts-repo](importing-external-artifact-repo.md) — overlay source onto a freshly-scaffolded artifact, don't hand-copy scaffold-generated files (tsconfig/vite.config/artifact.toml).
