@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { CheckCircle, AlertTriangle } from 'lucide-react';
+import { Armchair, Dumbbell, AlertTriangle } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -32,34 +32,28 @@ export function Scene1() {
         <div className="relative w-[360px] h-[360px] flex items-center justify-center">
           <motion.div
             className="absolute left-0 flex flex-col items-center gap-2"
-            style={{ marginLeft: -20 }}
+            style={{ marginLeft: -10 }}
             initial={{ x: -40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]">
-              <span className="text-[#10b981] font-display font-black text-[36px]">30g</span>
+            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_30px_rgba(249,115,22,0.35)]">
+              <Armchair size={56} color="#f97316" strokeWidth={1.5} />
             </div>
-            <div className="w-8 h-8 rounded-full bg-[#10b981] flex items-center justify-center">
-              <CheckCircle size={18} color="#0F172A" strokeWidth={2.5} />
-            </div>
-            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#10b981]">Correct</span>
+            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#f97316]">Sitting</span>
           </motion.div>
 
           <motion.div
             className="absolute right-0 flex flex-col items-center gap-2"
-            style={{ marginRight: -20 }}
+            style={{ marginRight: -10 }}
             initial={{ x: 40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.5, ...SPRING_SMOOTH }}
           >
-            <div className="w-[150px] h-[150px] rounded-full bg-[#0F172A] border-4 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_30px_rgba(249,115,22,0.35)]">
-              <span className="text-[#f97316] font-display font-black text-[40px]">200g</span>
+            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]">
+              <Dumbbell size={56} color="#10b981" strokeWidth={1.5} />
             </div>
-            <div className="w-8 h-8 rounded-full bg-[#f97316] flex items-center justify-center">
-              <AlertTriangle size={18} color="#0F172A" strokeWidth={2.5} />
-            </div>
-            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#f97316]">Too Much</span>
+            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#10b981]">Exercise</span>
           </motion.div>
 
           <motion.div
@@ -68,7 +62,7 @@ export function Scene1() {
             animate={{ scale: 1 }}
             transition={{ delay: 1.0, ...SPRING_SNAPPY }}
           >
-            <span className="text-[#0F172A] font-display font-black text-[24px]">VS</span>
+            <AlertTriangle size={36} color="#0F172A" strokeWidth={2.5} />
           </motion.div>
         </div>
       </div>
@@ -83,14 +77,14 @@ export function Scene1() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
         >
-          Healthy Doesn't Always Mean
+          Its Own Risk Factor
           <motion.span
-            className="text-[#10b981] block mt-2 drop-shadow-md"
+            className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 2.0, ...SPRING_SNAPPY }}
           >
-            Low in Calories
+            Independent of Exercise
           </motion.span>
         </motion.h2>
       </div>
