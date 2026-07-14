@@ -2,498 +2,965 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>BioMinute — Production Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIOMINUTE — PRODUCTION DASHBOARD</title>
 <style>
   :root {
-    --dark: #0F172A; --blue: #2F6FED; --emerald: #10B981; --orange: #F97316; --white: #FFFFFF;
+    --bg: #f4f1ea;
+    --ink: #0a0a0a;
+    --blue: #2563eb;
+    --emerald: #16a34a;
+    --orange: #f97316;
+    --pink: #db2777;
+    --yellow: #facc15;
+    --white: #ffffff;
   }
+
   * { box-sizing: border-box; }
+
+  @font-face {
+    font-family: 'Neue';
+    src: local('Arial Black'), local('Helvetica Neue Bold');
+    font-weight: 900;
+  }
+
   body {
-    margin: 0; background: var(--dark); color: var(--white);
-    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-    padding: 32px 24px 64px;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Arial Black', 'Helvetica Neue', 'Inter', system-ui, sans-serif;
+    padding: 32px 24px 80px;
+    background-image:
+      radial-gradient(circle at 12% 18%, var(--pink) 0px, transparent 2px),
+      radial-gradient(circle at 88% 12%, var(--blue) 0px, transparent 2px),
+      radial-gradient(circle at 40% 80%, var(--yellow) 0px, transparent 2px);
+    background-size: 120px 120px, 180px 180px, 140px 140px;
   }
-  header { max-width: 1200px; margin: 0 auto 28px; }
+
+  header {
+    max-width: 1300px;
+    margin: 0 auto 32px;
+    border: 4px solid var(--ink);
+    background: var(--white);
+    box-shadow: 8px 8px 0 0 var(--ink);
+    padding: 24px 28px;
+  }
+
   h1 {
-    font-size: 28px; margin: 0 0 6px; font-weight: 700;
-    background: linear-gradient(90deg, var(--blue), var(--emerald));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-size: 38px;
+    margin: 0 0 10px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
   }
-  .sub { color: #94a3b8; font-size: 14px; margin-bottom: 18px; }
-  .stats { display: flex; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+
+  h1 span { color: var(--pink); }
+
+  .sub {
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 22px;
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 14px;
+  }
+
+  .stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
   .stat {
-    background: #16213e; border: 1px solid #1e2a4a; border-radius: 10px;
-    padding: 10px 16px; font-size: 13px; color: #cbd5e1;
+    border: 3px solid var(--ink);
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    background: var(--yellow);
+    box-shadow: 4px 4px 0 0 var(--ink);
+    min-width: 120px;
   }
-  .stat b { color: var(--white); font-size: 16px; display: block; }
-  .filters { display: flex; gap: 8px; margin: 18px 0; }
+
+  .stat b {
+    display: block;
+    font-size: 26px;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .filters {
+    max-width: 1300px;
+    margin: 0 auto 28px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
   .filter-btn {
-    background: #16213e; border: 1px solid #1e2a4a; color: #cbd5e1;
-    padding: 7px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
+    border: 3px solid var(--ink);
+    background: var(--white);
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 0 var(--ink);
+    transition: transform 0.05s ease, box-shadow 0.05s ease;
   }
-  .filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+
+  .filter-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 0 var(--ink);
+  }
+
+  .filter-btn.active {
+    background: var(--ink);
+    color: var(--white);
+    box-shadow: 4px 4px 0 0 var(--pink);
+  }
+
   .grid {
-    max-width: 1200px; margin: 0 auto; display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px;
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 28px;
   }
+
   .card {
-    background: #131c33; border: 1px solid #1e2a4a; border-radius: 14px; overflow: hidden;
-    transition: transform 0.15s ease;
+    border: 4px solid var(--ink);
+    background: var(--white);
+    box-shadow: 8px 8px 0 0 var(--ink);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    display: flex;
+    flex-direction: column;
   }
-  .card:hover { transform: translateY(-3px); border-color: var(--emerald); }
+
+  .card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 12px 12px 0 0 var(--ink);
+  }
+
   .card-num {
-    position: absolute; margin: 10px; font-size: 11px; font-weight: 700;
-    letter-spacing: 1px; color: var(--emerald); font-family: monospace;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    background: var(--ink);
+    color: var(--white);
+    border-bottom: 4px solid var(--ink);
   }
+
+  .thumb-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9/16;
+    background: #111;
+    border-bottom: 4px solid var(--ink);
+    overflow: hidden;
+  }
+
   .thumb {
-    width: 100%; aspect-ratio: 9/16; background: #0a0f1e; object-fit: cover; display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
+
   .thumb.placeholder {
-    display: flex; align-items: center; justify-content: center;
-    color: #475569; font-size: 12px; text-align: center; padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 16px;
+    background: repeating-linear-gradient(
+      45deg,
+      #e5e5e5,
+      #e5e5e5 10px,
+      #d4d4d4 10px,
+      #d4d4d4 20px
+    );
   }
-  .card-body { padding: 12px 14px 14px; position: relative; }
-  .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin-bottom: 8px; min-height: 36px; }
-  .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-  .badge { padding: 3px 9px; border-radius: 20px; font-weight: 700; letter-spacing: 0.3px; }
-  .badge.complete { background: rgba(16,185,129,0.18); color: var(--emerald); }
-  .badge.queued { background: rgba(249,115,22,0.15); color: var(--orange); }
-  .date { color: #64748b; }
+
+  .card-body {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+
+  .badge {
+    padding: 4px 10px;
+    border: 2px solid var(--ink);
+    font-weight: 900;
+    text-transform: uppercase;
+    box-shadow: 2px 2px 0 0 var(--ink);
+  }
+
+  .badge.complete { background: var(--emerald); color: var(--white); }
+  .badge.queued { background: var(--orange); color: var(--white); }
+  .date { font-weight: 800; color: #333; }
+
+  .copy-row {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .copy-btn {
+    flex: 1;
+    border: 3px solid var(--ink);
+    background: var(--white);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 8px 4px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 0 var(--ink);
+    transition: transform 0.05s ease, box-shadow 0.05s ease, background 0.05s ease;
+  }
+
+  .copy-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 0 var(--ink);
+    background: var(--yellow);
+  }
+
+  .copy-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--ink);
+  }
+
+  .copy-btn.copied {
+    background: var(--emerald);
+    color: var(--white);
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 3px solid var(--ink);
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 900;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    box-shadow: 6px 6px 0 0 var(--ink);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+  }
+
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 26px; }
+    .grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>BioMinute Production Dashboard</h1>
-  <div class="sub">Self-contained repo preview — scripts, status, and finished videos travel together. Re-import into any Replit account and this still works.</div>
+  <h1>BIOMINUTE <span>PRODUCTION DASHBOARD</span></h1>
+  <div class="sub">Self-contained repo preview — scripts, status, and finished videos travel together.</div>
   <div class="stats">
     <div class="stat"><b>36</b>Total episodes</div>
-    <div class="stat"><b>10</b>Complete</div>
-    <div class="stat"><b>26</b>Uncomplete</div>
-  </div>
-  <div class="filters">
-    <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
-    <button class="filter-btn" onclick="filterCards('Complete', this)">Complete</button>
-    <button class="filter-btn" onclick="filterCards('Uncomplete', this)">Uncomplete</button>
+    <div class="stat" style="background:var(--emerald);color:#fff"><b>10</b>Complete</div>
+    <div class="stat" style="background:var(--orange);color:#fff"><b>26</b>Uncomplete</div>
   </div>
 </header>
-<div class="grid" id="grid">
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 1</div>
-        <video class="thumb" poster="Episode-01-Walk-After-Meals/thumbnail.png" controls preload="none">
-          <source src="Episode-01-Walk-After-Meals/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Walk After Meals</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-12</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 2</div>
-        <video class="thumb" poster="Episode-02-drink-water-before-your-morning/thumbnail.png" controls preload="none">
-          <source src="Episode-02-drink-water-before-your-morning/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Drink Water Before Your Morning Coffee</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 3</div>
-        <video class="thumb" poster="Episode-03-are-you-eating-protein-at/thumbnail.png" controls preload="none">
-          <source src="Episode-03-are-you-eating-protein-at/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Are You Eating Protein at the Wrong Time?</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 4</div>
-        <video class="thumb" poster="Episode-04-is-10-000-steps-actually/thumbnail.png" controls preload="none">
-          <source src="Episode-04-is-10-000-steps-actually/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Is 10,000 Steps Actually a Myth?</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 5</div>
-        <video class="thumb" poster="Episode-05-why-sleep-matters-more-than/thumbnail.png" controls preload="none">
-          <source src="Episode-05-why-sleep-matters-more-than/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Why Sleep Matters More Than You Think</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 6</div>
-        <video class="thumb" poster="Episode-06-why-are-you-still-hungry-right/thumbnail.png" controls preload="none">
-          <source src="Episode-06-why-are-you-still-hungry-right/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Why Are You Still Hungry Right After Eating?</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 7</div>
-        <video class="thumb" poster="Episode-07-how-deep-breathing-reduces-stress/thumbnail.png" controls preload="none">
-          <source src="Episode-07-how-deep-breathing-reduces-stress/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">How Deep Breathing Reduces Stress</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 8</div>
-        <video class="thumb" poster="Episode-08-does-drinking-water-really-boost/thumbnail.png" controls preload="none">
-          <source src="Episode-08-does-drinking-water-really-boost/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Does Drinking Water Really Boost Metabolism?</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 9</div>
-        <video class="thumb" poster="Episode-09-morning-sunlight-for-better-sleep/thumbnail.png" controls preload="none">
-          <source src="Episode-09-morning-sunlight-for-better-sleep/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Morning Sunlight for Better Sleep</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Complete">
-        <div class="card-num">EP 10</div>
-        <video class="thumb" poster="Episode-10-can-you-build-muscle-without/thumbnail.png" controls preload="none">
-          <source src="Episode-10-can-you-build-muscle-without/episode.mp4" type="video/mp4">
-        </video>
-        <div class="card-body">
-          <div class="card-title">Can You Build Muscle Without Supplements?</div>
-          <div class="card-meta">
-            <span class="badge complete">Complete</span>
-            <span class="date">2026-07-13</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 11</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Are Healthy Snacks Secretly Making You Gain Weight?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Aug 3, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 12</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Sitting Too Long Harms Your Body</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Aug 5, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 13</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Is Breakfast Really the Most Important Meal?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Aug 7, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 14</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Do You Really Need 8 Glasses of Water a Day?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Aug 10, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 15</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Does Eating Late at Night Cause Weight Gain?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Aug 12, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 16</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Can You Lose Belly Fat with Ab Exercises?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Aug 14, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 17</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">What's the Best Food to Eat Before a Workout?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Aug 17, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 18</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Does More Sweat Mean More Fat Burned?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Aug 19, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 19</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Can You Lose Fat Without Doing Cardio?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Aug 21, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 20</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">How Much Protein Do You Really Need?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Aug 24, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 21</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Does Lifting Weights Make Women Bulky?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Aug 26, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 22</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Is Creatine Safe?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Aug 28, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 23</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Why Is Sleep Secretly Affecting Your Fitness?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Aug 31, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 24</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Is Stretching Before Exercise Enough?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Sep 2, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 25</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Can You Turn Fat Into Muscle?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Sep 4, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 26</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Should You Work Out Every Day?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Sep 7, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 27</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Why Does Your Weight Change Overnight?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Sep 9, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 28</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Can Your Metabolism Be "Broken"?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Sep 11, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 29</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Are Eggs Actually Bad for Your Heart?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Sep 14, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 30</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Do Detox Drinks Really Clean Your Body?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Sep 16, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 31</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Should You Eat Before or After a Workout?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Sep 18, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 32</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Does Coffee Help You Burn Fat?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Sep 21, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 33</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">What's the Healthiest Cooking Oil?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Sep 23, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 34</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">Is Walking Enough to Stay Healthy?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Fri, Sep 25, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 35</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">What's the Biggest Nutrition Mistake After Age 40?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Mon, Sep 28, 2026</span>
-          </div>
-        </div>
-      </div>
-      <div class="card" data-status="Uncomplete">
-        <div class="card-num">EP 36</div>
-        <div class="thumb placeholder">Not produced yet</div>
-        <div class="card-body">
-          <div class="card-title">What's the #1 Habit That Improves Your Health?</div>
-          <div class="card-meta">
-            <span class="badge queued">Uncomplete</span>
-            <span class="date">Wed, Sep 30, 2026</span>
-          </div>
-        </div>
-      </div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+  <button class="filter-btn" onclick="filterCards('Complete', this)">Complete</button>
+  <button class="filter-btn" onclick="filterCards('Uncomplete', this)">Uncomplete</button>
 </div>
+
+<div class="grid" id="grid">
+
+  <div class="card" data-status="Complete" data-title="Walk After Meals" data-slug="Episode-01-Walk-After-Meals" data-path="exports/Episode-01-Walk-After-Meals/episode.mp4">
+    <div class="card-num">EP 01</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-01-Walk-After-Meals/thumbnail.png" controls preload="none">
+        <source src="Episode-01-Walk-After-Meals/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Walk After Meals</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-12</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Walk After Meals">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-01-Walk-After-Meals/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP01 — Walk After Meals">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Drink Water Before Your Morning Coffee" data-slug="Episode-02-drink-water-before-your-morning" data-path="exports/Episode-02-drink-water-before-your-morning/episode.mp4">
+    <div class="card-num">EP 02</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-02-drink-water-before-your-morning/thumbnail.png" controls preload="none">
+        <source src="Episode-02-drink-water-before-your-morning/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Drink Water Before Your Morning Coffee</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Drink Water Before Your Morning Coffee">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-02-drink-water-before-your-morning/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP02 — Drink Water Before Your Morning Coffee">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Are You Eating Protein at the Wrong Time?" data-slug="Episode-03-are-you-eating-protein-at" data-path="exports/Episode-03-are-you-eating-protein-at/episode.mp4">
+    <div class="card-num">EP 03</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-03-are-you-eating-protein-at/thumbnail.png" controls preload="none">
+        <source src="Episode-03-are-you-eating-protein-at/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Are You Eating Protein at the Wrong Time?</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Are You Eating Protein at the Wrong Time?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-03-are-you-eating-protein-at/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP03 — Are You Eating Protein at the Wrong Time?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Is 10,000 Steps Actually a Myth?" data-slug="Episode-04-is-10-000-steps-actually" data-path="exports/Episode-04-is-10-000-steps-actually/episode.mp4">
+    <div class="card-num">EP 04</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-04-is-10-000-steps-actually/thumbnail.png" controls preload="none">
+        <source src="Episode-04-is-10-000-steps-actually/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Is 10,000 Steps Actually a Myth?</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Is 10,000 Steps Actually a Myth?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-04-is-10-000-steps-actually/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP04 — Is 10,000 Steps Actually a Myth?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Why Sleep Matters More Than You Think" data-slug="Episode-05-why-sleep-matters-more-than" data-path="exports/Episode-05-why-sleep-matters-more-than/episode.mp4">
+    <div class="card-num">EP 05</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-05-why-sleep-matters-more-than/thumbnail.png" controls preload="none">
+        <source src="Episode-05-why-sleep-matters-more-than/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Why Sleep Matters More Than You Think</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Why Sleep Matters More Than You Think">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-05-why-sleep-matters-more-than/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP05 — Why Sleep Matters More Than You Think">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Why Are You Still Hungry Right After Eating?" data-slug="Episode-06-why-are-you-still-hungry-right" data-path="exports/Episode-06-why-are-you-still-hungry-right/episode.mp4">
+    <div class="card-num">EP 06</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-06-why-are-you-still-hungry-right/thumbnail.png" controls preload="none">
+        <source src="Episode-06-why-are-you-still-hungry-right/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Why Are You Still Hungry Right After Eating?</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Why Are You Still Hungry Right After Eating?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-06-why-are-you-still-hungry-right/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP06 — Why Are You Still Hungry Right After Eating?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="How Deep Breathing Reduces Stress" data-slug="Episode-07-how-deep-breathing-reduces-stress" data-path="exports/Episode-07-how-deep-breathing-reduces-stress/episode.mp4">
+    <div class="card-num">EP 07</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-07-how-deep-breathing-reduces-stress/thumbnail.png" controls preload="none">
+        <source src="Episode-07-how-deep-breathing-reduces-stress/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">How Deep Breathing Reduces Stress</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="How Deep Breathing Reduces Stress">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-07-how-deep-breathing-reduces-stress/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP07 — How Deep Breathing Reduces Stress">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Does Drinking Water Really Boost Metabolism?" data-slug="Episode-08-does-drinking-water-really-boost" data-path="exports/Episode-08-does-drinking-water-really-boost/episode.mp4">
+    <div class="card-num">EP 08</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-08-does-drinking-water-really-boost/thumbnail.png" controls preload="none">
+        <source src="Episode-08-does-drinking-water-really-boost/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Does Drinking Water Really Boost Metabolism?</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Does Drinking Water Really Boost Metabolism?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-08-does-drinking-water-really-boost/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP08 — Does Drinking Water Really Boost Metabolism?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Morning Sunlight for Better Sleep" data-slug="Episode-09-morning-sunlight-for-better-sleep" data-path="exports/Episode-09-morning-sunlight-for-better-sleep/episode.mp4">
+    <div class="card-num">EP 09</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-09-morning-sunlight-for-better-sleep/thumbnail.png" controls preload="none">
+        <source src="Episode-09-morning-sunlight-for-better-sleep/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Morning Sunlight for Better Sleep</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Morning Sunlight for Better Sleep">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-09-morning-sunlight-for-better-sleep/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP09 — Morning Sunlight for Better Sleep">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Complete" data-title="Can You Build Muscle Without Supplements?" data-slug="Episode-10-can-you-build-muscle-without" data-path="exports/Episode-10-can-you-build-muscle-without/episode.mp4">
+    <div class="card-num">EP 10</div>
+    <div class="thumb-wrap">
+      <video class="thumb" poster="Episode-10-can-you-build-muscle-without/thumbnail.png" controls preload="none">
+        <source src="Episode-10-can-you-build-muscle-without/episode.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-title">Can You Build Muscle Without Supplements?</div>
+      <div class="card-meta">
+        <span class="badge complete">Complete</span>
+        <span class="date">2026-07-13</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Can You Build Muscle Without Supplements?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="exports/Episode-10-can-you-build-muscle-without/episode.mp4">Path</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP10 — Can You Build Muscle Without Supplements?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Are Healthy Snacks Secretly Making You Gain Weight?" data-slug="Episode-11-are-healthy-snacks-secretly-making">
+    <div class="card-num">EP 11</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Are Healthy Snacks Secretly Making You Gain Weight?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Aug 3, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Are Healthy Snacks Secretly Making You Gain Weight?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-11-are-healthy-snacks-secretly-making">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP11 — Are Healthy Snacks Secretly Making You Gain Weight?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Sitting Too Long Harms Your Body" data-slug="Episode-12-sitting-too-long-harms-your">
+    <div class="card-num">EP 12</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Sitting Too Long Harms Your Body</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Aug 5, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Sitting Too Long Harms Your Body">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-12-sitting-too-long-harms-your">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP12 — Sitting Too Long Harms Your Body">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Is Breakfast Really the Most Important Meal?" data-slug="Episode-13-is-breakfast-really-the-most">
+    <div class="card-num">EP 13</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Is Breakfast Really the Most Important Meal?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Aug 7, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Is Breakfast Really the Most Important Meal?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-13-is-breakfast-really-the-most">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP13 — Is Breakfast Really the Most Important Meal?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Do You Really Need 8 Glasses of Water a Day?" data-slug="Episode-14-do-you-really-need-8">
+    <div class="card-num">EP 14</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Do You Really Need 8 Glasses of Water a Day?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Aug 10, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Do You Really Need 8 Glasses of Water a Day?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-14-do-you-really-need-8">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP14 — Do You Really Need 8 Glasses of Water a Day?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Does Eating Late at Night Cause Weight Gain?" data-slug="Episode-15-does-eating-late-at-night">
+    <div class="card-num">EP 15</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Does Eating Late at Night Cause Weight Gain?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Aug 12, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Does Eating Late at Night Cause Weight Gain?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-15-does-eating-late-at-night">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP15 — Does Eating Late at Night Cause Weight Gain?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Can You Lose Belly Fat with Ab Exercises?" data-slug="Episode-16-can-you-lose-belly-fat">
+    <div class="card-num">EP 16</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Can You Lose Belly Fat with Ab Exercises?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Aug 14, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Can You Lose Belly Fat with Ab Exercises?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-16-can-you-lose-belly-fat">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP16 — Can You Lose Belly Fat with Ab Exercises?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="What's the Best Food to Eat Before a Workout?" data-slug="Episode-17-whats-the-best-food-to">
+    <div class="card-num">EP 17</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">What's the Best Food to Eat Before a Workout?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Aug 17, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="What's the Best Food to Eat Before a Workout?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-17-whats-the-best-food-to">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP17 — What's the Best Food to Eat Before a Workout?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Does More Sweat Mean More Fat Burned?" data-slug="Episode-18-does-more-sweat-mean-more">
+    <div class="card-num">EP 18</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Does More Sweat Mean More Fat Burned?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Aug 19, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Does More Sweat Mean More Fat Burned?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-18-does-more-sweat-mean-more">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP18 — Does More Sweat Mean More Fat Burned?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Can You Lose Fat Without Doing Cardio?" data-slug="Episode-19-can-you-lose-fat-without">
+    <div class="card-num">EP 19</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Can You Lose Fat Without Doing Cardio?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Aug 21, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Can You Lose Fat Without Doing Cardio?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-19-can-you-lose-fat-without">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP19 — Can You Lose Fat Without Doing Cardio?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="How Much Protein Do You Really Need?" data-slug="Episode-20-how-much-protein-do-you">
+    <div class="card-num">EP 20</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">How Much Protein Do You Really Need?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Aug 24, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="How Much Protein Do You Really Need?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-20-how-much-protein-do-you">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP20 — How Much Protein Do You Really Need?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Does Lifting Weights Make Women Bulky?" data-slug="Episode-21-does-lifting-weights-make-women">
+    <div class="card-num">EP 21</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Does Lifting Weights Make Women Bulky?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Aug 26, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Does Lifting Weights Make Women Bulky?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-21-does-lifting-weights-make-women">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP21 — Does Lifting Weights Make Women Bulky?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Is Creatine Safe?" data-slug="Episode-22-is-creatine-safe">
+    <div class="card-num">EP 22</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Is Creatine Safe?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Aug 28, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Is Creatine Safe?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-22-is-creatine-safe">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP22 — Is Creatine Safe?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Why Is Sleep Secretly Affecting Your Fitness?" data-slug="Episode-23-why-is-sleep-secretly-affecting">
+    <div class="card-num">EP 23</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Why Is Sleep Secretly Affecting Your Fitness?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Aug 31, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Why Is Sleep Secretly Affecting Your Fitness?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-23-why-is-sleep-secretly-affecting">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP23 — Why Is Sleep Secretly Affecting Your Fitness?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Is Stretching Before Exercise Enough?" data-slug="Episode-24-is-stretching-before-exercise-enough">
+    <div class="card-num">EP 24</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Is Stretching Before Exercise Enough?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Sep 2, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Is Stretching Before Exercise Enough?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-24-is-stretching-before-exercise-enough">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP24 — Is Stretching Before Exercise Enough?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Can You Turn Fat Into Muscle?" data-slug="Episode-25-can-you-turn-fat-into">
+    <div class="card-num">EP 25</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Can You Turn Fat Into Muscle?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Sep 4, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Can You Turn Fat Into Muscle?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-25-can-you-turn-fat-into">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP25 — Can You Turn Fat Into Muscle?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Should You Work Out Every Day?" data-slug="Episode-26-should-you-work-out-every">
+    <div class="card-num">EP 26</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Should You Work Out Every Day?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Sep 7, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Should You Work Out Every Day?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-26-should-you-work-out-every">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP26 — Should You Work Out Every Day?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Why Does Your Weight Change Overnight?" data-slug="Episode-27-why-does-your-weight-change">
+    <div class="card-num">EP 27</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Why Does Your Weight Change Overnight?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Sep 9, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Why Does Your Weight Change Overnight?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-27-why-does-your-weight-change">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP27 — Why Does Your Weight Change Overnight?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title='Can Your Metabolism Be "Broken"?' data-slug="Episode-28-can-your-metabolism-be-broken">
+    <div class="card-num">EP 28</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Can Your Metabolism Be "Broken"?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Sep 11, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt='Can Your Metabolism Be "Broken"?'>Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-28-can-your-metabolism-be-broken">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt='EP28 — Can Your Metabolism Be "Broken"?'>Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Are Eggs Actually Bad for Your Heart?" data-slug="Episode-29-are-eggs-actually-bad-for">
+    <div class="card-num">EP 29</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Are Eggs Actually Bad for Your Heart?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Sep 14, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Are Eggs Actually Bad for Your Heart?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-29-are-eggs-actually-bad-for">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP29 — Are Eggs Actually Bad for Your Heart?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Do Detox Drinks Really Clean Your Body?" data-slug="Episode-30-do-detox-drinks-really-clean">
+    <div class="card-num">EP 30</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Do Detox Drinks Really Clean Your Body?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Sep 16, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Do Detox Drinks Really Clean Your Body?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-30-do-detox-drinks-really-clean">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP30 — Do Detox Drinks Really Clean Your Body?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Should You Eat Before or After a Workout?" data-slug="Episode-31-should-you-eat-before-or">
+    <div class="card-num">EP 31</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Should You Eat Before or After a Workout?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Sep 18, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Should You Eat Before or After a Workout?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-31-should-you-eat-before-or">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP31 — Should You Eat Before or After a Workout?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Does Coffee Help You Burn Fat?" data-slug="Episode-32-does-coffee-help-you-burn">
+    <div class="card-num">EP 32</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Does Coffee Help You Burn Fat?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Sep 21, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Does Coffee Help You Burn Fat?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-32-does-coffee-help-you-burn">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP32 — Does Coffee Help You Burn Fat?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="What's the Healthiest Cooking Oil?" data-slug="Episode-33-whats-the-healthiest-cooking-oil">
+    <div class="card-num">EP 33</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">What's the Healthiest Cooking Oil?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Sep 23, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="What's the Healthiest Cooking Oil?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-33-whats-the-healthiest-cooking-oil">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP33 — What's the Healthiest Cooking Oil?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="Is Walking Enough to Stay Healthy?" data-slug="Episode-34-is-walking-enough-to-stay">
+    <div class="card-num">EP 34</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">Is Walking Enough to Stay Healthy?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Fri, Sep 25, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Is Walking Enough to Stay Healthy?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-34-is-walking-enough-to-stay">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP34 — Is Walking Enough to Stay Healthy?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="What's the Biggest Nutrition Mistake After Age 40?" data-slug="Episode-35-whats-the-biggest-nutrition-mistake">
+    <div class="card-num">EP 35</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">What's the Biggest Nutrition Mistake After Age 40?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Mon, Sep 28, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="What's the Biggest Nutrition Mistake After Age 40?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-35-whats-the-biggest-nutrition-mistake">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP35 — What's the Biggest Nutrition Mistake After Age 40?">Label</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-status="Uncomplete" data-title="What's the #1 Habit That Improves Your Health?" data-slug="Episode-36-whats-the-1-habit-that">
+    <div class="card-num">EP 36</div>
+    <div class="thumb-wrap"><div class="thumb placeholder">Not produced yet</div></div>
+    <div class="card-body">
+      <div class="card-title">What's the #1 Habit That Improves Your Health?</div>
+      <div class="card-meta">
+        <span class="badge queued">Uncomplete</span>
+        <span class="date">Wed, Sep 30, 2026</span>
+      </div>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="What's the #1 Habit That Improves Your Health?">Title</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="Episode-36-whats-the-1-habit-that">Slug</button>
+        <button class="copy-btn" onclick="copyText(this.dataset.txt, this)" data-txt="EP36 — What's the #1 Habit That Improves Your Health?">Label</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
 <script>
 function filterCards(status, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -502,6 +969,36 @@ function filterCards(status, btn) {
     c.style.display = (status === 'all' || c.dataset.status === status) ? '' : 'none';
   });
 }
+
+async function copyText(text, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+    const original = btn.textContent;
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    showToast('Copied to clipboard');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('copied');
+    }, 1200);
+  } catch (err) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Copied to clipboard');
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1600);
+}
 </script>
+
 </body>
 </html>
