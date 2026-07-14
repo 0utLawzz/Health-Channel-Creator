@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Armchair, Dumbbell, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -29,7 +29,7 @@ export function Scene1() {
       <audio ref={audioRef} src={`${BASE_URL}audio/sfx-pop.mp3`} preload="auto" />
 
       <div className="absolute top-[260px] flex items-center justify-center z-10 w-full">
-        <div className="relative w-[360px] h-[360px] flex items-center justify-center">
+        <div className="relative w-[340px] h-[340px] flex items-center justify-center">
           <motion.div
             className="absolute left-0 flex flex-col items-center gap-2"
             style={{ marginLeft: -10 }}
@@ -37,10 +37,10 @@ export function Scene1() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_30px_rgba(249,115,22,0.35)]">
-              <Armchair size={56} color="#f97316" strokeWidth={1.5} />
+            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]">
+              <CheckCircle size={56} color="#10b981" strokeWidth={1.5} />
             </div>
-            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#f97316]">Sitting</span>
+            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#10b981]">Eat</span>
           </motion.div>
 
           <motion.div
@@ -50,10 +50,10 @@ export function Scene1() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.5, ...SPRING_SMOOTH }}
           >
-            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]">
-              <Dumbbell size={56} color="#10b981" strokeWidth={1.5} />
+            <div className="w-[110px] h-[110px] rounded-full bg-[#0F172A] border-4 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_30px_rgba(249,115,22,0.35)]">
+              <XCircle size={56} color="#f97316" strokeWidth={1.5} />
             </div>
-            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#10b981]">Exercise</span>
+            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#f97316]">Skip</span>
           </motion.div>
 
           <motion.div
@@ -62,7 +62,7 @@ export function Scene1() {
             animate={{ scale: 1 }}
             transition={{ delay: 1.0, ...SPRING_SNAPPY }}
           >
-            <AlertTriangle size={36} color="#0F172A" strokeWidth={2.5} />
+            <span className="text-[#0F172A] font-display font-black text-[24px]">OK</span>
           </motion.div>
         </div>
       </div>
@@ -77,14 +77,14 @@ export function Scene1() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.2 }}
         >
-          Its Own Risk Factor
+          Research Doesn't Say
           <motion.span
-            className="text-[#f97316] block mt-2 drop-shadow-md"
+            className="text-[#10b981] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 2.0, ...SPRING_SNAPPY }}
           >
-            Independent of Exercise
+            Everyone Must Eat It
           </motion.span>
         </motion.h2>
       </div>

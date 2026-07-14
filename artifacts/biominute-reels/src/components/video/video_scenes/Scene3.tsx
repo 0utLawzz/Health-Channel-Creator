@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Activity, Clock, Footprints } from 'lucide-react';
+import { Heart, Leaf, Apple, Droplets } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -17,6 +17,12 @@ export function Scene3() {
       audioRef.current.play().catch(() => {});
     }
   }, []);
+
+  const icons = [
+    { Icon: Apple, color: '#10b981', delay: 0.2, angle: 0 },
+    { Icon: Leaf, color: '#2F6FED', delay: 0.5, angle: 120 },
+    { Icon: Droplets, color: '#f97316', delay: 0.8, angle: 240 },
+  ];
 
   return (
     <motion.div
@@ -36,31 +42,36 @@ export function Scene3() {
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          <motion.div
-            className="absolute left-0 top-0 w-20 h-20 rounded-full bg-[#10b981] flex items-center justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, ...SPRING_SNAPPY }}
-          >
-            <Clock size={36} color="#0F172A" strokeWidth={2.5} />
-          </motion.div>
+          {icons.map(({ Icon, color, delay, angle }) => {
+            const rad = (angle * Math.PI) / 180;
+            const x = Math.cos(rad) * 130;
+            const y = Math.sin(rad) * 130;
+            return (
+              <motion.div
+                key={angle}
+                className="absolute flex flex-col items-center gap-2"
+                style={{ left: '50%', top: '50%', marginLeft: -44, marginTop: -44 }}
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
+                animate={{ x, y, opacity: 1, scale: 1 }}
+                transition={{ delay, ...SPRING_SMOOTH }}
+              >
+                <div
+                  className="w-[88px] h-[88px] rounded-full bg-[#0F172A] border-4 flex items-center justify-center"
+                  style={{ borderColor: color, boxShadow: `0 0 30px ${color}40` }}
+                >
+                  <Icon size={40} color={color} strokeWidth={2} />
+                </div>
+              </motion.div>
+            );
+          })}
 
           <motion.div
-            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_60px_rgba(16,185,129,0.35)]"
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, ...SPRING_SMOOTH }}
+            className="w-24 h-24 rounded-full bg-[#10b981] flex items-center justify-center z-10"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 1.2, ...SPRING_SNAPPY }}
           >
-            <Activity size={88} color="#10b981" strokeWidth={1.5} />
-          </motion.div>
-
-          <motion.div
-            className="absolute right-0 bottom-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.8, ...SPRING_SNAPPY }}
-          >
-            <Footprints size={36} color="#0F172A" strokeWidth={2.5} />
+            <Heart size={48} color="#0F172A" strokeWidth={2} />
           </motion.div>
         </div>
 
@@ -68,9 +79,9 @@ export function Scene3() {
           className="mt-8 bg-[#10b981]/10 border border-[#10b981]/30 px-6 py-4 rounded-2xl text-center max-w-[80%]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, ...SPRING_SMOOTH }}
+          transition={{ delay: 1.6, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Just 2–3 Minutes Is Enough</span>
+          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Overall Diet Quality Wins</span>
         </motion.div>
       </div>
 
@@ -84,14 +95,14 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          Improves Blood Sugar
+          What Matters Most
           <motion.span
             className="text-[#10b981] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            And Circulation
+            Is the Overall Quality of Your Diet
           </motion.span>
         </motion.h2>
       </div>

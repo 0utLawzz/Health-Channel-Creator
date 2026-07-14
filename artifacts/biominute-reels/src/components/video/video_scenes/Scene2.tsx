@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Timer, PersonStanding } from 'lucide-react';
+import { Clock, Utensils, Sandwich } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -36,37 +36,52 @@ export function Scene2() {
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           />
 
-          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 340 340">
-            <circle cx="170" cy="170" r="160" fill="none" stroke="#1e293b" strokeWidth="12" />
-            <motion.circle
-              cx="170" cy="170" r="160"
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 340 340">
+            <motion.path
+              d="M 80 170 Q 170 80 260 170"
               fill="none"
-              stroke="#10b981"
-              strokeWidth="12"
+              stroke="#2F6FED"
+              strokeWidth="6"
               strokeLinecap="round"
-              strokeDasharray={1005}
-              strokeDashoffset={1005}
-              animate={{ strokeDashoffset: 0 }}
-              transition={{ duration: 30, ease: "linear" }}
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.5, delay: 0.3 }}
             />
           </svg>
 
           <motion.div
-            className="w-[240px] h-[240px] rounded-full bg-[#0F172A] border-8 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_60px_rgba(16,185,129,0.35)]"
-            initial={{ scale: 0.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2"
+            style={{ marginLeft: -10 }}
+            initial={{ x: -40, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2, ...SPRING_SMOOTH }}
           >
-            <Timer size={88} color="#10b981" strokeWidth={1.5} />
+            <div className="w-[100px] h-[100px] rounded-full bg-[#0F172A] border-4 border-[#10b981] flex items-center justify-center drop-shadow-[0_0_30px_rgba(16,185,129,0.35)]">
+              <Utensils size={48} color="#10b981" strokeWidth={1.5} />
+            </div>
+            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#10b981]">Morning</span>
           </motion.div>
 
           <motion.div
-            className="absolute bottom-0 right-0 w-20 h-20 rounded-full bg-[#2F6FED] flex items-center justify-center"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2"
+            style={{ marginRight: -10 }}
+            initial={{ x: 40, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.5, ...SPRING_SMOOTH }}
+          >
+            <div className="w-[100px] h-[100px] rounded-full bg-[#0F172A] border-4 border-[#f97316] flex items-center justify-center drop-shadow-[0_0_30px_rgba(249,115,22,0.35)]">
+              <Sandwich size={48} color="#f97316" strokeWidth={1.5} />
+            </div>
+            <span className="font-display font-bold text-[14px] uppercase tracking-wider text-[#f97316]">Later</span>
+          </motion.div>
+
+          <motion.div
+            className="w-24 h-24 rounded-full bg-[#2F6FED] flex items-center justify-center z-10"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
             transition={{ delay: 1.2, ...SPRING_SNAPPY }}
           >
-            <PersonStanding size={40} color="#0F172A" strokeWidth={2.5} />
+            <Clock size={48} color="#0F172A" strokeWidth={2} />
           </motion.div>
         </div>
 
@@ -76,7 +91,7 @@ export function Scene2() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Break It Up Every 30 Minutes</span>
+          <span className="text-[#f8fafc] font-display font-bold text-[22px] uppercase tracking-wider">Both Patterns Can Work</span>
         </motion.div>
       </div>
 
@@ -90,14 +105,14 @@ export function Scene2() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.0 }}
         >
-          Breaking Up Sitting Time
+          Some Feel Better With It
           <motion.span
-            className="text-[#10b981] block mt-2 drop-shadow-md"
+            className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.8, ...SPRING_SNAPPY }}
           >
-            Is What Matters Most
+            Others Prefer Eating Later
           </motion.span>
         </motion.h2>
       </div>

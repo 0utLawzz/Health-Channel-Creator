@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Sitting Too Long Harms Your Body"
-  1: 7000, // Prolonged sitting is its own risk factor
-  2: 6500, // Breaking up sitting time matters
-  3: 6000, // 2-3 min every 30 min improves blood sugar/circulation
+  0: 4500, // Hook: "Is Breakfast Really the Most Important Meal?"
+  1: 7000, // Research doesn't show everyone must eat breakfast
+  2: 6500, // Some feel better with it, others prefer later
+  3: 6000, // Overall diet quality matters most
   4: 6500, // CTA + citation
   5: 5000, // Thumbnail end card
 } as const;
