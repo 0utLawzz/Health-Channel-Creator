@@ -22,10 +22,10 @@ export const CANVAS_STYLE = {
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Is Stretching Before Exercise Enough?"
-  1: 7000, // Static stretching isn't always best warm-up
-  2: 6500, // Dynamic warm-up better prepares muscles/joints
-  3: 6000, // Save static stretches for after workout or separate sessions
-  4: 6500, // CTA + citation
+  0: 4500, // Hook: "Can You Turn Fat Into Muscle?"
+  1: 7000, // Fat & muscle are completely different tissue types
+  2: 6500, // Fat is lost through a calorie deficit
+  3: 6000, // Muscle grows through training & protein
+  4: 6500, // CTA: "Have you heard this myth before?" + citation
   5: 5000, // Thumbnail end card
 } as const;
