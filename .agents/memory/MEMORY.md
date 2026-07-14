@@ -1,1 +1,2 @@
 - [Importing an external artifacts-repo](importing-external-artifact-repo.md) — overlay source onto a freshly-scaffolded artifact, don't hand-copy scaffold-generated files (tsconfig/vite.config/artifact.toml).
+- [BioMinute video export pipeline](biominute-video-export-pipeline.md) — Playwright needs libgbm; export URL must match live workflow port; episodes must be built strictly sequentially (scenes are overwritten in place).
