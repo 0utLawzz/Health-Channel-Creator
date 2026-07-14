@@ -1,0 +1,346 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useLocation, Link } from "wouter";
+import { 
+  useGetEpisode, 
+  useUpdateEpisode, 
+  useApproveEpisode, 
+  usePublishToYouTube,
+  useGetYouTubeStatus,
+  Episode,
+  EpisodeUpdate
+} from "@workspace/api-client-react";
+import { Navbar } from "../components/Navbar";
+import { YouTubeBanner } from "../components/YouTubeBanner";
+import { StatusBadge } from "../components/StatusBadge";
+import { ArrowLeft, CheckCircle, Youtube, Loader2, Save } from "lucide-react";
+import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+
+export default function EpisodeDetail() {
+  const params = useParams();
+  const id = parseInt(params.id || "0", 10);
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const { data: episode, isLoading, refetch } = useGetEpisode(id, { query: { enabled: !!id } });
+  const { data: ytStatus } = useGetYouTubeStatus();
+  
+  const updateMutation = useUpdateEpisode();
+  const approveMutation = useApproveEpisode();
+  const publishMutation = usePublishToYouTube();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState<Partial<EpisodeUpdate>>({});
+  const [confirmApprove, setConfirmApprove] = useState(false);
+  
+  const initRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (episode && initRef.current !== episode.id) {
+      initRef.current = episode.id;
+      setEditForm({
+        youtubeTitle: episode.youtubeTitle,
+        hashtags: episode.hashtags,
+        scheduledPublishAt: episode.scheduledPublishAt || undefined
+      });
+    }
+  }, [episode]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#EDEAE0] flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex justify-center items-center"><Loader2 className="w-10 h-10 animate-spin" /></div>
+      </div>
+    );
+  }
+
+  if (!episode) {
+    return (
+      <div className="min-h-screen bg-[#EDEAE0] flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex justify-center items-center font-display text-4xl">Episode Not Found</div>
+      </div>
+    );
+  }
+
+  const handleSaveMetadata = () => {
+    updateMutation.mutate(
+      { id, data: editForm },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+          refetch();
+          toast({ title: "Saved", description: "Metadata updated successfully.", className: "bg-[#0A6B52] text-white border-2 border-black rounded-none" });
+        },
+        onError: () => {
+          toast({ title: "Error", description: "Failed to update metadata.", variant: "destructive" });
+        }
+      }
+    );
+  };
+
+  const handleApprove = () => {
+    if (!confirmApprove) {
+      setConfirmApprove(true);
+      return;
+    }
+    approveMutation.mutate(
+      { id },
+      {
+        onSuccess: () => {
+          setConfirmApprove(false);
+          refetch();
+          toast({ title: "Approved", description: "Episode is approved and ready for publishing.", className: "bg-[#0A6B52] text-white border-2 border-black rounded-none" });
+        }
+      }
+    );
+  };
+
+  const handlePublish = () => {
+    // We'll publish as private by default for this example unless scheduled
+    publishMutation.mutate(
+      { 
+        id, 
+        data: { 
+          privacyStatus: "private", 
+          scheduleAt: editForm.scheduledPublishAt || null 
+        } 
+      },
+      {
+        onSuccess: (res) => {
+          refetch();
+          toast({ title: "Published", description: res.message, className: "bg-[#8B2FC9] text-white border-2 border-black rounded-none" });
+        },
+        onError: (err) => {
+          toast({ title: "Publish Error", description: err.error || "Failed to publish", variant: "destructive" });
+        }
+      }
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-[#EDEAE0] pb-20">
+      <Navbar />
+      <YouTubeBanner />
+
+      <main className="max-w-5xl mx-auto px-6 pt-8">
+        
+        {/* Back navigation */}
+        <Link href="/" className="inline-flex items-center gap-2 font-mono text-sm font-bold uppercase hover:text-[#C94A00] transition-colors mb-6">
+          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+        </Link>
+
+        {/* HEADER */}
+        <div className="mb-8 flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="bg-[#0C0C0C] text-white font-display text-5xl px-4 py-1 border-[3px] border-[#0C0C0C] shadow-[4px_4px_0_#C94A00]">
+                EP {episode.epNumber}
+              </div>
+              <StatusBadge status={episode.status} className="text-lg px-3 py-1.5" />
+            </div>
+            <h1 className="font-display text-5xl text-[#0C0C0C] leading-tight mb-2">
+              {episode.hookTitle}
+            </h1>
+            <div className="flex gap-3 text-sm font-mono font-bold text-[#555] uppercase">
+              <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Season {episode.season}</span>
+              <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Post Date: {format(new Date(episode.postDate), "MMM d, yyyy")}</span>
+              <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Dur: {episode.duration}</span>
+            </div>
+          </div>
+
+          {/* ACTION BUTTONS */}
+          <div className="flex flex-col gap-3 min-w-[200px]">
+            {episode.status === "review" && (
+              <button 
+                onClick={handleApprove}
+                disabled={approveMutation.isPending}
+                className={`brutal-btn flex items-center justify-center gap-2 py-3 ${confirmApprove ? 'bg-[#0A6B52] text-white' : 'brutal-btn-primary'}`}
+              >
+                {approveMutation.isPending ? <Loader2 className="animate-spin w-5 h-5" /> : <CheckCircle className="w-5 h-5" />}
+                {confirmApprove ? "CONFIRM APPROVE?" : "APPROVE EPISODE"}
+              </button>
+            )}
+
+            {(episode.status === "approved" || episode.status === "scheduled") && (
+              <button 
+                onClick={handlePublish}
+                disabled={publishMutation.isPending || (!ytStatus?.connected)}
+                className="brutal-btn bg-[#8B2FC9] text-white border-[2.5px] border-[#0C0C0C] flex items-center justify-center gap-2 py-3 hover:bg-[#7a28b0]"
+              >
+                {publishMutation.isPending ? <Loader2 className="animate-spin w-5 h-5" /> : <Youtube className="w-5 h-5" />}
+                {episode.status === "scheduled" ? "UPDATE YOUTUBE" : "PUBLISH TO YOUTUBE"}
+              </button>
+            )}
+            
+            {episode.youtubeVideoId && (
+              <a 
+                href={`https://youtube.com/shorts/${episode.youtubeVideoId}`} 
+                target="_blank" rel="noreferrer"
+                className="brutal-btn brutal-btn-secondary flex items-center justify-center gap-2 py-3 bg-[#E2DDD0]"
+              >
+                <Youtube className="w-5 h-5 text-[#C94A00]" />
+                VIEW ON YOUTUBE
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* LEFT COL: Content Script & Visuals */}
+          <div className="lg:col-span-2 space-y-8">
+            
+            {/* Script Panel */}
+            <div className="brutal-card p-6 bg-[#FAF7EE]">
+              <h2 className="font-display text-3xl mb-4 flex items-center gap-3">
+                <span className="bg-[#0C0C0C] text-white px-2 py-0.5 text-xl rotate-[-2deg]">1</span>
+                VO Script
+              </h2>
+              <div className="font-sans text-lg leading-relaxed text-[#0C0C0C] whitespace-pre-wrap p-4 bg-[#E2DDD0] border-l-[4px] border-[#C94A00]">
+                {episode.voScript}
+              </div>
+            </div>
+
+            {/* Visuals & Audio Panel */}
+            <div className="brutal-card p-6 bg-[#FAF7EE]">
+              <h2 className="font-display text-3xl mb-4 flex items-center gap-3">
+                <span className="bg-[#0C0C0C] text-white px-2 py-0.5 text-xl rotate-[2deg]">2</span>
+                Production Notes
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-mono text-sm font-bold uppercase text-[#555] mb-2">Visual Direction</h3>
+                  <p className="font-sans bg-white border-2 border-[#0C0C0C] p-3 text-sm shadow-[2px_2px_0_#0C0C0C]">
+                    {episode.visualDirection}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-mono text-sm font-bold uppercase text-[#555] mb-2">Thumbnail Prompt</h3>
+                  <p className="font-sans bg-white border-2 border-[#0C0C0C] p-3 text-sm shadow-[2px_2px_0_#0C0C0C]">
+                    {episode.thumbnailPrompt}
+                  </p>
+                </div>
+                <div className="md:col-span-2">
+                  <h3 className="font-mono text-sm font-bold uppercase text-[#555] mb-2">Audio / BGM</h3>
+                  <p className="font-sans bg-[#0C0C0C] text-[#FAF7EE] border-2 border-[#0C0C0C] p-3 text-sm">
+                    {episode.bgSound}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Citation Panel */}
+            <div className="brutal-card p-6 bg-[#FAF7EE]">
+              <h2 className="font-display text-3xl mb-4 flex items-center gap-3">
+                <span className="bg-[#0C0C0C] text-white px-2 py-0.5 text-xl">3</span>
+                Citation CTA
+              </h2>
+              <div className="font-sans bg-white border-2 border-[#0C0C0C] p-4 font-medium shadow-[3px_3px_0_#0A6B52]">
+                {episode.citationCta}
+              </div>
+            </div>
+
+          </div>
+
+          {/* RIGHT COL: YouTube Metadata Editable */}
+          <div className="space-y-6">
+            <div className="brutal-card p-6 bg-[#FAF7EE] border-[#0C0C0C]">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-display text-3xl">YT Metadata</h2>
+                {!isEditing ? (
+                  <button 
+                    onClick={() => setIsEditing(true)}
+                    className="font-mono text-xs font-bold uppercase text-[#C94A00] hover:text-[#0C0C0C] underline decoration-2 underline-offset-4"
+                  >
+                    Edit
+                  </button>
+                ) : (
+                  <button 
+                    onClick={handleSaveMetadata}
+                    disabled={updateMutation.isPending}
+                    className="brutal-btn brutal-btn-primary py-1 px-3 text-xs flex items-center gap-1 shadow-brutal-sm"
+                  >
+                    {updateMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                    Save
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="block font-mono text-sm font-bold uppercase text-[#555] mb-2">Title</label>
+                  {isEditing ? (
+                    <input 
+                      type="text"
+                      className="brutal-input w-full"
+                      value={editForm.youtubeTitle || ""}
+                      onChange={(e) => setEditForm(prev => ({...prev, youtubeTitle: e.target.value}))}
+                    />
+                  ) : (
+                    <div className="font-sans font-bold text-lg">{episode.youtubeTitle}</div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block font-mono text-sm font-bold uppercase text-[#555] mb-2">Hashtags</label>
+                  {isEditing ? (
+                    <textarea 
+                      className="brutal-input w-full min-h-[80px] resize-none"
+                      value={editForm.hashtags || ""}
+                      onChange={(e) => setEditForm(prev => ({...prev, hashtags: e.target.value}))}
+                    />
+                  ) : (
+                    <div className="font-mono text-sm text-[#0A6B52] bg-[#E2DDD0] p-2 border-2 border-[#0A6B52] break-words">
+                      {episode.hashtags}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block font-mono text-sm font-bold uppercase text-[#555] mb-2">Schedule Time (ISO)</label>
+                  {isEditing ? (
+                    <input 
+                      type="text"
+                      placeholder="YYYY-MM-DDTHH:mm:ssZ"
+                      className="brutal-input w-full text-sm font-mono"
+                      value={editForm.scheduledPublishAt || ""}
+                      onChange={(e) => setEditForm(prev => ({...prev, scheduledPublishAt: e.target.value}))}
+                    />
+                  ) : (
+                    <div className="font-mono text-sm">
+                      {episode.scheduledPublishAt ? format(new Date(episode.scheduledPublishAt), "PPp") : "Not scheduled"}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Timeline */}
+            <div className="brutal-card p-6 bg-[#FAF7EE]">
+              <h2 className="font-display text-2xl mb-4">Timeline</h2>
+              <div className="space-y-4 border-l-2 border-[#0C0C0C] ml-2 pl-4 relative">
+                <TimelineItem date={episode.createdAt} label="Created" color="bg-[#555]" />
+                {episode.approvedAt && <TimelineItem date={episode.approvedAt} label="Approved" color="bg-[#0A6B52]" />}
+                {episode.publishedAt && <TimelineItem date={episode.publishedAt} label="Published" color="bg-[#8B2FC9]" />}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  );
+}
+
+function TimelineItem({ date, label, color }: { date: string, label: string, color: string }) {
+  return (
+    <div className="relative">
+      <div className={`absolute -left-[23px] top-1 w-3 h-3 ${color} border-2 border-[#0C0C0C] rounded-full`}></div>
+      <div className="font-mono font-bold text-xs uppercase">{label}</div>
+      <div className="font-sans text-sm text-[#555]">{format(new Date(date), "MMM d, yyyy h:mm a")}</div>
+    </div>
+  );
+}

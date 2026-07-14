@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/publishing-dashboard/"
+title = "BioMinute Publishing Dashboard"
+version = "1.0.0"
+id = "artifacts/publishing-dashboard"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/publishing-dashboard/" ]
+localPort = 24083
+
+[services.development]
+run = "pnpm --filter @workspace/publishing-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/publishing-dashboard", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/publishing-dashboard/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24083"
+BASE_PATH = "/publishing-dashboard/"

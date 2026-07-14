@@ -1,22 +1,24 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: BioMinute Publishing Dashboard API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: episodes
+    description: Episode management
+  - name: youtube
+    description: YouTube publishing operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +26,184 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /episodes:
+    get:
+      operationId: listEpisodes
+      tags: [episodes]
+      summary: List all episodes
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, complete, review, approved, scheduled, published]
+        - name: season
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of episodes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Episode"
+
+  /episodes/stats:
+    get:
+      operationId: getEpisodeStats
+      tags: [episodes]
+      summary: Get episode stats summary
+      responses:
+        "200":
+          description: Stats summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EpisodeStats"
+
+  /episodes/upcoming:
+    get:
+      operationId: getUpcomingEpisodes
+      tags: [episodes]
+      summary: Get next 5 episodes due to publish
+      responses:
+        "200":
+          description: Upcoming episodes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Episode"
+
+  /episodes/{id}:
+    get:
+      operationId: getEpisode
+      tags: [episodes]
+      summary: Get a single episode
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Episode detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Episode"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateEpisode
+      tags: [episodes]
+      summary: Update episode status or metadata
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EpisodeUpdate"
+      responses:
+        "200":
+          description: Updated episode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Episode"
+
+  /episodes/{id}/approve:
+    post:
+      operationId: approveEpisode
+      tags: [episodes]
+      summary: Approve an episode for publishing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Approved episode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Episode"
+
+  /youtube/auth-url:
+    get:
+      operationId: getYouTubeAuthUrl
+      tags: [youtube]
+      summary: Get OAuth URL to connect YouTube account
+      responses:
+        "200":
+          description: Auth URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/YouTubeAuthUrl"
+
+  /youtube/status:
+    get:
+      operationId: getYouTubeStatus
+      tags: [youtube]
+      summary: Check if YouTube account is connected
+      responses:
+        "200":
+          description: Connection status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/YouTubeStatus"
+
+  /youtube/publish/{id}:
+    post:
+      operationId: publishToYouTube
+      tags: [youtube]
+      summary: Schedule or publish episode to YouTube
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublishRequest"
+      responses:
+        "200":
+          description: Publish result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublishResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +211,164 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    Episode:
+      type: object
+      properties:
+        id:
+          type: integer
+        epNumber:
+          type: integer
+        status:
+          type: string
+          enum: [draft, complete, review, approved, scheduled, published]
+        dateBuilt:
+          type: ["string", "null"]
+        postDate:
+          type: string
+        season:
+          type: string
+        aspectRatio:
+          type: string
+        duration:
+          type: string
+        hookTitle:
+          type: string
+        youtubeTitle:
+          type: string
+        voScript:
+          type: string
+        visualDirection:
+          type: string
+        bgSound:
+          type: string
+        thumbnailPrompt:
+          type: string
+        citationCta:
+          type: string
+        hashtags:
+          type: string
+        youtubeVideoId:
+          type: ["string", "null"]
+        scheduledPublishAt:
+          type: ["string", "null"]
+        approvedAt:
+          type: ["string", "null"]
+        publishedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - epNumber
+        - status
+        - postDate
+        - season
+        - duration
+        - hookTitle
+        - youtubeTitle
+        - voScript
+        - visualDirection
+        - bgSound
+        - thumbnailPrompt
+        - citationCta
+        - hashtags
+        - createdAt
+        - updatedAt
+
+    EpisodeUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [draft, complete, review, approved, scheduled, published]
+        youtubeTitle:
+          type: string
+        citationCta:
+          type: string
+        hashtags:
+          type: string
+        scheduledPublishAt:
+          type: string
+
+    EpisodeStats:
+      type: object
+      properties:
+        total:
+          type: integer
+        byStatus:
+          type: object
+          properties:
+            draft:
+              type: integer
+            complete:
+              type: integer
+            review:
+              type: integer
+            approved:
+              type: integer
+            scheduled:
+              type: integer
+            published:
+              type: integer
+          required: [draft, complete, review, approved, scheduled, published]
+        nextPostDate:
+          type: ["string", "null"]
+        publishedThisMonth:
+          type: integer
+      required: [total, byStatus, publishedThisMonth]
+
+    YouTubeAuthUrl:
+      type: object
+      properties:
+        url:
+          type: string
+      required: [url]
+
+    YouTubeStatus:
+      type: object
+      properties:
+        connected:
+          type: boolean
+        channelName:
+          type: ["string", "null"]
+        channelId:
+          type: ["string", "null"]
+      required: [connected]
+
+    PublishRequest:
+      type: object
+      properties:
+        scheduleAt:
+          type: ["string", "null"]
+          description: ISO datetime to schedule. Null = publish immediately.
+        privacyStatus:
+          type: string
+          enum: [public, unlisted, private]
+          default: public
+      required: [privacyStatus]
+
+    PublishResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        youtubeVideoId:
+          type: ["string", "null"]
+        youtubeUrl:
+          type: ["string", "null"]
+        scheduledAt:
+          type: ["string", "null"]
+        message:
+          type: string
+      required: [success, message]
