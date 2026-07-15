@@ -2,7 +2,12 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { db, episodesTable } from "@workspace/db";
 import { eq, and, lte, isNull } from "drizzle-orm";
-import { findEpisodeVideoPath, uploadEpisodeVideo } from "./lib/youtube-upload";
+import {
+  findEpisodeVideoPath,
+  uploadEpisodeVideo,
+  addVideoToPlaylist,
+  SEASON_PLAYLIST_ENV,
+} from "./lib/youtube-upload";
 
 // ---------------------------------------------------------------------------
 // Startup credential check — logs which secrets are present and which are
@@ -19,6 +24,13 @@ function logStartupCredentials(): void {
     YOUTUBE_CHANNEL_NAME: !!process.env.YOUTUBE_CHANNEL_NAME,
     YOUTUBE_CHANNEL_ID: !!process.env.YOUTUBE_CHANNEL_ID,
     GITHUB_TOKEN: !!process.env.GITHUB_TOKEN,
+    // Season playlist IDs (one per season, S1–S6)
+    YOUTUBE_PLAYLIST_S1: !!process.env.YOUTUBE_PLAYLIST_S1,
+    YOUTUBE_PLAYLIST_S2: !!process.env.YOUTUBE_PLAYLIST_S2,
+    YOUTUBE_PLAYLIST_S3: !!process.env.YOUTUBE_PLAYLIST_S3,
+    YOUTUBE_PLAYLIST_S4: !!process.env.YOUTUBE_PLAYLIST_S4,
+    YOUTUBE_PLAYLIST_S5: !!process.env.YOUTUBE_PLAYLIST_S5,
+    YOUTUBE_PLAYLIST_S6: !!process.env.YOUTUBE_PLAYLIST_S6,
   };
 
   const present = Object.entries(creds)
@@ -93,6 +105,16 @@ async function runScheduledPublish(): Promise<void> {
           privacyStatus: "public",
           publishAt: null,
         });
+
+        // Add to season playlist (non-fatal)
+        try {
+          await addVideoToPlaylist({ youtubeVideoId, season: episode.season });
+        } catch (playlistErr) {
+          logger.warn(
+            { playlistErr, episodeId: episode.id, season: episode.season },
+            "Scheduler: playlist insert failed (episode still marked published)",
+          );
+        }
 
         await db
           .update(episodesTable)

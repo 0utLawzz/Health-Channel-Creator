@@ -1,7 +1,51 @@
 import fs from "node:fs";
 import path from "node:path";
 import { google } from "googleapis";
+import { logger } from "./logger";
 
+// ---------------------------------------------------------------------------
+// Season → playlist env-var mapping
+// Set YOUTUBE_PLAYLIST_S1 … YOUTUBE_PLAYLIST_S6 in Replit Secrets.
+// ---------------------------------------------------------------------------
+export const SEASON_PLAYLIST_ENV: Record<string, string> = {
+  "S1: Morning Habits":            "YOUTUBE_PLAYLIST_S1",
+  "S2: Movement & Body":           "YOUTUBE_PLAYLIST_S2",
+  "S3: Sleep & Recovery":          "YOUTUBE_PLAYLIST_S3",
+  "S4: Stress & Mind":             "YOUTUBE_PLAYLIST_S4",
+  "S5: Nutrition & Myths":         "YOUTUBE_PLAYLIST_S5",
+  "S6: Healthy Aging & Longevity": "YOUTUBE_PLAYLIST_S6",
+};
+
+/** Returns the YouTube playlist ID for a season, or null if not configured. */
+export function getPlaylistId(season: string): string | null {
+  const envKey = SEASON_PLAYLIST_ENV[season];
+  if (!envKey) return null;
+  return process.env[envKey] ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// Shared OAuth2 client factory
+// ---------------------------------------------------------------------------
+function getOAuth2Client() {
+  const clientId = process.env.YOUTUBE_CLIENT_ID;
+  const clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+  const refreshToken = process.env.YOUTUBE_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error(
+      "YouTube credentials are not configured " +
+        "(YOUTUBE_CLIENT_ID / YOUTUBE_CLIENT_SECRET / YOUTUBE_REFRESH_TOKEN).",
+    );
+  }
+
+  const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
+  oauth2Client.setCredentials({ refresh_token: refreshToken });
+  return oauth2Client;
+}
+
+// ---------------------------------------------------------------------------
+// findEpisodeVideoPath
+// ---------------------------------------------------------------------------
 /**
  * Locates the exported MP4 for a given episode number.
  * Export folders follow `exports/Episode-{NN}-{slug}/episode.mp4`, but the
@@ -31,13 +75,18 @@ export function findEpisodeVideoPath(epNumber: number): string {
   return videoPath;
 }
 
+// ---------------------------------------------------------------------------
+// uploadEpisodeVideo
+// ---------------------------------------------------------------------------
 export interface UploadEpisodeVideoParams {
   videoPath: string;
   title: string;
   description: string;
   tags?: string[];
+  /** If set, video is uploaded as 'private' and YouTube publishes it at this time. */
+  publishAt?: string | null;
+  /** Ignored when publishAt is set (YouTube requires private for scheduled uploads). */
   privacyStatus: "public" | "unlisted" | "private";
-  publishAt?: string | null; // ISO datetime; requires privacyStatus "private"
 }
 
 export interface UploadEpisodeVideoResult {
@@ -46,30 +95,18 @@ export interface UploadEpisodeVideoResult {
 }
 
 /**
- * Uploads an episode's MP4 to YouTube via the Data API v3 resumable upload
- * endpoint (videos.insert with a readable stream body).
+ * Uploads an episode's MP4 to YouTube via the Data API v3 resumable upload.
+ *
+ * Privacy rules:
+ * - If `publishAt` is provided → always uploads as `private` with `publishAt`
+ *   set; YouTube automatically flips it to public/unlisted at that timestamp.
+ * - Otherwise → uses `privacyStatus` as-is.
  */
 export async function uploadEpisodeVideo(
   params: UploadEpisodeVideoParams,
 ): Promise<UploadEpisodeVideoResult> {
-  const clientId = process.env.YOUTUBE_CLIENT_ID;
-  const clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
-  const refreshToken = process.env.YOUTUBE_REFRESH_TOKEN;
+  const youtube = google.youtube({ version: "v3", auth: getOAuth2Client() });
 
-  if (!clientId || !clientSecret || !refreshToken) {
-    throw new Error(
-      "YouTube credentials are not configured (YOUTUBE_CLIENT_ID / YOUTUBE_CLIENT_SECRET / YOUTUBE_REFRESH_TOKEN).",
-    );
-  }
-
-  const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
-  oauth2Client.setCredentials({ refresh_token: refreshToken });
-
-  const youtube = google.youtube({ version: "v3", auth: oauth2Client });
-
-  // Scheduling a future publish requires the video to be uploaded as
-  // "private" with a publishAt timestamp; YouTube flips it to public/unlisted
-  // automatically at that time.
   const usesSchedule = !!params.publishAt;
   const status = usesSchedule
     ? {
@@ -106,4 +143,143 @@ export async function uploadEpisodeVideo(
     youtubeVideoId,
     youtubeUrl: `https://youtu.be/${youtubeVideoId}`,
   };
+}
+
+// ---------------------------------------------------------------------------
+// addVideoToPlaylist
+// ---------------------------------------------------------------------------
+export interface AddToPlaylistParams {
+  youtubeVideoId: string;
+  season: string;
+}
+
+export interface AddToPlaylistResult {
+  playlistId: string;
+  playlistItemId: string;
+}
+
+/**
+ * Adds a video to the season playlist configured in env vars.
+ * Returns null (with a warning log) if the playlist ID is not configured for
+ * this season — this is non-fatal so a missing env var never blocks publishing.
+ */
+export async function addVideoToPlaylist(
+  params: AddToPlaylistParams,
+): Promise<AddToPlaylistResult | null> {
+  const playlistId = getPlaylistId(params.season);
+  if (!playlistId) {
+    logger.warn(
+      {
+        season: params.season,
+        envVar: SEASON_PLAYLIST_ENV[params.season] ?? "unknown",
+      },
+      "No playlist ID configured for season — skipping playlist insert",
+    );
+    return null;
+  }
+
+  const youtube = google.youtube({ version: "v3", auth: getOAuth2Client() });
+
+  const response = await youtube.playlistItems.insert({
+    part: ["snippet"],
+    requestBody: {
+      snippet: {
+        playlistId,
+        resourceId: {
+          kind: "youtube#video",
+          videoId: params.youtubeVideoId,
+        },
+      },
+    },
+  });
+
+  const playlistItemId = response.data.id;
+  if (!playlistItemId) {
+    throw new Error("playlistItems.insert succeeded but returned no item id.");
+  }
+
+  logger.info(
+    { youtubeVideoId: params.youtubeVideoId, playlistId, playlistItemId },
+    "Video added to season playlist",
+  );
+
+  return { playlistId, playlistItemId };
+}
+
+// ---------------------------------------------------------------------------
+// repairVideoOnYouTube — retroactively fix privacy + playlist for an existing video
+// ---------------------------------------------------------------------------
+export interface RepairVideoParams {
+  youtubeVideoId: string;
+  season: string;
+  privacyStatus: "public" | "unlisted" | "private";
+  /** If set, overrides privacyStatus to 'private' and schedules auto-publish. */
+  publishAt?: string | null;
+}
+
+export interface RepairVideoResult {
+  privacyUpdated: boolean;
+  playlistResult: AddToPlaylistResult | null;
+  playlistWarning: string | null;
+}
+
+/**
+ * Retroactively sets privacy status and adds an existing YouTube video to the
+ * correct season playlist. Used to fix videos uploaded outside the pipeline.
+ */
+export async function repairVideoOnYouTube(
+  params: RepairVideoParams,
+): Promise<RepairVideoResult> {
+  const youtube = google.youtube({ version: "v3", auth: getOAuth2Client() });
+
+  // Update privacy (and optional scheduled publish time)
+  const usesSchedule = !!params.publishAt;
+  const status = usesSchedule
+    ? {
+        privacyStatus: "private" as const,
+        publishAt: new Date(params.publishAt as string).toISOString(),
+        selfDeclaredMadeForKids: false,
+      }
+    : {
+        privacyStatus: params.privacyStatus,
+        selfDeclaredMadeForKids: false,
+      };
+
+  await youtube.videos.update({
+    part: ["status"],
+    requestBody: {
+      id: params.youtubeVideoId,
+      status,
+    },
+  });
+
+  logger.info(
+    { youtubeVideoId: params.youtubeVideoId, status },
+    "Repair: video privacy updated",
+  );
+
+  // Add to playlist (non-fatal)
+  let playlistResult: AddToPlaylistResult | null = null;
+  let playlistWarning: string | null = null;
+  try {
+    playlistResult = await addVideoToPlaylist({
+      youtubeVideoId: params.youtubeVideoId,
+      season: params.season,
+    });
+    if (!playlistResult) {
+      const envVar = SEASON_PLAYLIST_ENV[params.season] ?? "YOUTUBE_PLAYLIST_S?";
+      playlistWarning = `No playlist ID configured for season "${params.season}". Set ${envVar} in Replit Secrets to enable playlist assignment.`;
+    }
+  } catch (err) {
+    playlistWarning =
+      err instanceof Error
+        ? `Playlist insert failed: ${err.message}`
+        : "Playlist insert failed (unknown error)";
+    logger.warn(
+      { err, youtubeVideoId: params.youtubeVideoId },
+      "Repair: playlist insert failed (non-fatal)",
+    );
+  }
+
+  return { privacyUpdated: true, playlistResult, playlistWarning };
 }
