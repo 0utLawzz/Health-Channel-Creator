@@ -5,8 +5,11 @@ import * as schema from "./schema";
 const { Pool } = pg;
 
 if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+  // Warn but do not crash — server can still start and serve /healthz;
+  // DB-dependent routes will fail with a connection error at query time.
+  console.warn(
+    "[db] WARNING: DATABASE_URL is not set. All database operations will fail. " +
+      "Add DATABASE_URL in Replit Secrets to fix this.",
   );
 }
 

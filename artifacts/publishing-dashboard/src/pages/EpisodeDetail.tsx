@@ -304,18 +304,32 @@ export default function EpisodeDetail() {
                 </div>
 
                 <div>
-                  <label className="block font-mono text-sm font-bold uppercase text-[#555] mb-2">Schedule Time (ISO)</label>
+                  <label className="block font-mono text-sm font-bold uppercase text-[#555] mb-2">Schedule Time</label>
                   {isEditing ? (
-                    <input 
-                      type="text"
-                      placeholder="YYYY-MM-DDTHH:mm:ssZ"
+                    <input
+                      type="datetime-local"
                       className="brutal-input w-full text-sm font-mono"
-                      value={editForm.scheduledPublishAt || ""}
-                      onChange={(e) => setEditForm(prev => ({...prev, scheduledPublishAt: e.target.value}))}
+                      value={
+                        editForm.scheduledPublishAt
+                          ? // datetime-local expects "YYYY-MM-DDTHH:mm" (no seconds / tz)
+                            new Date(editForm.scheduledPublishAt)
+                              .toISOString()
+                              .slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) => {
+                        // Convert local datetime string back to full ISO for storage
+                        const iso = e.target.value
+                          ? new Date(e.target.value).toISOString()
+                          : undefined;
+                        setEditForm((prev) => ({ ...prev, scheduledPublishAt: iso }));
+                      }}
                     />
                   ) : (
                     <div className="font-mono text-sm">
-                      {episode.scheduledPublishAt ? format(new Date(episode.scheduledPublishAt), "PPp") : "Not scheduled"}
+                      {episode.scheduledPublishAt
+                        ? format(new Date(episode.scheduledPublishAt), "PPp")
+                        : "Not scheduled"}
                     </div>
                   )}
                 </div>

@@ -8,8 +8,9 @@ import { logger } from "../lib/logger";
 const router = Router();
 
 // GET /youtube/status
-router.get("/youtube/status", async (req, res): Promise<void> => {
-  // Returns connection status based on whether YT credentials are configured
+router.get("/youtube/status", async (_req, res): Promise<void> => {
+  // Returns connection status based on whether YT credentials are configured.
+  // This route must never return a 500 — it is polled by the dashboard on every load.
   const hasCredentials =
     !!process.env.YOUTUBE_CLIENT_ID &&
     !!process.env.YOUTUBE_CLIENT_SECRET &&
@@ -23,12 +24,13 @@ router.get("/youtube/status", async (req, res): Promise<void> => {
 });
 
 // GET /youtube/auth-url
-router.get("/youtube/auth-url", async (req, res): Promise<void> => {
+router.get("/youtube/auth-url", async (_req, res): Promise<void> => {
   const clientId = process.env.YOUTUBE_CLIENT_ID;
-  const redirectUri = process.env.YOUTUBE_REDIRECT_URI ?? "urn:ietf:wg:oauth:2.0:oob";
+  const redirectUri =
+    process.env.YOUTUBE_REDIRECT_URI ?? "urn:ietf:wg:oauth:2.0:oob";
 
   if (!clientId) {
-    // Return placeholder URL with instructions until credentials are configured
+    // Return an instructional placeholder until credentials are configured.
     res.json({
       url: "https://console.cloud.google.com/apis/credentials — Add YOUTUBE_CLIENT_ID and YOUTUBE_CLIENT_SECRET as secrets first",
     });
@@ -55,7 +57,7 @@ router.get("/youtube/auth-url", async (req, res): Promise<void> => {
 router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
-  if (isNaN(id)) {
+  if (isNaN(id) || id <= 0) {
     res.status(400).json({ error: "Invalid id" });
     return;
   }
@@ -79,20 +81,26 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
     !!process.env.YOUTUBE_CLIENT_SECRET &&
     !!process.env.YOUTUBE_REFRESH_TOKEN;
 
+  // -------------------------------------------------------------------------
+  // DRAFT MODE — no YouTube credentials configured yet.
+  // Mark the episode as scheduled in the DB so the scheduler can pick it up
+  // once credentials are added, and return a success response to the client.
+  // -------------------------------------------------------------------------
   if (!hasCredentials) {
-    // Draft mode — no credentials yet, just mark as scheduled
     const [episode] = await db
       .select()
       .from(episodesTable)
       .where(eq(episodesTable.id, id));
 
     if (!episode) {
-      res.status(400).json({ error: "Episode not found" });
+      res.status(404).json({ error: "Episode not found" });
       return;
     }
 
     if (episode.status !== "approved") {
-      res.status(400).json({ error: "Episode must be approved before publishing" });
+      res.status(400).json({
+        error: "Episode must be approved before publishing",
+      });
       return;
     }
 
@@ -107,6 +115,11 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
       })
       .where(eq(episodesTable.id, id));
 
+    logger.info(
+      { episodeId: id, scheduledAt },
+      "Draft mode: episode marked as scheduled (no YT credentials)",
+    );
+
     res.json({
       success: true,
       youtubeVideoId: null,
@@ -117,19 +130,23 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  // Real YouTube publish — credentials are configured.
+  // -------------------------------------------------------------------------
+  // LIVE MODE — credentials present, upload to YouTube now.
+  // -------------------------------------------------------------------------
   const [episode] = await db
     .select()
     .from(episodesTable)
     .where(eq(episodesTable.id, id));
 
   if (!episode) {
-    res.status(400).json({ error: "Episode not found" });
+    res.status(404).json({ error: "Episode not found" });
     return;
   }
 
   if (episode.status !== "approved") {
-    res.status(400).json({ error: "Episode must be approved before publishing" });
+    res.status(400).json({
+      error: "Episode must be approved before publishing",
+    });
     return;
   }
 
@@ -137,7 +154,10 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
   try {
     videoPath = findEpisodeVideoPath(episode.epNumber);
   } catch (err) {
-    logger.error({ err, epNumber: episode.epNumber }, "Episode video file not found");
+    logger.error(
+      { err, epNumber: episode.epNumber },
+      "Episode video file not found",
+    );
     res.status(400).json({
       error:
         err instanceof Error
@@ -148,14 +168,17 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
   }
 
   try {
+    // Guard: hashtags may be empty or null on older rows
+    const tags = (episode.hashtags ?? "")
+      .split(/[\s,]+/)
+      .map((tag: string) => tag.replace(/^#/, ""))
+      .filter(Boolean);
+
     const { youtubeVideoId, youtubeUrl } = await uploadEpisodeVideo({
       videoPath,
       title: episode.youtubeTitle,
-      description: `${episode.citationCta}\n\n${episode.hashtags}`,
-      tags: episode.hashtags
-        .split(/[\s,]+/)
-        .map((tag: string) => tag.replace(/^#/, ""))
-        .filter(Boolean),
+      description: `${episode.citationCta ?? ""}\n\n${episode.hashtags ?? ""}`,
+      tags,
       privacyStatus,
       publishAt: scheduleAt ?? null,
     });
@@ -172,6 +195,11 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
         updatedAt: new Date(),
       })
       .where(eq(episodesTable.id, id));
+
+    logger.info(
+      { episodeId: id, youtubeVideoId, scheduled: !!scheduleAt },
+      "YouTube upload succeeded",
+    );
 
     res.json({
       success: true,

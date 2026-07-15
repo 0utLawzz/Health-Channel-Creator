@@ -9,6 +9,15 @@ import {
   ApproveEpisodeParams,
 } from "@workspace/api-zod";
 
+// The valid set of episode status strings (mirrors the Drizzle pgEnum)
+type EpisodeStatusValue =
+  | "draft"
+  | "complete"
+  | "review"
+  | "approved"
+  | "scheduled"
+  | "published";
+
 const router = Router();
 
 // GET /episodes
@@ -22,7 +31,8 @@ router.get("/episodes", async (req, res): Promise<void> => {
   const { status, season } = parsed.data;
 
   const conditions = [];
-  if (status) conditions.push(eq(episodesTable.status, status as any));
+  // status is already validated by Zod as a known enum value
+  if (status) conditions.push(eq(episodesTable.status, status as EpisodeStatusValue));
   if (season) conditions.push(eq(episodesTable.season, season));
 
   const episodes = await db
@@ -91,7 +101,7 @@ router.get("/episodes/upcoming", async (req, res): Promise<void> => {
 router.get("/episodes/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
-  if (isNaN(id)) {
+  if (isNaN(id) || id <= 0) {
     res.status(400).json({ error: "Invalid id" });
     return;
   }
@@ -119,7 +129,7 @@ router.get("/episodes/:id", async (req, res): Promise<void> => {
 router.patch("/episodes/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
-  if (isNaN(id)) {
+  if (isNaN(id) || id <= 0) {
     res.status(400).json({ error: "Invalid id" });
     return;
   }
@@ -138,7 +148,7 @@ router.patch("/episodes/:id", async (req, res): Promise<void> => {
 
   const { status, youtubeTitle, citationCta, hashtags, scheduledPublishAt } = bodyParsed.data;
 
-  const updateData: Record<string, any> = { updatedAt: new Date() };
+  const updateData: Record<string, unknown> = { updatedAt: new Date() };
   if (status !== undefined) updateData.status = status;
   if (youtubeTitle !== undefined) updateData.youtubeTitle = youtubeTitle;
   if (citationCta !== undefined) updateData.citationCta = citationCta;
@@ -165,7 +175,7 @@ router.patch("/episodes/:id", async (req, res): Promise<void> => {
 router.post("/episodes/:id/approve", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
-  if (isNaN(id)) {
+  if (isNaN(id) || id <= 0) {
     res.status(400).json({ error: "Invalid id" });
     return;
   }
