@@ -6,18 +6,39 @@
 [![Node](https://img.shields.io/badge/Node-24-green.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org)
 [![pnpm](https://img.shields.io/badge/pnpm-workspaces-orange.svg)](https://pnpm.io)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF.svg)](https://vitejs.dev)
+[![Express](https://img.shields.io/badge/Express-5-000000.svg)](https://expressjs.com)
+[![Drizzle](https://img.shields.io/badge/Drizzle-ORM-C5F74F.svg)](https://orm.drizzle.team)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-4169E1.svg)](https://www.postgresql.org)
 
 ---
 
-## Overview
+## What is this?
 
-**BioMinute Shorts Studio** is a monorepo production system for the BioMinute health channel — a YouTube Shorts series delivering 60-second, science-backed health insights. The studio covers the full episode lifecycle:
+**BioMinute Shorts Studio** is a monorepo production system for the **BioMinute** health channel — a YouTube Shorts series delivering 60-second, science-backed health insights. It covers the full episode lifecycle:
 
 ```
-XLSX Master Plan → Video Builder → MP4 Export → Publishing Dashboard → YouTube
+Spreadsheet Master Plan → Animated Video Builder → MP4 Export → Review Dashboard → YouTube Publish
 ```
 
-36 episodes are planned across 6 thematic seasons (Jul – Oct 2026). Each episode is researched, scripted, animated, exported, and published through a unified toolchain — no manual handoffs.
+- **36 episodes** planned across **6 thematic seasons** (Jul – Oct 2026).
+- Each episode is researched, scripted, animated, exported, and published through a unified toolchain.
+- The pipeline is designed for **9:16 vertical** (1080×1920) YouTube Shorts.
+
+---
+
+## Pipeline Flow
+
+```mermaid
+flowchart LR
+    A[📄 Master Plan<br/>XLSX] --> B[🎬 biominute-reels<br/>React/Framer Motion scenes]
+    B --> C[📦 export-video<br/>Playwright + ffmpeg]
+    C --> D[💾 exports/Episode-NN-slug/<br/>episode.mp4 + thumbnail.png]
+    D --> E[📊 publishing-dashboard<br/>Review + approve + metadata]
+    E --> F[🔌 api-server<br/>Drizzle + YouTube Data API]
+    F --> G[📺 YouTube Shorts]
+```
 
 ---
 
@@ -29,6 +50,7 @@ biominute-shorts-studio/
 │   ├── biominute-reels/        # React/Vite animated video player (9:16, 1080×1920)
 │   ├── api-server/             # Express 5 REST API + Drizzle ORM (PostgreSQL)
 │   ├── publishing-dashboard/   # React/Vite publishing control center
+│   ├── biominute-deck/         # React/Vite investor deck
 │   └── mockup-sandbox/         # Vite component preview server (design iterations)
 ├── lib/
 │   ├── db/                     # Drizzle schema, migrations, seed data
@@ -36,12 +58,22 @@ biominute-shorts-studio/
 │   ├── api-client-react/       # Auto-generated TanStack Query hooks
 │   └── api-zod/                # Auto-generated Zod validation schemas
 ├── scripts/
-│   └── src/                    # Video exporter, dashboard generator, GitHub pusher
+│   └── src/                    # Video exporter, dashboard generator, seed reader
 ├── exports/
 │   ├── production-log.md       # Episode tracker (status, export folders)
 │   └── Episode-NN-*/           # Per-episode MP4 + thumbnail + notes
-└── attached_assets/
-    └── BioMinute-Episode-Master-Plan*.xlsx   # 36-episode content bible
+├── attached_assets/
+│   ├── BioMinute-Episode-Master-Plan_*.xlsx   # 36-episode content bible
+│   ├── Logo_Youtube_*.png                       # Channel logo
+│   ├── Thumbnails_*.zip                         # Thumbnail source pack
+│   └── fiverr-thumbnail.png                     # Public gig image
+└── docs/
+    ├── INSTALL.md
+    ├── RUN.md
+    ├── USAGE.md
+    ├── CONTRIBUTING.md
+    ├── design-reference-neobrutalism.md
+    └── bug-report-aspect-ratio.md
 ```
 
 ---
@@ -49,25 +81,28 @@ biominute-shorts-studio/
 ## Artifacts
 
 ### 🎥 BioMinute Reels (`artifacts/biominute-reels`)
-Animated video player built in React 19 + Framer Motion. Each episode consists of 6 scenes rendered at 1080×1920 (9:16 vertical). Playwright + Xvfb headless export produces MP4 files ready for upload.
+Animated video player built with React 19 + Framer Motion. Each episode is made of 6 scenes rendered at 1080×1920 (9:16 vertical). The export pipeline records the running app via Playwright and merges the audio track with ffmpeg.
 
 - **Stack:** React 19, Vite, Framer Motion, Tailwind CSS, HTML5 Audio
-- **Output:** 1080×1920 MP4 @ 30fps, ~60 seconds per episode
-- **Audio:** Background music + scene SFX (no audio added to slides/dashboard)
+- **Output:** 1080×1920 MP4 @ 30fps, ~35–60 seconds per episode
+- **Audio:** Background music + scene SFX are **only** part of the video reels; the dashboard and deck have no background audio
 
 ### 📊 Publishing Dashboard (`artifacts/publishing-dashboard`)
-Neo-Brutalism control center for managing all 36 episodes. Features a stats overview, upcoming-episode strip, season/status filters, per-episode metadata editor, and one-click YouTube publishing.
+Neo-Brutalism control center for managing all 36 episodes. Stats overview, season/status filters, per-episode metadata editor, and one-click YouTube publishing.
 
 - **Stack:** React 19, Vite, TanStack Query, Wouter, Tailwind CSS
-- **Design:** Neo-Brutalism — `#EDEAE0` canvas, teal `#0A6B52` primary, orange `#C94A00` secondary
-- **Integrations:** YouTube Data API v3 (publish, schedule, privacy control)
+- **Design:** Neo-Brutalism — cream `#EDEAE0`, teal `#0A6B52`, orange `#C94A00`
+- **Integrations:** YouTube Data API v3
 
 ### 🔌 API Server (`artifacts/api-server`)
-REST API serving both the publishing dashboard and external tooling.
+REST API serving the publishing dashboard and YouTube publishing flow.
 
 - **Stack:** Express 5, Drizzle ORM, PostgreSQL, Zod, Pino
-- **Endpoints:** `GET/PATCH /episodes`, `POST /episodes/:id/approve`, `POST /youtube/publish/:id`, `GET /youtube/status`
-- **Auth:** Session-based (SESSION_SECRET), YouTube OAuth2 refresh token flow
+- **Endpoints:** `GET /api/episodes`, `PATCH /api/episodes/:id`, `POST /api/episodes/:id/approve`, `POST /api/youtube/publish/:id`, `GET /api/youtube/status`
+- **Auth:** Session-based (`SESSION_SECRET`), YouTube OAuth2 refresh token flow
+
+### 📑 BioMinute Deck (`artifacts/biominute-deck`)
+Investor/presentation deck built as a React web app. Slide content is driven by `src/data/slides-manifest.json`.
 
 ---
 
@@ -86,62 +121,52 @@ Every episode row in the master XLSX contains: hook title, VO script, visual dir
 
 ---
 
-## Getting Started
-
-### Prerequisites
-- Node.js 24+
-- pnpm 9+
-- PostgreSQL (or a Replit managed DB)
-
-### Install & Run
+## Quick Start
 
 ```bash
-# Install all workspace dependencies
+# 1. Install all workspace dependencies
 pnpm install
 
-# Start the API server
+# 2. Push the DB schema and seed episodes
+pnpm --filter @workspace/db push-force
+pnpm --filter @workspace/scripts exec tsx ./src/seed-episodes.ts
+
+# 3. Start the artifacts (in separate terminals)
 pnpm --filter @workspace/api-server run dev
-
-# Start the publishing dashboard
 pnpm --filter @workspace/publishing-dashboard run dev
-
-# Start the video builder
 pnpm --filter @workspace/biominute-reels run dev
 ```
 
-### Database Setup
+See [`docs/INSTALL.md`](docs/INSTALL.md) and [`docs/RUN.md`](docs/RUN.md) for the full setup.
 
-```bash
-# Push schema to DB
-pnpm --filter @workspace/db run push
+---
 
-# Seed all 36 episodes from master plan
-pnpm --filter @workspace/db run seed
-```
+## Available Options & Commands
 
-### Export a Video
-
-```bash
-# Make sure biominute-reels dev server is running first, then:
-pnpm run export-video
-```
-
-Exports go to `exports/Episode-NN-<slug>/episode.mp4`.
-
-### Push Exports to GitHub
-
-```bash
-bash scripts/push-to-github.sh "feat: export Episode 5"
-```
+| Command | Description |
+|---------|-------------|
+| `pnpm install` | Install all workspace dependencies |
+| `pnpm run typecheck` | TypeScript check across all packages |
+| `pnpm run build` | Build all packages |
+| `pnpm --filter @workspace/api-server run dev` | Start the API server |
+| `pnpm --filter @workspace/publishing-dashboard run dev` | Start the publishing dashboard |
+| `pnpm --filter @workspace/biominute-reels run dev` | Start the video player |
+| `pnpm --filter @workspace/biominute-deck run dev` | Start the investor deck |
+| `pnpm --filter @workspace/db push-force` | Push Drizzle schema to the database |
+| `pnpm --filter @workspace/scripts exec tsx ./src/seed-episodes.ts` | Seed episodes from the master XLSX |
+| `pnpm run export-video` | Export the current episode to MP4 |
+| `pnpm --filter @workspace/scripts exec tsx ./src/verify-export.ts <path>` | Verify MP4 resolution is 1080×1920 |
+| `pnpm run dashboard:generate` | Regenerate `exports/dashboard.html` from the production log |
 
 ---
 
 ## Environment Secrets
 
 | Secret | Purpose | Required |
-|--------|---------|---------|
+|--------|---------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | For API server |
 | `SESSION_SECRET` | Express session signing | Yes |
-| `GITHUB_TOKEN` | Push exports to GitHub (classic PAT, `repo` scope) | For exports |
+| `GITHUB_TOKEN` | Push exports to GitHub (classic PAT, `repo` scope) | For auto-push |
 | `YOUTUBE_CLIENT_ID` | YouTube OAuth2 client ID | For publishing |
 | `YOUTUBE_CLIENT_SECRET` | YouTube OAuth2 client secret | For publishing |
 | `YOUTUBE_REFRESH_TOKEN` | Long-lived refresh token for YouTube API | For publishing |
@@ -150,21 +175,10 @@ Set all secrets via Replit's Secrets manager (never commit to `.env`).
 
 ---
 
-## Publishing Workflow
-
-1. **Build episode** — Open `biominute-reels`, load episode scenes from master plan
-2. **Export MP4** — Run `pnpm run export-video` (Playwright headless recorder)
-3. **Review in dashboard** — Open publishing dashboard, check stats and episode card
-4. **Edit metadata** — Update YouTube title, hashtags, schedule date inline
-5. **Approve** — Click "Approve Episode" on the episode detail page
-6. **Publish** — Click "Publish to YouTube" → uploads via YouTube Data API v3
-
----
-
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|------------|
 | Runtime | Node.js 24 |
 | Language | TypeScript 5.9 |
 | Package manager | pnpm workspaces |
@@ -176,30 +190,29 @@ Set all secrets via Replit's Secrets manager (never commit to `.env`).
 | Validation | Zod (auto-generated from OpenAPI) |
 | API client | TanStack Query (auto-generated hooks) |
 | Styling | Tailwind CSS v4 |
-| Video export | Playwright + Xvfb |
+| Video export | Playwright + Xvfb + ffmpeg |
 | YouTube integration | YouTube Data API v3 |
 | Logging | Pino |
 
 ---
 
-## Scripts Reference
+## Documentation
 
-| Command | Description |
-|---------|------------|
-| `pnpm install` | Install all workspace dependencies |
-| `pnpm run typecheck` | TypeScript check across all packages |
-| `pnpm run build` | Build all packages |
-| `pnpm run export-video` | Export current episode to MP4 |
-| `pnpm run dashboard:generate` | Regenerate `exports/dashboard.html` |
-| `bash scripts/push-to-github.sh "message"` | Push exports to GitHub |
+- [`docs/INSTALL.md`](docs/INSTALL.md) — detailed installation and secrets setup
+- [`docs/RUN.md`](docs/RUN.md) — how to run every artifact and workflow
+- [`docs/USAGE.md`](docs/USAGE.md) — full production workflow from plan to publish
+- [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) — bug report / suggestion form and known issues
+- [`docs/design-reference-neobrutalism.md`](docs/design-reference-neobrutalism.md) — brand/design system reference
+- [`docs/bug-report-aspect-ratio.md`](docs/bug-report-aspect-ratio.md) — historical aspect-ratio bug report
 
 ---
 
 ## Project Status
 
-- ✅ Episodes 1–30: Complete (exported, logged in `exports/production-log.md`)
-- 🔄 Episodes 31–36: Planned
-- ✅ Publishing dashboard: Live (Neo-Brutalism UI, full CRUD + YouTube publish)
+- ✅ Episodes 1–24: Exported and logged in `exports/production-log.md`
+- ✅ Episodes 25–30: Built and logged
+- 🔄 Episodes 31–36: Planned queue
+- ✅ Publishing dashboard: Live with Neo-Brutalism UI, full CRUD + YouTube publish
 - ✅ API server: Running with full OpenAPI spec
 - ✅ Database: 36 episodes seeded
 - 🔄 YouTube credentials: Being configured

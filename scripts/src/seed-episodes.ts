@@ -9,7 +9,7 @@ import { db, episodesTable } from "@workspace/db";
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
 const MASTER_SHEET = path.join(
   PROJECT_ROOT,
-  "attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx",
+  "attached_assets/BioMinute-Episode-Master-Plan_1783893698840.xlsx",
 );
 const PRODUCTION_LOG = path.join(PROJECT_ROOT, "exports/production-log.md");
 const EXPORTS_DIR = path.join(PROJECT_ROOT, "exports");
@@ -53,30 +53,46 @@ function normalizePostDate(raw: string): string {
   return parsed.toISOString().slice(0, 10);
 }
 
+function parseCitationBlock(raw: string): { citationCta: string; hashtags: string } {
+  const hashtagsMatch = raw.match(/HASHTAGS:\s*(.*)/);
+  const hashtags = hashtagsMatch ? hashtagsMatch[1].trim() : "";
+  // Keep the full CITATION + CTA block as the dashboard citation text.
+  const citationCta = raw
+    .replace(/HASHTAGS:.*$/s, "")
+    .replace(/\r?\n\r?\n+/g, "\n\n")
+    .trim();
+  return { citationCta, hashtags };
+}
+
 async function main() {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.readFile(MASTER_SHEET);
-  const ws = wb.getWorksheet("Content_Master");
-  if (!ws) throw new Error("Content_Master sheet not found");
+  const ws = wb.getWorksheet("Episode Master Plan");
+  if (!ws) throw new Error("Episode Master Plan sheet not found");
 
   const logStatuses = parseProductionLog();
 
   const rows: (typeof episodesTable.$inferInsert)[] = [];
 
   ws.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return; // header
+    // Row 1 is a warning banner, row 2 is the header. Data starts at row 3.
+    if (rowNumber <= 2) return;
+
     const epNumber = Number(row.getCell(1).value);
     if (!epNumber || Number.isNaN(epNumber)) return;
 
-    const postDateRaw = String(row.getCell(3).value ?? "");
-    const season = String(row.getCell(4).value ?? "");
-    const hookTitle = String(row.getCell(5).value ?? "");
-    const youtubeTitle = String(row.getCell(6).value ?? "");
-    const voScript = String(row.getCell(7).value ?? "");
-    const visualDirection = String(row.getCell(8).value ?? "");
-    const hashtags = String(row.getCell(11).value ?? "");
-    const ctaPrompt = String(row.getCell(12).value ?? "");
+    const postDateRaw = String(row.getCell(4).value ?? "");
+    const season = String(row.getCell(5).value ?? "");
+    const duration = String(row.getCell(7).value ?? "");
+    const hookTitle = String(row.getCell(8).value ?? "");
+    const youtubeTitle = String(row.getCell(9).value ?? "");
+    const voScript = String(row.getCell(10).value ?? "");
+    const visualDirection = String(row.getCell(11).value ?? "");
+    const bgSound = String(row.getCell(12).value ?? "");
     const thumbnailPrompt = String(row.getCell(13).value ?? "");
+    const citationBlock = String(row.getCell(14).value ?? "");
+
+    const { citationCta, hashtags } = parseCitationBlock(citationBlock);
 
     const exported = hasExportedVideo(epNumber);
     const status: DbStatus = exported ? "complete" : "draft";
@@ -89,14 +105,14 @@ async function main() {
       postDate: postDateRaw ? normalizePostDate(postDateRaw) : "",
       season,
       aspectRatio: "9:16",
-      duration: "~35-60s",
+      duration,
       hookTitle,
       youtubeTitle,
       voScript,
       visualDirection,
-      bgSound: "Background music + scene SFX",
+      bgSound,
       thumbnailPrompt,
-      citationCta: ctaPrompt,
+      citationCta,
       hashtags,
     });
   });

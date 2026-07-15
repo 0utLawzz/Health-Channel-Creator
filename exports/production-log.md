@@ -4,7 +4,7 @@ Persistent tracker for all BioMinute reel/short episodes. **Read this file befor
 
 > **Format note:** The generic video-js skill defaults to 16:9 widescreen motion pieces. **BioMinute is 9:16 vertical** (1080×1920 YouTube Shorts). Always keep the vertical aspect ratio in `artifacts/biominute-reels`.
 >
-> **Repo policy:** every completed episode's `episode.mp4` and `thumbnail.png` are committed to its `exports/Episode-NN-slug/` folder so the repo stays self-contained and portable across accounts. Re-importing into any Replit account should still show working video previews in `exports/dashboard.html`.
+> **Repo policy:** every completed episode's `episode.mp4` and `thumbnail.png` are committed to its `exports/Episode-NN-slug/` folder so the repo stays self-contained and portable across accounts. Use the `artifacts/publishing-dashboard` artifact for live episode previews, or regenerate `exports/dashboard.html` with `pnpm run dashboard:generate` if needed.
 
 | Episode # | Title | Status | Date Completed | Export Folder | Notes |
 |---|---|---|---|---|---|
@@ -76,4 +76,4 @@ Record exact constants and creative choices here so future episodes don't drift.
 - Thumbnail spec (from master plan): 1080x1920 vertical, dark slate bg (#0F172A), bold white headline, one keyword highlighted in emerald (#10B981) or orange (#F97316), one simple rounded flat icon, soft blue (#2F6FED) gradient glow, Kurzgesagt-inspired flat design, generous negative space, no stock photos.
 
 ## Full source data
-- Full spreadsheet with scripts, visual direction, citations, descriptions, hashtags, CTAs, and thumbnail prompts for every episode: `attached_assets/BioMinute-Episode-Master-Plan_1783643847514.xlsx` (sheet "Content_Master"). Re-read this sheet's row for an episode's exact script/citation before producing — do not rely on the title alone.
+- Full spreadsheet with scripts, visual direction, citations, descriptions, hashtags, CTAs, and thumbnail prompts for every episode: `attached_assets/BioMinute-Episode-Master-Plan_1783893698840.xlsx` (sheet "Episode Master Plan"). Re-read this sheet's row for an episode's exact script/citation before producing — do not rely on the title alone.
