@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "outputDirectory": "dist/public",
+  "buildCommand": "pnpm --filter @workspace/publishing-dashboard build",
+  "installCommand": "pnpm install"
+}
