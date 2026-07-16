@@ -180,21 +180,6 @@ export interface CreateEpisodeBody {
   aspectRatio?: string;
 }
 
-export interface GenerateScriptBody {
-  topic: string;
-  season?: string;
-}
-
-export interface GenerateScriptResult {
-  hookTitle: string;
-  youtubeTitle: string;
-  voScript: string;
-  visualDirection: string;
-  thumbnailPrompt: string;
-  citationCta: string;
-  hashtags: string;
-}
-
 export interface BuildStatus {
   id: number;
   status: string;

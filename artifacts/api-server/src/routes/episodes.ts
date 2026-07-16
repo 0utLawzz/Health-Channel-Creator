@@ -8,7 +8,6 @@ import {
   UpdateEpisodeParams,
   ApproveEpisodeParams,
   CreateEpisodeBody,
-  GenerateScriptBody,
   GetBuildStatusParams,
   RunProductionParams,
   RejectEpisodeParams,
@@ -143,51 +142,6 @@ router.get("/episodes/upcoming", async (req, res): Promise<void> => {
     .limit(5);
 
   res.json(all);
-});
-
-// POST /episodes/generate-script
-router.post("/episodes/generate-script", async (req, res): Promise<void> => {
-  const parsed = GenerateScriptBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-
-  const { topic, season } = parsed.data;
-  const seasonTag = season ? ` (${season})` : "";
-
-  // Template-based placeholder — no LLM needed. User edits before rendering.
-  const hookTitle = `The truth about ${topic} nobody tells you`;
-  const youtubeTitle = `${topic}: What the science actually says #BioMinute`;
-  const voScript = `[HOOK — 0:00-0:05]
-Did you know that ${topic} can change your biology in minutes?
-
-[CONTEXT — 0:05-0:15]
-Most people are getting this completely wrong. Here's what the research actually shows about ${topic}.
-
-[MECHANISM — 0:15-0:35]
-Your body responds to ${topic} by triggering a cascade of cellular changes. Studies show that consistent practice leads to measurable improvements in key biomarkers within just weeks.
-
-[EVIDENCE — 0:35-0:50]
-A landmark 2023 study found that people who optimized their approach to ${topic} experienced significantly better outcomes compared to controls — without any medications or expensive interventions.
-
-[CTA — 0:50-1:00]
-The research is clear. Start today. Drop a "✓" in the comments if you're going to try this. Save this video — your future self will thank you.`;
-
-  const visualDirection = `Clean medical-aesthetic visuals. Open on close-up of relevant imagery for "${topic}". Animate key statistics as bold text overlays. Use biominute color palette — deep green, warm cream, accent orange. Split-screen showing before/after or mechanism diagrams. End card with channel logo.`;
-  const thumbnailPrompt = `Bold text "${topic.toUpperCase()} TRUTH" over a high-contrast medical/wellness background. Include a shocked or curious face expression. Red/orange accent color on key word. Clean, minimal, high-contrast for mobile.`;
-  const citationCta = `Source: Current research on ${topic}. See pinned comment for full citations. Consult your healthcare provider before making changes.`;
-  const hashtags = `#${topic.replace(/\s+/g, "")} #BioMinute #HealthScience #WellnessTips #HealthHacks #ScienceBacked${seasonTag ? ` #BioMinuteSeason` : ""}`;
-
-  res.json({
-    hookTitle,
-    youtubeTitle,
-    voScript,
-    visualDirection,
-    thumbnailPrompt,
-    citationCta,
-    hashtags,
-  });
 });
 
 // POST /episodes — create new episode (enters building pipeline)

@@ -26,8 +26,6 @@ import type {
   EpisodeStats,
   EpisodeUpdate,
   ErrorResponse,
-  GenerateScriptBody,
-  GenerateScriptResult,
   HealthStatus,
   ListEpisodesParams,
   PublishRequest,
@@ -864,39 +862,6 @@ export const useCreateEpisode = <TError = ErrorType<unknown>, TContext = unknown
   options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createEpisode>>, TError, { data: BodyType<CreateEpisodeBody> }, TContext>, request?: SecondParameter<typeof customFetch> }
 ): UseMutationResult<Awaited<ReturnType<typeof createEpisode>>, TError, { data: BodyType<CreateEpisodeBody> }, TContext> => {
   return useMutation(getCreateEpisodeMutationOptions(options));
-};
-
-
-export const getGenerateScriptUrl = () => `/api/episodes/generate-script`
-
-export const generateScript = async (generateScriptBody: GenerateScriptBody, options?: RequestInit): Promise<GenerateScriptResult> => {
-  return customFetch<GenerateScriptResult>(getGenerateScriptUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(generateScriptBody)
-  });
-}
-
-export const getGenerateScriptMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof generateScript>>, TError, { data: BodyType<GenerateScriptBody> }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationOptions<Awaited<ReturnType<typeof generateScript>>, TError, { data: BodyType<GenerateScriptBody> }, TContext> => {
-  const mutationKey = ['generateScript'];
-  const { mutation: mutationOptions, request: requestOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateScript>>, { data: BodyType<GenerateScriptBody> }> = (props) => {
-    const { data } = props ?? {};
-    return generateScript(data, requestOptions);
-  };
-  return { mutationFn, ...mutationOptions };
-};
-
-export const useGenerateScript = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof generateScript>>, TError, { data: BodyType<GenerateScriptBody> }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationResult<Awaited<ReturnType<typeof generateScript>>, TError, { data: BodyType<GenerateScriptBody> }, TContext> => {
-  return useMutation(getGenerateScriptMutationOptions(options));
 };
 
 

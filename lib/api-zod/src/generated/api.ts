@@ -243,25 +243,6 @@ export const CreateEpisodeBody = zod.object({
 export const CreateEpisodeParams = zod.object({})
 
 /**
- * @summary Generate a placeholder script from topic
- */
-export const GenerateScriptBody = zod.object({
-  "topic": zod.string().min(3),
-  "season": zod.string().optional()
-})
-
-export const GenerateScriptResponse = zod.object({
-  "hookTitle": zod.string(),
-  "youtubeTitle": zod.string(),
-  "voScript": zod.string(),
-  "visualDirection": zod.string(),
-  "thumbnailPrompt": zod.string(),
-  "citationCta": zod.string(),
-  "hashtags": zod.string()
-})
-
-
-/**
  * @summary Get build status for an episode
  */
 export const GetBuildStatusParams = zod.object({

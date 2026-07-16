@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useLocation } from "wouter";
-import { Loader2, Upload, Sparkles, ArrowLeft, ChevronRight } from "lucide-react";
+import { Loader2, Upload, ArrowLeft, FileText, X } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { customFetch } from "@workspace/api-client-react";
-
-type Mode = null | "upload" | "ai";
 
 const SEASONS = [
   "S1: Morning Habits",
@@ -14,6 +12,8 @@ const SEASONS = [
   "S5: Nutrition & Myths",
   "S6: Healthy Aging & Longevity",
 ];
+
+const DURATIONS = ["30s", "45s", "60s", "90s"];
 
 const DEFAULT_FORM = {
   epNumber: "",
@@ -27,56 +27,113 @@ const DEFAULT_FORM = {
   bgSound: "calm ambient",
   thumbnailPrompt: "",
   citationCta: "",
+  ctaComment: "",
   hashtags: "",
   aspectRatio: "9:16",
 };
 
+type FormState = typeof DEFAULT_FORM;
+
+type UploadEpisode = Partial<{
+  epNumber: number | string;
+  postDate: string;
+  season: string;
+  duration: string;
+  hookTitle: string;
+  youtubeTitle: string;
+  voScript: string;
+  visualDirection: string;
+  bgSound: string;
+  thumbnailPrompt: string;
+  citationCta: string;
+  ctaComment: string;
+  hashtags: string;
+  aspectRatio: string;
+}>;
+
 export default function NewEpisode() {
   const [, navigate] = useLocation();
-  const [mode, setMode] = useState<Mode>(null);
   const [form, setForm] = useState({ ...DEFAULT_FORM });
-  const [topic, setTopic] = useState("");
-  const [generating, setGenerating] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function set(field: keyof typeof form, value: string) {
+  function set(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleGenerate() {
-    if (!topic.trim()) return;
-    setGenerating(true);
+  function applyUpload(data: UploadEpisode) {
+    setForm((prev) => ({
+      ...prev,
+      epNumber: data.epNumber !== undefined ? String(data.epNumber) : prev.epNumber,
+      postDate: data.postDate ?? prev.postDate,
+      season: data.season ?? prev.season,
+      duration: data.duration ?? prev.duration,
+      hookTitle: data.hookTitle ?? prev.hookTitle,
+      youtubeTitle: data.youtubeTitle ?? prev.youtubeTitle,
+      voScript: data.voScript ?? prev.voScript,
+      visualDirection: data.visualDirection ?? prev.visualDirection,
+      bgSound: data.bgSound ?? prev.bgSound,
+      thumbnailPrompt: data.thumbnailPrompt ?? prev.thumbnailPrompt,
+      citationCta: data.citationCta ?? prev.citationCta,
+      ctaComment: data.ctaComment ?? prev.ctaComment,
+      hashtags: data.hashtags ?? prev.hashtags,
+      aspectRatio: data.aspectRatio ?? prev.aspectRatio,
+    }));
+  }
+
+  const parseFile = useCallback(async (file: File) => {
     setError(null);
+    const text = await file.text();
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    let data: UploadEpisode = {};
     try {
-      const result = await customFetch<{
-        hookTitle: string;
-        youtubeTitle: string;
-        voScript: string;
-        visualDirection: string;
-        thumbnailPrompt: string;
-        citationCta: string;
-        hashtags: string;
-      }>("/api/episodes/generate-script", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, season: form.season }),
-      });
-      setForm((prev) => ({
-        ...prev,
-        hookTitle: result.hookTitle,
-        youtubeTitle: result.youtubeTitle,
-        voScript: result.voScript,
-        visualDirection: result.visualDirection,
-        thumbnailPrompt: result.thumbnailPrompt,
-        citationCta: result.citationCta,
-        hashtags: result.hashtags,
-      }));
+      if (ext === "json") {
+        data = JSON.parse(text) as UploadEpisode;
+      } else if (ext === "md" || ext === "txt") {
+        // Try to extract a JSON block from markdown, or treat whole file as JSON if it starts with "{".
+        const trimmed = text.trim();
+        const jsonBlock = trimmed.match(/```(?:json)?\n?([\s\S]*?)```/);
+        const payload = jsonBlock?.[1]?.trim() ?? trimmed;
+        if (payload.startsWith("{")) {
+          data = JSON.parse(payload) as UploadEpisode;
+        } else {
+          // Fallback: assume markdown headers and treat voScript as body.
+          data = parseMarkdownFields(text);
+        }
+      } else {
+        throw new Error("Unsupported file type. Use .md, .txt, or .json.");
+      }
+      applyUpload(data);
+      setUploadedFileName(file.name);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to generate script");
-    } finally {
-      setGenerating(false);
+      setError(e?.message ?? "Failed to parse uploaded file");
+      setUploadedFileName(null);
     }
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setDragOver(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file) parseFile(file);
+    },
+    [parseFile]
+  );
+
+  const handleFileInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) parseFile(file);
+      e.target.value = "";
+    },
+    [parseFile]
+  );
+
+  function clearUpload() {
+    setUploadedFileName(null);
   }
 
   async function handleSave() {
@@ -86,7 +143,7 @@ export default function NewEpisode() {
       return;
     }
     if (!form.postDate || !form.hookTitle || !form.voScript) {
-      setError("Post date, hook title, and script are required");
+      setError("Post date, hook title, and VO script are required");
       return;
     }
 
@@ -107,7 +164,7 @@ export default function NewEpisode() {
           visualDirection: form.visualDirection,
           bgSound: form.bgSound,
           thumbnailPrompt: form.thumbnailPrompt,
-          citationCta: form.citationCta,
+          citationCta: [form.citationCta, form.ctaComment].filter(Boolean).join(" "),
           hashtags: form.hashtags,
           aspectRatio: form.aspectRatio,
         }),
@@ -120,114 +177,78 @@ export default function NewEpisode() {
     }
   }
 
-  // ── Choice Gate ───────────────────────────────────────────────────────────────
-  if (!mode) {
-    return (
-      <div className="min-h-screen bg-[#0C0C0C]">
-        <Navbar />
-        <main className="max-w-4xl mx-auto px-6 py-16">
-          <div className="mb-10">
-            <p className="font-mono text-xs text-[#C9A800] font-bold uppercase tracking-widest mb-2">New Episode</p>
-            <h1 className="font-display text-7xl text-[#FAF7EE] leading-none uppercase">
-              HOW DO YOU<br />WANT TO START?
-            </h1>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-            {/* Upload Asset */}
-            <button
-              onClick={() => setMode("upload")}
-              className="group text-left bg-[#1A1A1A] border-[3px] border-[#FAF7EE] p-8 shadow-[6px_6px_0_#FAF7EE] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all"
-            >
-              <div className="w-14 h-14 bg-[#FAF7EE] border-[3px] border-[#FAF7EE] flex items-center justify-center mb-6">
-                <Upload size={28} className="text-[#0C0C0C]" />
-              </div>
-              <h2 className="font-display text-4xl text-[#FAF7EE] uppercase mb-3">UPLOAD ASSET</h2>
-              <p className="font-mono text-xs text-[#999] leading-relaxed">
-                You have the script ready. Fill in all fields manually and enter the building pipeline.
-              </p>
-              <div className="flex items-center gap-2 mt-6 font-mono text-xs font-bold text-[#C9A800] uppercase">
-                Fill form <ChevronRight size={14} />
-              </div>
-            </button>
-
-            {/* AI Generate */}
-            <button
-              onClick={() => setMode("ai")}
-              className="group text-left bg-[#1A1A1A] border-[3px] border-[#C9A800] p-8 shadow-[6px_6px_0_#C9A800] hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all"
-            >
-              <div className="w-14 h-14 bg-[#C9A800] border-[3px] border-[#C9A800] flex items-center justify-center mb-6">
-                <Sparkles size={28} className="text-[#0C0C0C]" />
-              </div>
-              <h2 className="font-display text-4xl text-[#C9A800] uppercase mb-3">AI GENERATE</h2>
-              <p className="font-mono text-xs text-[#999] leading-relaxed">
-                Enter a health topic and get a complete script template instantly. Edit before saving.
-              </p>
-              <div className="flex items-center gap-2 mt-6 font-mono text-xs font-bold text-[#C9A800] uppercase">
-                Generate draft <ChevronRight size={14} />
-              </div>
-            </button>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  // ── Full Form ─────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#EDEAE0] pb-20">
       <Navbar />
       <main className="max-w-4xl mx-auto px-6 pt-10">
         <div className="flex items-center gap-4 mb-8">
           <button
-            onClick={() => setMode(null)}
+            onClick={() => navigate("/")}
             className="flex items-center gap-2 font-mono text-xs font-bold text-[#555] hover:text-[#0C0C0C] uppercase"
           >
             <ArrowLeft size={14} /> Back
           </button>
           <div className="h-[2px] bg-[#0C0C0C] flex-1" />
-          <div className={`font-mono text-xs font-bold px-3 py-1 border-[2px] border-[#0C0C0C] uppercase ${
-            mode === "ai" ? "bg-[#C9A800] text-[#0C0C0C]" : "bg-[#FAF7EE] text-[#0C0C0C]"
-          }`}>
-            {mode === "ai" ? "✦ AI Generate" : "↑ Upload Asset"}
+          <div className="font-mono text-xs font-bold px-3 py-1 border-[2px] border-[#0C0C0C] bg-[#C9A800] text-[#0C0C0C] uppercase">
+            New Episode
           </div>
         </div>
 
-        <h1 className="font-display text-5xl text-[#0C0C0C] uppercase mb-8">New Episode</h1>
-
-        {/* AI Topic Generator (only in AI mode) */}
-        {mode === "ai" && (
-          <div className="bg-[#0C0C0C] border-[3px] border-[#0C0C0C] p-6 mb-8 shadow-[5px_5px_0_#C9A800]">
-            <p className="font-mono text-xs text-[#C9A800] font-bold uppercase mb-3">✦ Generate from Topic</p>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                placeholder="e.g. cold exposure, circadian rhythm, gut health…"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
-                className="flex-1 bg-[#1A1A1A] border-[2px] border-[#555] text-[#FAF7EE] font-mono text-sm px-4 py-2 placeholder:text-[#444] focus:border-[#C9A800] outline-none"
-              />
-              <button
-                onClick={handleGenerate}
-                disabled={generating || !topic.trim()}
-                className="flex items-center gap-2 bg-[#C9A800] text-[#0C0C0C] font-mono font-bold text-xs px-5 py-2 border-[2px] border-[#C9A800] shadow-[3px_3px_0_#FAF7EE] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase"
-              >
-                {generating ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
-                {generating ? "Generating…" : "Generate"}
-              </button>
-            </div>
-            {form.hookTitle && (
-              <p className="font-mono text-xs text-[#0D9970] mt-3">✓ Script generated — review and edit below before saving</p>
-            )}
-          </div>
-        )}
+        <h1 className="font-display text-5xl text-[#0C0C0C] uppercase mb-2">New Episode</h1>
+        <p className="font-mono text-xs text-[#555] uppercase mb-8 max-w-2xl">
+          Fill the form directly, or upload an existing script file (.md / .txt / .json) to pre-fill it. Either way, this enters the building pipeline at stage “script_ready.”
+        </p>
 
         {error && (
           <div className="bg-[#FFE8E8] border-[2px] border-[#C94A00] text-[#C94A00] font-mono text-sm px-4 py-3 mb-6">
             {error}
           </div>
         )}
+
+        {/* Upload drop zone */}
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          className={`mb-8 border-[3px] p-8 transition-all ${
+            dragOver
+              ? "border-[#C9A800] bg-[#F5F2E8] shadow-[5px_5px_0_#C9A800]"
+              : "border-[#0C0C0C] bg-[#FAF7EE] shadow-[5px_5px_0_#0C0C0C]"
+          }`}
+        >
+          <div className="flex items-start gap-6">
+            <div className="w-14 h-14 bg-[#0C0C0C] flex items-center justify-center shrink-0">
+              <Upload size={28} className="text-[#C9A800]" />
+            </div>
+            <div className="flex-1">
+              <p className="font-mono text-xs font-bold text-[#0C0C0C] uppercase mb-2">
+                Option A — Upload a script file
+              </p>
+              <p className="font-mono text-xs text-[#555] leading-relaxed mb-4">
+                Drag & drop a .md, .txt, or .json file here, or click to browse. If the file matches the BioMinute episode structure, we’ll auto-fill the form below. You can still edit everything before saving.
+              </p>
+              <label className="inline-flex items-center gap-2 font-mono text-xs font-bold px-4 py-2 border-[2px] border-[#0C0C0C] bg-[#C9A800] text-[#0C0C0C] shadow-[3px_3px_0_#0C0C0C] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all uppercase cursor-pointer">
+                <FileText size={13} /> Choose file
+                <input type="file" accept=".md,.txt,.json" className="hidden" onChange={handleFileInput} />
+              </label>
+              {uploadedFileName && (
+                <div className="mt-3 inline-flex items-center gap-2 font-mono text-xs bg-[#0C0C0C] text-[#FAF7EE] px-3 py-1.5">
+                  <span className="text-[#C9A800]">✓</span> {uploadedFileName}
+                  <button onClick={clearUpload} className="ml-1 hover:text-[#C9A800]">
+                    <X size={12} />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-4 mb-8">
+          <div className="h-[2px] bg-[#0C0C0C] flex-1" />
+          <span className="font-mono text-xs font-bold text-[#0C0C0C] uppercase">Option B — Type directly</span>
+          <div className="h-[2px] bg-[#0C0C0C] flex-1" />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Episode Number */}
@@ -261,19 +282,17 @@ export default function NewEpisode() {
             </select>
           </Field>
 
-          {/* Duration */}
-          <Field label="Duration">
-            <input
-              type="text"
-              value={form.duration}
-              onChange={(e) => set("duration", e.target.value)}
-              className={INPUT}
-              placeholder="60s"
-            />
+          {/* Duration target */}
+          <Field label="Duration Target" required>
+            <select value={form.duration} onChange={(e) => set("duration", e.target.value)} className={INPUT}>
+              {DURATIONS.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
           </Field>
 
           {/* Hook Title */}
-          <Field label="Hook Title" required className="md:col-span-2">
+          <Field label="Topic / Hook Title" required className="md:col-span-2">
             <input
               type="text"
               value={form.hookTitle}
@@ -297,7 +316,7 @@ export default function NewEpisode() {
           {/* VO Script */}
           <Field label="VO Script" required className="md:col-span-2">
             <textarea
-              rows={10}
+              rows={12}
               value={form.voScript}
               onChange={(e) => set("voScript", e.target.value)}
               className={`${INPUT} resize-y`}
@@ -308,11 +327,11 @@ export default function NewEpisode() {
           {/* Visual Direction */}
           <Field label="Visual Direction" className="md:col-span-2">
             <textarea
-              rows={4}
+              rows={5}
               value={form.visualDirection}
               onChange={(e) => set("visualDirection", e.target.value)}
               className={`${INPUT} resize-y`}
-              placeholder="Describe the visual style, colors, and key imagery…"
+              placeholder="Describe the visual style, colors, and key imagery for the editor…"
             />
           </Field>
 
@@ -327,7 +346,7 @@ export default function NewEpisode() {
             />
           </Field>
 
-          {/* BG Sound */}
+          {/* Background Sound */}
           <Field label="Background Sound">
             <input
               type="text"
@@ -347,14 +366,25 @@ export default function NewEpisode() {
             </select>
           </Field>
 
-          {/* Citation CTA */}
-          <Field label="Citation / CTA" className="md:col-span-2">
+          {/* Citation */}
+          <Field label="Citation / Source" className="md:col-span-2">
             <input
               type="text"
               value={form.citationCta}
               onChange={(e) => set("citationCta", e.target.value)}
               className={INPUT}
-              placeholder="Source + call to action text"
+              placeholder="Source reference and safety disclaimer"
+            />
+          </Field>
+
+          {/* CTA / Comment Prompt */}
+          <Field label="CTA / Comment Prompt" className="md:col-span-2">
+            <input
+              type="text"
+              value={form.ctaComment}
+              onChange={(e) => set("ctaComment", e.target.value)}
+              className={INPUT}
+              placeholder="Drop a ✓ in the comments if you’ll try this…"
             />
           </Field>
 
@@ -413,4 +443,52 @@ function Field({
       {children}
     </div>
   );
+}
+
+function parseMarkdownFields(text: string): UploadEpisode {
+  const data: UploadEpisode = {};
+  const lines = text.split("\n");
+  let currentKey: keyof UploadEpisode | null = null;
+  const buffer: Record<string, string[]> = {};
+
+  const keyMap: Record<string, keyof UploadEpisode> = {
+    "episode number": "epNumber",
+    "post date": "postDate",
+    season: "season",
+    duration: "duration",
+    "topic / hook title": "hookTitle",
+    "hook title": "hookTitle",
+    "topic": "hookTitle",
+    "youtube title": "youtubeTitle",
+    "vo script": "voScript",
+    "script": "voScript",
+    "visual direction": "visualDirection",
+    "background sound": "bgSound",
+    "thumbnail prompt": "thumbnailPrompt",
+    "citation / source": "citationCta",
+    citation: "citationCta",
+    "cta / comment prompt": "ctaComment",
+    cta: "ctaComment",
+    hashtags: "hashtags",
+    "aspect ratio": "aspectRatio",
+  };
+
+  for (const line of lines) {
+    const headerMatch = line.match(/^#+\s*(.+)$/i);
+    if (headerMatch) {
+      const header = headerMatch[1].trim().toLowerCase().replace(/[:*]/g, "");
+      currentKey = keyMap[header] ?? null;
+      if (currentKey) buffer[currentKey] = [];
+      continue;
+    }
+    if (currentKey && line.trim() !== "---") {
+      buffer[currentKey].push(line);
+    }
+  }
+
+  for (const [key, value] of Object.entries(buffer)) {
+    const clean = value.join("\n").trim();
+    if (clean) data[key as keyof UploadEpisode] = clean;
+  }
+  return data;
 }
