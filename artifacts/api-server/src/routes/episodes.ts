@@ -32,7 +32,7 @@ const router = Router();
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-const WORKSPACE_ROOT = path.resolve(process.cwd(), "..", "..", "..");
+const WORKSPACE_ROOT = path.resolve(process.cwd(), "..", "..");
 
 /** Find exported video file for an episode number, returns null if not found */
 async function findVideoPath(epNumber: number): Promise<string | null> {

@@ -53,8 +53,8 @@ function getOAuth2Client() {
  * folder instead of reconstructing the slug from the title.
  */
 export function findEpisodeVideoPath(epNumber: number): string {
-  // artifacts/api-server/src/lib -> workspace root is 4 levels up
-  const workspaceRoot = path.resolve(import.meta.dirname, "../../../../");
+  // process.cwd() = artifacts/api-server/ at runtime → 2 levels up = workspace root
+  const workspaceRoot = path.resolve(process.cwd(), "../..");
   const exportsDir = path.join(workspaceRoot, "exports");
   const padded = String(epNumber).padStart(2, "0");
 
