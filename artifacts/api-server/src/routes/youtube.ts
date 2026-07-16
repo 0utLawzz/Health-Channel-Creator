@@ -8,6 +8,7 @@ import {
   addVideoToPlaylist,
   repairVideoOnYouTube,
   seasonEnvKey,
+  SEASON_PLAYLIST_ENV,
 } from "../lib/youtube-upload";
 import { logger } from "../lib/logger";
 

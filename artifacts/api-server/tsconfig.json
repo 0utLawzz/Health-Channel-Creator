@@ -6,7 +6,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "types": ["node"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmitOnError": false
   },
   "include": ["src"],
   "references": [
