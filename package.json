@@ -13,8 +13,7 @@
   },
   "private": true,
   "dependencies": {
-    "@replit/connectors-sdk": "^0.4.1",
-    "xlsx": "^0.18.5"
+    "@replit/connectors-sdk": "^0.4.1"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",
