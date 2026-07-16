@@ -24,7 +24,7 @@ const DEFAULT_FORM = {
   youtubeTitle: "",
   voScript: "",
   visualDirection: "",
-  bgSound: "calm ambient",
+  // NOTE: bgSound removed from UI intentionally — audio/sound is for reel generation only. DO NOT add it back here.
   thumbnailPrompt: "",
   citationCta: "",
   ctaComment: "",
@@ -43,7 +43,6 @@ type UploadEpisode = Partial<{
   youtubeTitle: string;
   voScript: string;
   visualDirection: string;
-  bgSound: string;
   thumbnailPrompt: string;
   citationCta: string;
   ctaComment: string;
@@ -74,7 +73,6 @@ export default function NewEpisode() {
       youtubeTitle: data.youtubeTitle ?? prev.youtubeTitle,
       voScript: data.voScript ?? prev.voScript,
       visualDirection: data.visualDirection ?? prev.visualDirection,
-      bgSound: data.bgSound ?? prev.bgSound,
       thumbnailPrompt: data.thumbnailPrompt ?? prev.thumbnailPrompt,
       citationCta: data.citationCta ?? prev.citationCta,
       ctaComment: data.ctaComment ?? prev.ctaComment,
@@ -343,17 +341,6 @@ export default function NewEpisode() {
               onChange={(e) => set("thumbnailPrompt", e.target.value)}
               className={`${INPUT} resize-y`}
               placeholder="AI image generation prompt for thumbnail…"
-            />
-          </Field>
-
-          {/* Background Sound */}
-          <Field label="Background Sound">
-            <input
-              type="text"
-              value={form.bgSound}
-              onChange={(e) => set("bgSound", e.target.value)}
-              className={INPUT}
-              placeholder="calm ambient"
             />
           </Field>
 

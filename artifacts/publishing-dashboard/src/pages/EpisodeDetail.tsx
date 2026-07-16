@@ -227,12 +227,7 @@ export default function EpisodeDetail() {
                     {episode.thumbnailPrompt}
                   </p>
                 </div>
-                <div className="md:col-span-2">
-                  <h3 className="font-mono text-sm font-bold uppercase text-[#555] mb-2">Audio / BGM</h3>
-                  <p className="font-sans bg-[#0C0C0C] text-[#FAF7EE] border-2 border-[#0C0C0C] p-3 text-sm">
-                    {episode.bgSound}
-                  </p>
-                </div>
+                {/* NOTE: Audio/BGM display removed — audio/sound is for reel generation only. DO NOT add it back here. */}
               </div>
             </div>
 

@@ -1,2 +1,3 @@
 - [Importing an external artifacts-repo](importing-external-artifact-repo.md) — overlay source onto a freshly-scaffolded artifact, don't hand-copy scaffold-generated files (tsconfig/vite.config/artifact.toml).
 - [BioMinute video export pipeline](biominute-video-export-pipeline.md) — export script env vars, build-stage flow, TypeScript project references rebuild required after lib changes.
+- [No audio in dashboard artifacts](no-audio-in-dashboard.md) — bgSound/BGM/SFX UI must never appear in publishing-dashboard, biominute-deck, or mockup-sandbox. Audio is biominute-reels + export scripts only.
