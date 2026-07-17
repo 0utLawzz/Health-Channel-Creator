@@ -4,11 +4,15 @@ import * as schema from "./schema";
 
 const { Pool } = pg;
 
-// Connection: uses PG* env vars (built-in Replit Postgres) which are always
-// correct in this environment. Switch to DATABASE_URL once Neon credentials
-// are confirmed working.
+// Connection priority:
+//   1. DATABASE_URL  → Neon (production DB)
+//   2. PG* vars      → built-in Replit Postgres (fallback / local dev)
 function buildPoolConfig(): pg.PoolConfig {
+  if (process.env.DATABASE_URL) {
+    return { connectionString: process.env.DATABASE_URL };
+  }
   if (process.env.PGHOST && process.env.PGDATABASE) {
+    console.warn("[db] DATABASE_URL not set — falling back to built-in Replit Postgres.");
     return {
       host: process.env.PGHOST,
       port: parseInt(process.env.PGPORT ?? "5432", 10),
@@ -17,7 +21,8 @@ function buildPoolConfig(): pg.PoolConfig {
       database: process.env.PGDATABASE,
     };
   }
-  return { connectionString: process.env.DATABASE_URL };
+  console.warn("[db] WARNING: No database credentials found.");
+  return {};
 }
 
 export const pool = new Pool(buildPoolConfig());
