@@ -2,6 +2,7 @@
 
 > AI-powered health-science YouTube Shorts production pipeline — from master plan spreadsheet to published video, fully automated.
 
+[![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)](VERSION.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/Node-24-green.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org)
@@ -22,7 +23,7 @@
 Spreadsheet Master Plan → Animated Video Builder → MP4 Export → Review Dashboard → YouTube Publish
 ```
 
-- **36 episodes** planned across **6 thematic seasons** (Jul – Oct 2026).
+- **50 episodes** planned across **6 thematic seasons** (Jul – Nov 2026).
 - Each episode is researched, scripted, animated, exported, and published through a unified toolchain.
 - The pipeline is designed for **9:16 vertical** (1080×1920) YouTube Shorts.
 
@@ -58,15 +59,16 @@ biominute-shorts-studio/
 │   ├── api-client-react/       # Auto-generated TanStack Query hooks
 │   └── api-zod/                # Auto-generated Zod validation schemas
 ├── scripts/
-│   └── src/                    # Video exporter, dashboard generator, seed reader
+│   └── src/                    # Video exporter, dashboard generator, seed reader, manual upload
 ├── exports/
 │   ├── production-log.md       # Episode tracker (status, export folders)
+│   ├── dashboard.html          # Static, self-contained live dashboard
 │   └── Episode-NN-*/           # Per-episode MP4 + thumbnail + notes
 ├── attached_assets/
-│   ├── BioMinute-Episode-Master-Plan_*.xlsx   # 36-episode content bible
-│   ├── Logo_Youtube_*.png                       # Channel logo
-│   ├── Thumbnails_*.zip                         # Thumbnail source pack
-│   └── fiverr-thumbnail.png                     # Public gig image
+│   ├── BioMinute-Master-Workbook.xlsx   # 50-episode content bible (Production / Social / Schedule tabs)
+│   ├── Logo_Youtube_*.png               # Channel logo
+│   ├── Thumbnails_*.zip                 # Thumbnail source pack
+│   └── fiverr-thumbnail.png           # Public gig image
 └── docs/
     ├── INSTALL.md
     ├── RUN.md
@@ -88,7 +90,7 @@ Animated video player built with React 19 + Framer Motion. Each episode is made 
 - **Audio:** Background music + scene SFX are **only** part of the video reels; the dashboard and deck have no background audio
 
 ### 📊 Publishing Dashboard (`artifacts/publishing-dashboard`)
-Neo-Brutalism control center for managing all 36 episodes. Stats overview, season/status filters, per-episode metadata editor, and one-click YouTube publishing.
+Neo-Brutalism control center for managing all 50 episodes. Stats overview, season/status filters, per-episode metadata editor, and one-click YouTube publishing.
 
 - **Stack:** React 19, Vite, TanStack Query, Wouter, Tailwind CSS
 - **Design:** Neo-Brutalism — cream `#EDEAE0`, teal `#0A6B52`, orange `#C94A00`
@@ -98,8 +100,9 @@ Neo-Brutalism control center for managing all 36 episodes. Stats overview, seaso
 REST API serving the publishing dashboard and YouTube publishing flow.
 
 - **Stack:** Express 5, Drizzle ORM, PostgreSQL, Zod, Pino
-- **Endpoints:** `GET /api/episodes`, `PATCH /api/episodes/:id`, `POST /api/episodes/:id/approve`, `POST /api/youtube/publish/:id`, `GET /api/youtube/status`
+- **Endpoints:** `GET /api/episodes`, `PATCH /api/episodes/:id`, `POST /api/episodes/:id/approve`, `POST /api/youtube/publish/:id`, `GET /api/youtube/status`, `POST /api/episodes/:epNumber/publish-now`
 - **Auth:** Session-based (`SESSION_SECRET`), YouTube OAuth2 refresh token flow
+- **Scheduler:** Every 15 minutes, auto-uploads scheduled episodes whose time has arrived
 
 ### 📑 BioMinute Deck (`artifacts/biominute-deck`)
 Investor/presentation deck built as a React web app. Slide content is driven by `src/data/slides-manifest.json`.
@@ -116,8 +119,9 @@ Investor/presentation deck built as a React web app. Slide content is driven by 
 | S4 | Stress & Mind | Ep 19–24 | Aug 18 – Aug 28, 2026 |
 | S5 | Nutrition & Myths | Ep 25–30 | Aug 30 – Sep 11, 2026 |
 | S6 | Healthy Aging & Longevity | Ep 31–36 | Sep 13 – Sep 25, 2026 |
+| S7 | Extended queue | Ep 37–50 | Sep 27 – Nov 10, 2026 |
 
-Every episode row in the master XLSX contains: hook title, VO script, visual direction, thumbnail prompt, BGM/SFX notes, hashtags, YouTube title, and post date.
+Every episode row in the master workbook contains: hook title, VO script, visual direction, thumbnail prompt, BGM/SFX notes, hashtags, YouTube title, post-ready description, and post date.
 
 ---
 
@@ -153,10 +157,11 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) and [`docs/RUN.md`](docs/RUN.md) for th
 | `pnpm --filter @workspace/biominute-reels run dev` | Start the video player |
 | `pnpm --filter @workspace/biominute-deck run dev` | Start the investor deck |
 | `pnpm --filter @workspace/db push-force` | Push Drizzle schema to the database |
-| `pnpm --filter @workspace/scripts exec tsx ./src/seed-episodes.ts` | Seed episodes from the master XLSX |
-| `pnpm run export-video` | Export the current episode to MP4 |
+| `pnpm --filter @workspace/scripts exec tsx ./src/seed-episodes.ts` | Seed episodes from the master workbook |
+| `pnpm --filter @workspace/scripts exec tsx ./src/upload-now.ts <ep>` | Manually upload an episode immediately |
+| `pnpm run export-video` | Export the current episode to MP4 (also regenerates dashboard) |
 | `pnpm --filter @workspace/scripts exec tsx ./src/verify-export.ts <path>` | Verify MP4 resolution is 1080×1920 |
-| `pnpm run dashboard:generate` | Regenerate `exports/dashboard.html` from the production log |
+| `pnpm run dashboard:generate` | Regenerate `exports/dashboard.html` from the database |
 
 ---
 
@@ -164,7 +169,9 @@ See [`docs/INSTALL.md`](docs/INSTALL.md) and [`docs/RUN.md`](docs/RUN.md) for th
 
 | Secret | Purpose | Required |
 |--------|---------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | For API server |
+| `DATABASE_URL` | Primary PostgreSQL connection string (Neon) | For API server |
+| `DATABASE_URL_UNPOOLED` | Direct Neon connection for migrations / admin | For schema pushes |
+| `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE` | Built-in Replit Postgres fallback | Optional |
 | `SESSION_SECRET` | Express session signing | Yes |
 | `GITHUB_TOKEN` | Push exports to GitHub (classic PAT, `repo` scope) | For auto-push |
 | `YOUTUBE_CLIENT_ID` | YouTube OAuth2 client ID | For publishing |
@@ -186,7 +193,7 @@ Set all secrets via Replit's Secrets manager (never commit to `.env`).
 | Build tool | Vite 7 |
 | API framework | Express 5 |
 | ORM | Drizzle ORM |
-| Database | PostgreSQL |
+| Database | PostgreSQL (Neon primary, Replit fallback) |
 | Validation | Zod (auto-generated from OpenAPI) |
 | API client | TanStack Query (auto-generated hooks) |
 | Styling | Tailwind CSS v4 |
@@ -203,19 +210,22 @@ Set all secrets via Replit's Secrets manager (never commit to `.env`).
 - [`docs/USAGE.md`](docs/USAGE.md) — full production workflow from plan to publish
 - [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) — bug report / suggestion form and known issues
 - [`docs/design-reference-neobrutalism.md`](docs/design-reference-neobrutalism.md) — brand/design system reference
-- [`docs/bug-report-aspect-ratio.md`](docs/bug-report-aspect-ratio.md) — historical aspect-ratio bug report
+- [`docs/bug-report-aspect-ratio.md`](docs/bug-report-aspect-ratio.md) — aspect-ratio bug report (resolved)
+- [`VERSION.md`](VERSION.md) — version history
 
 ---
 
 ## Project Status
 
-- ✅ Episodes 1–24: Exported and logged in `exports/production-log.md`
-- ✅ Episodes 25–30: Built and logged
-- 🔄 Episodes 31–36: Planned queue
+- ✅ Episodes 1–36: Exported, logged in `exports/production-log.md`, and seeded in the database
+- ✅ Episodes 1–4: Published to YouTube
+- ✅ Episodes 5–36: Scheduled for daily posting at 09:00 UTC on their post dates
 - ✅ Publishing dashboard: Live with Neo-Brutalism UI, full CRUD + YouTube publish
-- ✅ API server: Running with full OpenAPI spec
-- ✅ Database: 36 episodes seeded
-- 🔄 YouTube credentials: Being configured
+- ✅ API server: Running with full OpenAPI spec, duplicate-upload guard, and canonical description template
+- ✅ Database: 36 episodes seeded; 50-episode master workbook in place
+- ✅ Static dashboard: `exports/dashboard.html` reflects live DB state
+- 🔄 Test episodes `TEST-1` and `TEST-2` reserved for pipeline smoke tests
+- 🔄 GitHub Pages: ready to deploy from `main` root
 
 ---
 

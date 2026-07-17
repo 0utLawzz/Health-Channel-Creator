@@ -7,6 +7,8 @@ import {
   uploadEpisodeVideo,
   addVideoToPlaylist,
   SEASON_PLAYLIST_ENV,
+  buildYouTubeDescription,
+  assertNotAlreadyPublished,
 } from "./lib/youtube-upload";
 
 // ---------------------------------------------------------------------------
@@ -90,6 +92,8 @@ async function runScheduledPublish(): Promise<void> {
 
     for (const episode of due) {
       try {
+        assertNotAlreadyPublished(episode);
+
         const videoPath = findEpisodeVideoPath(episode.epNumber);
 
         const tags = (episode.hashtags ?? "")
@@ -97,10 +101,17 @@ async function runScheduledPublish(): Promise<void> {
           .map((t: string) => t.replace(/^#/, ""))
           .filter(Boolean);
 
+        const description = buildYouTubeDescription({
+          voScript: episode.voScript,
+          citationCta: episode.citationCta,
+          hashtags: episode.hashtags,
+          season: episode.season,
+        });
+
         const { youtubeVideoId, youtubeUrl } = await uploadEpisodeVideo({
           videoPath,
           title: episode.youtubeTitle,
-          description: `${episode.citationCta ?? ""}\n\n${episode.hashtags ?? ""}`,
+          description,
           tags,
           privacyStatus: "public",
           publishAt: null,

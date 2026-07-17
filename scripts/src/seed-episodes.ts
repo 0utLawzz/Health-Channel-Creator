@@ -1,42 +1,22 @@
-// One-off seed: populates the `episodes` table from the master plan XLSX plus
-// exports/production-log.md (for actual build/export status), so the API
-// server and publishing dashboard have real data to work with.
+// One-off seed: populates the `episodes` table from the master workbook
+// `attached_assets/BioMinute-Master-Workbook.xlsx` (Production, Social, Schedule tabs).
+// - Existing rows (1-36) are updated with workbook metadata only; their real
+//   publish/schedule status and YouTube IDs are preserved.
+// - New rows (37-50) and the two pipeline test slots (TEST-1, TEST-2) are inserted.
 import ExcelJS from "exceljs";
 import fs from "node:fs";
 import path from "node:path";
 import { db, episodesTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
-const MASTER_SHEET = path.join(
+const MASTER_WORKBOOK = path.join(
   PROJECT_ROOT,
-  "attached_assets/BioMinute-Episode-Master-Plan_1783893698840.xlsx",
+  "attached_assets/instructions_1784313986424/BioMinute-Master-Workbook.xlsx",
 );
-const PRODUCTION_LOG = path.join(PROJECT_ROOT, "exports/production-log.md");
 const EXPORTS_DIR = path.join(PROJECT_ROOT, "exports");
 
 type DbStatus = "draft" | "complete" | "review" | "approved" | "scheduled" | "published";
-
-function parseProductionLog(): Map<number, { dateCompleted: string | null }> {
-  const content = fs.readFileSync(PRODUCTION_LOG, "utf8");
-  const map = new Map<number, { dateCompleted: string | null }>();
-  for (const line of content.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed.startsWith("|") || trimmed.includes("Episode #") || trimmed.startsWith("|---")) {
-      continue;
-    }
-    const match = trimmed.match(
-      /^\|\s*(\d+)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*(.+?)\s*\|$/,
-    );
-    if (!match) continue;
-    const [, numStr, , , dateCompleted] = match;
-    const number = parseInt(numStr, 10);
-    if (Number.isNaN(number)) continue;
-    map.set(number, {
-      dateCompleted: dateCompleted.trim() === "—" ? null : dateCompleted.trim(),
-    });
-  }
-  return map;
-}
 
 function hasExportedVideo(epNumber: number): boolean {
   const padded = String(epNumber).padStart(2, "0");
@@ -47,86 +27,233 @@ function hasExportedVideo(epNumber: number): boolean {
 }
 
 function normalizePostDate(raw: string): string {
-  // "Mon, Jul 13, 2026" -> "2026-07-13"
   const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime())) return raw;
+  if (Number.isNaN(parsed.getTime())) return "";
   return parsed.toISOString().slice(0, 10);
 }
 
-function parseCitationBlock(raw: string): { citationCta: string; hashtags: string } {
-  const hashtagsMatch = raw.match(/HASHTAGS:\s*(.*)/);
-  const hashtags = hashtagsMatch ? hashtagsMatch[1].trim() : "";
-  // Keep the full CITATION + CTA block as the dashboard citation text.
-  const citationCta = raw
-    .replace(/HASHTAGS:.*$/s, "")
-    .replace(/\r?\n\r?\n+/g, "\n\n")
-    .trim();
-  return { citationCta, hashtags };
+function extractEpNumberFromSchedule(cellValue: unknown): number | null {
+  const raw = String(cellValue ?? "");
+  const match = raw.match(/\bEp\s*(\d+)\b/i);
+  return match ? parseInt(match[1], 10) : null;
+}
+
+function workbookStatusToDb(status: string): DbStatus {
+  const s = String(status ?? "").toLowerCase();
+  if (s.includes("published")) return "published";
+  if (s.includes("complete") || s.includes("approved")) return "complete";
+  if (s.includes("test")) return "approved"; // test episodes are ready to publish
+  return "draft";
+}
+
+function parseDescriptionBlock(description: string): { citation: string; hashtags: string } {
+  // The Social description already has the canonical template. We extract the citation
+  // line and hashtags from it so the DB stores them separately.
+  const lines = description.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+
+  // Hashtags are the last line if it starts with #.
+  let hashtags = "";
+  if (lines.length > 0 && lines[lines.length - 1].startsWith("#")) {
+    hashtags = lines.pop()!;
+  }
+
+  // Citation is the line starting with "Backed by:".
+  const citationLine = lines.find((l) => l.toLowerCase().startsWith("backed by:"));
+  const citation = citationLine ? citationLine.replace(/^Backed by:\s*/i, "").trim() : "";
+
+  return { citation, hashtags };
 }
 
 async function main() {
   const wb = new ExcelJS.Workbook();
-  await wb.xlsx.readFile(MASTER_SHEET);
-  const ws = wb.getWorksheet("Episode Master Plan");
-  if (!ws) throw new Error("Episode Master Plan sheet not found");
+  await wb.xlsx.readFile(MASTER_WORKBOOK);
 
-  const logStatuses = parseProductionLog();
+  const prod = wb.getWorksheet("Production");
+  const social = wb.getWorksheet("Social");
+  const schedule = wb.getWorksheet("Schedule");
 
-  const rows: (typeof episodesTable.$inferInsert)[] = [];
+  if (!prod) throw new Error("Production sheet not found");
+  if (!social) throw new Error("Social sheet not found");
 
-  ws.eachRow((row, rowNumber) => {
-    // Row 1 is a warning banner, row 2 is the header. Data starts at row 3.
-    if (rowNumber <= 2) return;
-
+  // -------------------------------------------------------------------------
+  // Read Production sheet
+  // Headers are on row 4; data starts at row 5.
+  // -------------------------------------------------------------------------
+  const prodByEp = new Map<number, Record<string, any>>();
+  prod.eachRow((row, rowNumber) => {
+    if (rowNumber <= 4) return;
     const epNumber = Number(row.getCell(1).value);
     if (!epNumber || Number.isNaN(epNumber)) return;
+    prodByEp.set(epNumber, {
+      title: String(row.getCell(2).value ?? ""),
+      season: String(row.getCell(3).value ?? ""),
+      status: String(row.getCell(4).value ?? ""),
+      duration: String(row.getCell(5).value ?? ""),
+      voScript: String(row.getCell(7).value ?? ""),
+      visualDirection: String(row.getCell(8).value ?? ""),
+      citation: String(row.getCell(9).value ?? ""),
+    });
+  });
 
-    const postDateRaw = String(row.getCell(4).value ?? "");
-    const season = String(row.getCell(5).value ?? "");
-    const duration = String(row.getCell(7).value ?? "");
-    const hookTitle = String(row.getCell(8).value ?? "");
-    const youtubeTitle = String(row.getCell(9).value ?? "");
-    const voScript = String(row.getCell(10).value ?? "");
-    const visualDirection = String(row.getCell(11).value ?? "");
-    const bgSound = String(row.getCell(12).value ?? "");
-    const thumbnailPrompt = String(row.getCell(13).value ?? "");
-    const citationBlock = String(row.getCell(14).value ?? "");
+  // -------------------------------------------------------------------------
+  // Read Social sheet
+  // Headers are on row 4; data starts at row 5.
+  // -------------------------------------------------------------------------
+  const socialByEp = new Map<number, Record<string, any>>();
+  social.eachRow((row, rowNumber) => {
+    if (rowNumber <= 4) return;
+    const epNumber = Number(row.getCell(1).value);
+    if (!epNumber || Number.isNaN(epNumber)) return;
+    const description = String(row.getCell(4).value ?? "");
+    const { citation, hashtags } = parseDescriptionBlock(description);
+    socialByEp.set(epNumber, {
+      youtubeTitle: String(row.getCell(3).value ?? ""),
+      description,
+      cta: String(row.getCell(5).value ?? ""),
+      hashtags,
+      thumbnailPrompt: String(row.getCell(7).value ?? ""),
+      // Prefer the citation extracted from the canonical description; fall back to Production.
+      citation: citation || String(row.getCell(9).value ?? ""),
+    });
+  });
 
-    const { citationCta, hashtags } = parseCitationBlock(citationBlock);
+  // -------------------------------------------------------------------------
+  // Read Schedule sheet for post dates
+  // Headers are on row 4; data starts at row 5.
+  // -------------------------------------------------------------------------
+  const scheduleByEp = new Map<number, string>();
+  if (schedule) {
+    schedule.eachRow((row, rowNumber) => {
+      if (rowNumber <= 4) return;
+      const epNumber = extractEpNumberFromSchedule(row.getCell(4).value);
+      const date = String(row.getCell(2).value ?? "");
+      if (epNumber && date) {
+        scheduleByEp.set(epNumber, normalizePostDate(date));
+      }
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Build episode rows
+  // -------------------------------------------------------------------------
+  const allEpNumbers = new Set([...prodByEp.keys(), ...socialByEp.keys()]);
+  const rows: (typeof episodesTable.$inferInsert)[] = [];
+
+  for (const epNumber of allEpNumbers) {
+    const p = prodByEp.get(epNumber);
+    const s = socialByEp.get(epNumber);
+    if (!p || !s) continue; // need both sheets
 
     const exported = hasExportedVideo(epNumber);
-    const status: DbStatus = exported ? "complete" : "draft";
-    const dateBuilt = logStatuses.get(epNumber)?.dateCompleted ?? null;
+    const dbStatus = workbookStatusToDb(p.status);
+    const status: DbStatus = exported && dbStatus === "draft" ? "complete" : dbStatus;
+
+    const citationText = s.citation || p.citation || "";
+    const cta = s.cta ? `CTA: ${s.cta}` : "";
+    const citationCta = [citationText, cta].filter(Boolean).join("\n\n");
 
     rows.push({
       epNumber,
       status,
-      dateBuilt,
-      postDate: postDateRaw ? normalizePostDate(postDateRaw) : "",
-      season,
+      dateBuilt: null,
+      postDate: scheduleByEp.get(epNumber) || "",
+      season: p.season,
       aspectRatio: "9:16",
-      duration,
-      hookTitle,
-      youtubeTitle,
-      voScript,
-      visualDirection,
-      bgSound,
-      thumbnailPrompt,
+      duration: p.duration,
+      hookTitle: p.title,
+      youtubeTitle: s.youtubeTitle,
+      voScript: p.voScript,
+      visualDirection: p.visualDirection,
+      bgSound: "",
+      thumbnailPrompt: s.thumbnailPrompt,
       citationCta,
-      hashtags,
+      hashtags: s.hashtags,
     });
-  });
-
-  if (rows.length === 0) throw new Error("No episode rows parsed from master sheet");
-
-  const existing = await db.select({ epNumber: episodesTable.epNumber }).from(episodesTable);
-  if (existing.length > 0) {
-    console.log(`episodes table already has ${existing.length} rows — skipping seed.`);
-    process.exit(0);
   }
 
-  await db.insert(episodesTable).values(rows);
-  console.log(`Seeded ${rows.length} episodes.`);
+  // -------------------------------------------------------------------------
+  // Add two test episode slots
+  // -------------------------------------------------------------------------
+  const testEpisodes: (typeof episodesTable.$inferInsert)[] = [
+    {
+      epNumber: 998,
+      status: "approved",
+      dateBuilt: null,
+      postDate: "",
+      season: "S1: Morning Habits",
+      aspectRatio: "9:16",
+      duration: "~30 seconds",
+      hookTitle: "TEST-1: Pipeline Smoke Test (immediate publish)",
+      youtubeTitle: "TEST-1 — BioMinute Pipeline Smoke Test",
+      voScript: "This is a lightweight test episode used to verify the generate → export → publish path without touching real content.",
+      visualDirection: "Minimal placeholder animation with BioMinute branding.",
+      bgSound: "",
+      thumbnailPrompt: "Dark slate background, 'TEST-1' badge, BioMinute wordmark.",
+      citationCta: "CTA: Build a test episode and publish it instantly.",
+      hashtags: "#BioMinute #Test #Pipeline",
+    },
+    {
+      epNumber: 999,
+      status: "approved",
+      dateBuilt: null,
+      postDate: "",
+      season: "S1: Morning Habits",
+      aspectRatio: "9:16",
+      duration: "~30 seconds",
+      hookTitle: "TEST-2: Scheduler Smoke Test (+1 day scheduled publish)",
+      youtubeTitle: "TEST-2 — BioMinute Scheduler Smoke Test",
+      voScript: "This is a lightweight test episode used to verify the unattended scheduler publishes on its own after a short delay.",
+      visualDirection: "Minimal placeholder animation with BioMinute branding.",
+      bgSound: "",
+      thumbnailPrompt: "Dark slate background, 'TEST-2' badge, BioMinute wordmark.",
+      citationCta: "CTA: Schedule this test episode and confirm it publishes automatically.",
+      hashtags: "#BioMinute #Test #Scheduler",
+    },
+  ];
+  rows.push(...testEpisodes);
+
+  if (rows.length === 0) throw new Error("No episode rows parsed from workbook");
+
+  // -------------------------------------------------------------------------
+  // Upsert: preserve existing publish/schedule state for real episodes
+  // -------------------------------------------------------------------------
+  const existing = await db.select({ epNumber: episodesTable.epNumber }).from(episodesTable);
+  const existingSet = new Set(existing.map((e) => e.epNumber));
+
+  const toInsert = rows.filter((r) => !existingSet.has(r.epNumber));
+  const toUpdate = rows.filter((r) => existingSet.has(r.epNumber) && r.epNumber <= 50);
+
+  if (toInsert.length > 0) {
+    await db.insert(episodesTable).values(toInsert);
+    console.log(`Inserted ${toInsert.length} new episodes.`);
+  }
+
+  for (const row of toUpdate) {
+    // For existing real episodes, only update metadata fields from the workbook.
+    // Never overwrite status, youtubeVideoId, publishedAt, or scheduledPublishAt.
+    await db
+      .update(episodesTable)
+      .set({
+        postDate: row.postDate,
+        season: row.season,
+        duration: row.duration,
+        hookTitle: row.hookTitle,
+        youtubeTitle: row.youtubeTitle,
+        voScript: row.voScript,
+        visualDirection: row.visualDirection,
+        thumbnailPrompt: row.thumbnailPrompt,
+        citationCta: row.citationCta,
+        hashtags: row.hashtags,
+        updatedAt: new Date(),
+      })
+      .where(eq(episodesTable.epNumber, row.epNumber));
+  }
+
+  if (toUpdate.length > 0) {
+    console.log(`Updated metadata for ${toUpdate.length} existing episodes.`);
+  }
+
+  console.log(`Done. Total episodes in table: ${existing.length + toInsert.length}`);
   process.exit(0);
 }
 

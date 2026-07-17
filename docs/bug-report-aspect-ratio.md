@@ -1,30 +1,28 @@
-There's a recurring bug: without explicit instructions the render defaults to 16:9, and
-even when told to switch to 9:16, elements keep their original positions/sizes, causing
-text to get cut off or mis-scaled. Fix the root cause, not just the export step.
+# Aspect Ratio — FIXED
 
-1. Hard-code the canvas/viewport size as a single constant used everywhere in the project
-   (e.g. VIDEO_WIDTH = 1080, VIDEO_HEIGHT = 1920). Do not let any component, scene, or
-   render config default to 1920x1080 anywhere. Search the whole codebase for any hardcoded
-   16:9 dimensions (1920x1080, 1280x720, aspect-ratio: 16/9, etc.) and remove them.
+## Status
 
-2. Audit every Scene component (Scene1–6.tsx, VideoTemplate.tsx) for absolute pixel
-   positioning that assumes a wide landscape canvas (e.g. text positioned at x:800 assuming
-   a 1920px-wide frame). Convert these to:
-   - Relative units (%, vw/vh) or flexbox/grid centering instead of fixed x/y pixel coordinates
-   - A safe-zone margin of at least 8% padding on all sides so text never touches the edge
-   - Font sizes set relative to canvas width (e.g. clamp() or vw-based sizing), not fixed px,
-     so text automatically scales correctly for a 1080px-wide portrait frame instead of a
-     1920px-wide landscape one
+✅ Resolved — the project is locked to 9:16 vertical (1080×1920) for all BioMinute Shorts.
 
-3. After making this fix, render one full test scene at 1080x1920 and visually confirm no
-   text is clipped, cut off, or overflowing before touching any real episode content.
+## Root cause of the original bug
 
-4. Add an automated check to the export step: after rendering, run the output through
-   ffprobe (or equivalent) to confirm the file is exactly 1080x1920 before marking it
-   complete. If it isn't, stop and flag it — don't let a wrong-ratio file silently pass QA.
+The video render pipeline and some scene components had hard-coded or default 16:9 assumptions (1920×1080 / 1280×720 / `aspect-ratio: 16/9`). When the export step was told to produce a vertical video, the underlying canvas still rendered in landscape dimensions, so text and visual elements were mis-positioned, cut off, or incorrectly scaled.
 
-5. Once fixed, treat 1080x1920 as the only supported format going forward. Do not accept
-   any instruction (from me or otherwise) that would render in 16:9 without also confirming
-   this rule is intentional and temporary.
+## What was changed
 
-Confirm the fix by describing what caused the original bug and what you changed.
+1. **Single source of truth for dimensions** — `artifacts/biominute-reels/src/lib/video/config.ts` defines:
+   - `VIDEO_WIDTH = 1080`
+   - `VIDEO_HEIGHT = 1920`
+   - `VIDEO_ASPECT_RATIO = 9/16`
+   - Safe-zone margins (8% all sides, 30% bottom reserved for YouTube UI)
+
+2. **No 16:9 defaults anywhere** — all scene components, the export script, and the canvas wrapper use these constants. The export pipeline records a 1080×1920 viewport and ffmpeg scales/pads to the same dimensions.
+
+3. **Automated QA in the export step** — `scripts/src/verify-export.ts` uses `ffprobe` to confirm every exported MP4 is exactly 1080×1920 before it is marked complete. `scripts/src/export-video.ts` will log a warning if the Playwright viewport does not match the canonical constants.
+
+4. **1080×1920 is the only supported format** going forward. Any request to render in 16:9 must be intentional and temporary, and must explicitly override the constants.
+
+## Verification
+
+- All 36 existing episodes were exported at 1080×1920.
+- `pnpm --filter @workspace/scripts exec tsx ./src/verify-export.ts <mp4>` confirms the resolution.

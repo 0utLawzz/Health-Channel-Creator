@@ -9,6 +9,8 @@ import {
   repairVideoOnYouTube,
   seasonEnvKey,
   SEASON_PLAYLIST_ENV,
+  buildYouTubeDescription,
+  assertNotAlreadyPublished,
 } from "../lib/youtube-upload";
 import { logger } from "../lib/logger";
 
@@ -156,6 +158,14 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
     return;
   }
 
+  try {
+    assertNotAlreadyPublished(episode);
+  } catch (err) {
+    logger.warn({ episodeId: id, epNumber: episode.epNumber }, "Duplicate upload blocked");
+    res.status(409).json({ error: err instanceof Error ? err.message : "Already published" });
+    return;
+  }
+
   let videoPath: string;
   try {
     videoPath = findEpisodeVideoPath(episode.epNumber);
@@ -176,10 +186,17 @@ router.post("/youtube/publish/:id", async (req, res): Promise<void> => {
       .map((tag: string) => tag.replace(/^#/, ""))
       .filter(Boolean);
 
+    const description = buildYouTubeDescription({
+      voScript: episode.voScript,
+      citationCta: episode.citationCta,
+      hashtags: episode.hashtags,
+      season: episode.season,
+    });
+
     const { youtubeVideoId, youtubeUrl } = await uploadEpisodeVideo({
       videoPath,
       title: episode.youtubeTitle,
-      description: `${episode.citationCta ?? ""}\n\n${episode.hashtags ?? ""}`,
+      description,
       tags,
       privacyStatus,
       publishAt: scheduleAt ?? null,

@@ -139,6 +139,15 @@ async function main() {
     }
 
     console.log('Exported MP4:', mp4Path);
+
+    // Regenerate the static dashboard so the latest export is visible immediately.
+    try {
+      const { execSync } = await import('child_process');
+      execSync('pnpm run dashboard:generate', { stdio: 'inherit', cwd: path.resolve(__dirname, '../..') });
+      console.log('Dashboard regenerated after export.');
+    } catch (dashErr) {
+      console.warn('Dashboard regeneration failed (non-fatal):', dashErr);
+    }
   } finally {
     if (browser) await browser.close();
     xvfb.stop();

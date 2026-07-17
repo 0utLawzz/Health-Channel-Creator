@@ -22,21 +22,19 @@ Copy the template below and add it to the appropriate section.
 
 ## Current known issues and suggestions
 
-### Audio desync risk in export pipeline
+### Audio desync risk in export pipeline — RESOLVED
 
 - **Type:** Suggestion
 - **File(s):** `scripts/src/export-video.ts` (~line 87–95)
-- **Description:** Background music is mixed via ffmpeg using `-shortest` and `-stream_loop -1`. If the Playwright recording duration drifts from the scene manifest, the audio loop can fall out of sync with the visuals.
-- **Impact:** Exported MP4s may have mismatched audio/video timing.
-- **Proposed fix:** Derive the audio mix length from the scene manifest or the actual recorded duration rather than relying on `-shortest`.
+- **Status:** Fixed. The export script reads the canonical duration from `artifacts/biominute-reels/src/lib/video/config.ts` (`SCENE_DURATIONS`) and records the Playwright video for that length plus a small buffer. The `-shortest` audio flag is still present but is bounded by the scene manifest, so the looped background track cannot run longer than the visuals.
+- **Impact:** Audio/video timing is now deterministic per episode.
 
-### Hardcoded export fallback duration
+### Hardcoded export fallback duration — RESOLVED
 
 - **Type:** Code smell
 - **File(s):** `scripts/src/export-video.ts` (~line 31)
-- **Description:** `FALLBACK_DURATION_MS = 43500` is hardcoded.
-- **Impact:** The fallback does not adapt to episodes with different total durations.
-- **Proposed fix:** Read the total duration from `config.ts` or the database.
+- **Status:** Fixed. `FALLBACK_DURATION_MS` is only a last-resort safety net when the config read fails; the primary duration is derived from `SCENE_DURATIONS` in `config.ts`.
+- **Impact:** Episodes with non-standard durations are handled via the scene manifest.
 
 ### Duplicate audio handling across scene components
 
@@ -62,10 +60,11 @@ Copy the template below and add it to the appropriate section.
 - **Impact:** Hard to maintain; changing a common animation requires editing many files.
 - **Proposed fix:** Introduce a higher-order component or a JSON-driven scene generator for common patterns.
 
-### Master sheet / sheet-name mismatch
+### Master sheet / sheet-name mismatch — RESOLVED
 
 - **Type:** Bug / Documentation
 - **File(s):** `scripts/src/seed-episodes.ts`, `scripts/src/read-master-sheet.ts`, `exports/production-log.md`
+- **Status:** Fixed. The latest workbook is `attached_assets/BioMinute-Master-Workbook.xlsx` with sheet `Production`. All seed/read scripts point to the current workbook. Older `BioMinute-Episode-Master-Plan_*.xlsx` references should be considered deprecated.
 - **Description:** Older references call the sheet `Content_Master`, but the current master XLSX uses `Episode Master Plan`. Code has been updated to the new sheet name, but older docs, memory, and third-party tooling may still reference the old name.
 - **Impact:** Outdated references can cause confusion or silent failures if a tool reads the wrong sheet.
 - **Proposed fix:** Audit all references and align them to `Episode Master Plan`.

@@ -1,97 +1,64 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { db, episodesTable } from "@workspace/db";
+import { asc } from "drizzle-orm";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, '..', '..');
-const PRODUCTION_LOG = path.resolve(PROJECT_ROOT, 'exports/production-log.md');
 const DASHBOARD_OUTPUT = path.resolve(PROJECT_ROOT, 'exports/dashboard.html');
+const EXPORTS_DIR = path.resolve(PROJECT_ROOT, 'exports');
 
-type EpisodeStatus = 'Complete' | 'Uncomplete' | 'Built — awaiting export';
+type Episode = typeof episodesTable.$inferSelect;
 
-interface Episode {
-  number: number;
-  title: string;
-  status: EpisodeStatus;
-  dateCompleted: string | null;
-  folder: string;
-  notes: string;
+function findEpisodeFolder(epNumber: number): string | null {
+  const padded = String(epNumber).padStart(2, '0');
+  if (!fs.existsSync(EXPORTS_DIR)) return null;
+  const entries = fs.readdirSync(EXPORTS_DIR);
+  const match = entries.find((name) => name.startsWith(`Episode-${padded}-`) && fs.existsSync(path.join(EXPORTS_DIR, name, 'episode.mp4')));
+  return match ? `exports/${match}` : null;
 }
 
-function parseProductionLog(): Episode[] {
-  const content = fs.readFileSync(PRODUCTION_LOG, 'utf8');
-  const lines = content.split('\n');
-  const episodes: Episode[] = [];
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed.startsWith('|') || trimmed.includes('Episode #') || trimmed.startsWith('|---')) {
-      continue;
-    }
-
-    // Match the table row pattern exactly: | num | title | status | date | `folder` | notes |
-    // This is more robust than splitting on every pipe because notes may contain pipes.
-    const match = trimmed.match(
-      /^\|\s*(\d+)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*`([^`]+)`\s*\|\s*(.+?)\s*\|$/
-    );
-    if (!match) continue;
-
-    const [, numStr, title, status, dateCompleted, folderRaw, notes] = match;
-    const number = parseInt(numStr, 10);
-    if (Number.isNaN(number)) continue;
-
-    const folder = folderRaw.replace(/\/$/, '');
-
-    episodes.push({
-      number,
-      title: title.trim(),
-      status: status.trim() as EpisodeStatus,
-      dateCompleted: dateCompleted.trim() === '—' || dateCompleted.trim() === '-' ? null : dateCompleted.trim(),
-      folder,
-      notes: notes.trim(),
-    });
+function statusBadgeClass(status: string): string {
+  switch (status) {
+    case 'published': return 'published';
+    case 'scheduled': return 'scheduled';
+    case 'approved': return 'approved';
+    case 'complete': return 'complete';
+    default: return 'queued';
   }
-
-  return episodes.sort((a, b) => a.number - b.number);
-}
-
-function extractPlannedDate(notes: string): string | null {
-  const match = notes.match(/Planned post date:\s*([^|]+)/i);
-  return match ? match[1].trim() : null;
 }
 
 function generateDashboard(episodes: Episode[]): string {
   const total = episodes.length;
-  const complete = episodes.filter((e) => e.status === 'Complete').length;
-  const uncomplete = total - complete;
+  const published = episodes.filter((e) => e.status === 'published').length;
+  const scheduled = episodes.filter((e) => e.status === 'scheduled').length;
+  const approved = episodes.filter((e) => e.status === 'approved' || e.status === 'complete').length;
+  const queued = total - published - scheduled - approved;
 
   const cards = episodes
     .map((ep) => {
-      const displayStatus = ep.status === 'Complete' ? 'Complete' : 'Uncomplete';
-      const statusClass = ep.status === 'Complete' ? 'complete' : 'queued';
-      const date =
-        ep.status === 'Complete'
-          ? ep.dateCompleted || '—'
-          : extractPlannedDate(ep.notes) || 'Not scheduled';
-
-      // The dashboard lives in exports/; use a path relative to that folder so the
-      // preview works whether the file is opened directly or served from the project root.
-      const relativeFolder = ep.folder.replace(/^exports\//, '');
-      const thumb =
-        ep.status === 'Complete'
-          ? `        <video class="thumb" poster="${relativeFolder}/thumbnail.png" controls preload="none">
-          <source src="${relativeFolder}/episode.mp4" type="video/mp4">
+      const folder = findEpisodeFolder(ep.epNumber);
+      const thumb = folder
+        ? `        <video class="thumb" poster="${folder}/thumbnail.png" controls preload="none">
+          <source src="${folder}/episode.mp4" type="video/mp4">
         </video>`
-          : `        <div class="thumb placeholder">Not produced yet</div>`;
+        : `        <div class="thumb placeholder">Not produced yet</div>`;
+
+      const meta: string[] = [];
+      if (ep.postDate) meta.push(`Post: ${ep.postDate}`);
+      if (ep.status === 'published' && ep.publishedAt) meta.push(`Published: ${ep.publishedAt.toISOString().slice(0, 10)}`);
+      if (ep.status === 'scheduled' && ep.scheduledPublishAt) meta.push(`Scheduled: ${ep.scheduledPublishAt.toISOString().replace('T', ' ').slice(0, 16)} UTC`);
+      if (ep.youtubeVideoId) meta.push(`<a href="https://youtu.be/${ep.youtubeVideoId}" target="_blank">YouTube</a>`);
 
       return `
-      <div class="card" data-status="${displayStatus}">
-        <div class="card-num">EP ${ep.number}</div>
+      <div class="card" data-status="${ep.status}">
+        <div class="card-num">EP ${ep.epNumber}</div>
 ${thumb}
         <div class="card-body">
-          <div class="card-title">${ep.title}</div>
+          <div class="card-title">${ep.hookTitle}</div>
           <div class="card-meta">
-            <span class="badge ${statusClass}">${displayStatus}</span>
-            <span class="date">${date}</span>
+            <span class="badge ${statusBadgeClass(ep.status)}">${ep.status}</span>
           </div>
+          <div class="card-details">${meta.join(' • ')}</div>
         </div>
       </div>`;
     })
@@ -101,10 +68,11 @@ ${thumb}
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BioMinute — Production Dashboard</title>
 <style>
   :root {
-    --dark: #0F172A; --blue: #2F6FED; --emerald: #10B981; --orange: #F97316; --white: #FFFFFF;
+    --dark: #0F172A; --blue: #2F6FED; --emerald: #10B981; --orange: #F97316; --white: #FFFFFF; --purple: #8B5CF6;
   }
   * { box-sizing: border-box; }
   body {
@@ -125,7 +93,7 @@ ${thumb}
     padding: 10px 16px; font-size: 13px; color: #cbd5e1;
   }
   .stat b { color: var(--white); font-size: 16px; display: block; }
-  .filters { display: flex; gap: 8px; margin: 18px 0; }
+  .filters { display: flex; gap: 8px; margin: 18px 0; flex-wrap: wrap; }
   .filter-btn {
     background: #16213e; border: 1px solid #1e2a4a; color: #cbd5e1;
     padding: 7px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
@@ -153,26 +121,36 @@ ${thumb}
   }
   .card-body { padding: 12px 14px 14px; position: relative; }
   .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin-bottom: 8px; min-height: 36px; }
-  .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
-  .badge { padding: 3px 9px; border-radius: 20px; font-weight: 700; letter-spacing: 0.3px; }
-  .badge.complete { background: rgba(16,185,129,0.18); color: var(--emerald); }
+  .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 6px; }
+  .badge { padding: 3px 9px; border-radius: 20px; font-weight: 700; letter-spacing: 0.3px; text-transform: capitalize; }
+  .badge.published { background: rgba(16,185,129,0.18); color: var(--emerald); }
+  .badge.scheduled { background: rgba(139,92,246,0.18); color: var(--purple); }
+  .badge.approved { background: rgba(47,111,237,0.18); color: var(--blue); }
+  .badge.complete { background: rgba(47,111,237,0.18); color: var(--blue); }
   .badge.queued { background: rgba(249,115,22,0.15); color: var(--orange); }
-  .date { color: #64748b; }
+  .card-details { font-size: 11px; color: #64748b; line-height: 1.5; }
+  .card-details a { color: var(--emerald); text-decoration: none; }
+  .card-details a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
 <header>
   <h1>BioMinute Production Dashboard</h1>
-  <div class="sub">Self-contained repo preview — scripts, status, and finished videos travel together. Re-import into any Replit account and this still works.</div>
+  <div class="sub">Live pipeline status — combines the local export folders, the database state, and the YouTube publishing queue.</div>
   <div class="stats">
     <div class="stat"><b>${total}</b>Total episodes</div>
-    <div class="stat"><b>${complete}</b>Complete</div>
-    <div class="stat"><b>${uncomplete}</b>Uncomplete</div>
+    <div class="stat"><b>${published}</b>Published</div>
+    <div class="stat"><b>${scheduled}</b>Scheduled</div>
+    <div class="stat"><b>${approved}</b>Approved / Complete</div>
+    <div class="stat"><b>${queued}</b>Queued</div>
   </div>
   <div class="filters">
     <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
-    <button class="filter-btn" onclick="filterCards('Complete', this)">Complete</button>
-    <button class="filter-btn" onclick="filterCards('Uncomplete', this)">Uncomplete</button>
+    <button class="filter-btn" onclick="filterCards('published', this)">Published</button>
+    <button class="filter-btn" onclick="filterCards('scheduled', this)">Scheduled</button>
+    <button class="filter-btn" onclick="filterCards('approved', this)">Approved</button>
+    <button class="filter-btn" onclick="filterCards('complete', this)">Complete</button>
+    <button class="filter-btn" onclick="filterCards('queued', this)">Queued</button>
   </div>
 </header>
 <div class="grid" id="grid">
@@ -191,16 +169,25 @@ function filterCards(status, btn) {
 </html>`;
 }
 
-function main() {
-  const episodes = parseProductionLog();
+async function main() {
+  const episodes = await db
+    .select()
+    .from(episodesTable)
+    .orderBy(asc(episodesTable.epNumber));
+
   if (episodes.length === 0) {
-    throw new Error(`No episodes found in ${PRODUCTION_LOG}`);
+    console.warn('No episodes found in the database — dashboard is empty.');
   }
-  const html = generateDashboard(episodes);
+
+  const html = generateDashboard(episodes as Episode[]);
   fs.writeFileSync(DASHBOARD_OUTPUT, html);
   console.log(
     `Generated dashboard for ${episodes.length} episodes at ${path.resolve(DASHBOARD_OUTPUT)}`,
   );
+  process.exit(0);
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

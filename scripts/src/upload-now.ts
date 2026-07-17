@@ -11,7 +11,7 @@ import { google } from "googleapis";
 import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
-import { episodes as episodesTable } from "../../lib/db/src/schema.js";
+import { episodesTable } from "@workspace/db";
 
 // ---------------------------------------------------------------------------
 // DB
@@ -20,8 +20,92 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool);
 
 // ---------------------------------------------------------------------------
-// YouTube helpers
+// Shared helpers (duplicated here so the script is self-contained)
 // ---------------------------------------------------------------------------
+interface BuildDescriptionParams {
+  voScript: string;
+  citationCta: string;
+  hashtags: string;
+  season: string;
+}
+
+function buildYouTubeDescription(params: BuildDescriptionParams): string {
+  const { voScript, citationCta, hashtags, season } = params;
+
+  const sentences = (voScript ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(/(?<=[.!?])\s+/)
+    .filter(Boolean);
+  let hook = sentences.slice(0, 2).join(" ").trim();
+  if (hook.length > 240) {
+    hook = hook.slice(0, 240).replace(/\s+\S*$/, "").trim() + ".";
+  }
+
+  const cleanedBlock = (citationCta ?? "")
+    .replace(/^CITATION:\s*/i, "")
+    .replace(/\bCTA:\s*/gi, "")
+    .replace(/HASHTAGS:.*$/s, "")
+    .replace(/\r?\n+/g, "\n")
+    .replace(/\n\s*\n/g, "\n")
+    .trim();
+
+  const citationLine = cleanedBlock
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .find((l) => /^[A-Z][a-z]+\s+\w+.*\(\d{4}\)|^doi:|^pmid:|^https?:\/\//i.test(l));
+
+  const citation = citationLine ?? cleanedBlock;
+
+  const seasonMap: Record<string, string> = {
+    S1: "Morning Habits",
+    S2: "Movement & Body",
+    S3: "Sleep & Recovery",
+    S4: "Stress & Mind",
+    S5: "Nutrition & Myths",
+    S6: "Healthy Aging & Longevity",
+  };
+  const seasonCode = (season ?? "").split(":")[0].trim().toUpperCase();
+  const playlistName = (season ?? "").includes(":")
+    ? season
+    : `${season}: ${seasonMap[seasonCode] ?? season}`;
+
+  const parts = [
+    hook,
+    "",
+    citation ? `Backed by: ${citation}` : "",
+    "",
+    "🔔 Subscribe to BioMinute for daily evidence-based health tips.",
+    `📌 Playlist: ${playlistName}`,
+    "",
+    (hashtags ?? "").trim(),
+  ];
+
+  return parts
+    .filter((p) => p !== "")
+    .join("\n")
+    .trim();
+}
+
+interface EpisodeGuard {
+  epNumber: number;
+  youtubeVideoId?: string | null;
+}
+
+function assertNotAlreadyPublished(episode: EpisodeGuard): void {
+  if (episode.youtubeVideoId) {
+    throw new Error(
+      `Episode ${episode.epNumber} is already on YouTube (${episode.youtubeVideoId}). ` +
+        `Delete the existing video first if you want to re-upload.`,
+    );
+  }
+}
+
+function seasonEnvKey(season: string): string {
+  return `YOUTUBE_PLAYLIST_${season.split(":")[0].trim().toUpperCase()}`;
+}
+
 function getOAuth2Client() {
   const { YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, YOUTUBE_REFRESH_TOKEN } = process.env;
   if (!YOUTUBE_CLIENT_ID || !YOUTUBE_CLIENT_SECRET || !YOUTUBE_REFRESH_TOKEN) {
@@ -32,6 +116,9 @@ function getOAuth2Client() {
   return client;
 }
 
+// ---------------------------------------------------------------------------
+// Locate exported MP4
+// ---------------------------------------------------------------------------
 function findVideoPath(epNumber: number): string {
   const exportsDir = path.resolve(process.cwd(), "../../exports");
   const padded = String(epNumber).padStart(2, "0");
@@ -43,10 +130,9 @@ function findVideoPath(epNumber: number): string {
   return p;
 }
 
-function seasonEnvKey(season: string): string {
-  return `YOUTUBE_PLAYLIST_${season.split(":")[0].trim().toUpperCase()}`;
-}
-
+// ---------------------------------------------------------------------------
+// Upload a single episode
+// ---------------------------------------------------------------------------
 async function uploadEp(epNumber: number) {
   console.log(`\n=== Uploading Episode ${epNumber} ===`);
 
@@ -54,10 +140,7 @@ async function uploadEp(epNumber: number) {
   if (!rows.length) throw new Error(`Episode ${epNumber} not found in DB.`);
   const ep = rows[0];
 
-  if (ep.youtubeVideoId) {
-    console.log(`  ⚠️  Already has YouTube ID: ${ep.youtubeVideoId} — skipping.`);
-    return;
-  }
+  assertNotAlreadyPublished(ep);
 
   const videoPath = findVideoPath(epNumber);
   console.log(`  Video: ${videoPath}`);
@@ -67,6 +150,13 @@ async function uploadEp(epNumber: number) {
     .map((t: string) => t.replace(/^#/, ""))
     .filter(Boolean);
 
+  const description = buildYouTubeDescription({
+    voScript: ep.voScript,
+    citationCta: ep.citationCta,
+    hashtags: ep.hashtags,
+    season: ep.season,
+  });
+
   const youtube = google.youtube({ version: "v3", auth: getOAuth2Client() });
 
   console.log(`  Uploading: "${ep.youtubeTitle}" ...`);
@@ -75,7 +165,7 @@ async function uploadEp(epNumber: number) {
     requestBody: {
       snippet: {
         title: ep.youtubeTitle,
-        description: `${ep.citationCta ?? ""}\n\n${ep.hashtags ?? ""}`,
+        description,
         tags,
       },
       status: { privacyStatus: "public", selfDeclaredMadeForKids: false },
@@ -88,7 +178,6 @@ async function uploadEp(epNumber: number) {
   const youtubeUrl = `https://youtu.be/${youtubeVideoId}`;
   console.log(`  ✓ Uploaded: ${youtubeUrl}`);
 
-  // Add to season playlist
   const playlistId = process.env[seasonEnvKey(ep.season ?? "")];
   if (playlistId) {
     try {
@@ -109,7 +198,6 @@ async function uploadEp(epNumber: number) {
     console.warn(`  ⚠️  No playlist env var for season "${ep.season}"`);
   }
 
-  // Mark published in DB
   const now = new Date();
   await db
     .update(episodesTable)

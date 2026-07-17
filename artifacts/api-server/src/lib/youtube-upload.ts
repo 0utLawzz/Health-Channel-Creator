@@ -4,6 +4,124 @@ import { google } from "googleapis";
 import { logger } from "./logger";
 
 // ---------------------------------------------------------------------------
+// Description builder — locked to canonical BioMinute template
+// ---------------------------------------------------------------------------
+export interface BuildDescriptionParams {
+  voScript: string;
+  citationCta: string;
+  hashtags: string;
+  season: string;
+}
+
+/**
+ * Builds a YouTube description in the exact canonical BioMinute format:
+ *
+ *   {hook — first 1–2 sentences of the VO script}
+ *
+ *   Backed by: {citation}
+ *
+ *   🔔 Subscribe to BioMinute for daily evidence-based health tips.
+ *   📌 Playlist: {season name}
+ *
+ *   {hashtags}
+ *
+ * The function is intentionally defensive: it strips the old "CITATION:" and
+ * "CTA:" labels that leaked into live descriptions, drops stray blank lines,
+ * and always follows the same order regardless of what the source spreadsheet
+ * contains.
+ */
+export function buildYouTubeDescription(params: BuildDescriptionParams): string {
+  const { voScript, citationCta, hashtags, season } = params;
+
+  // Hook: first 1–2 sentences of the VO script, capped at 240 chars to stay punchy.
+  const sentences = (voScript ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(/(?<=[.!?])\s+/)
+    .filter(Boolean);
+  let hook = sentences.slice(0, 2).join(" ").trim();
+  if (hook.length > 240) {
+    hook = hook.slice(0, 240).replace(/\s+\S*$/, "").trim() + ".";
+  }
+  if (!hook) hook = "";
+
+  // Citation: extract the real citation from the citation/CTA block, strip old labels.
+  const cleanedBlock = (citationCta ?? "")
+    .replace(/^CITATION:\s*/i, "")
+    .replace(/\bCTA:\s*/gi, "")
+    .replace(/HASHTAGS:.*$/s, "")
+    .replace(/\r?\n+/g, "\n")
+    .replace(/\n\s*\n/g, "\n")
+    .trim();
+
+  // Find the line that looks like a citation (starts with a name/date or DOI/PMID).
+  const citationLine = cleanedBlock
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0)
+    .find((l) => /^[A-Z][a-z]+\s+\w+.*\(\d{4}\)|^doi:|^pmid:|^https?:\/\//i.test(l));
+
+  const citation = citationLine ?? cleanedBlock;
+
+  // Playlist display name — use the full season label if it has a colon, otherwise just the season.
+  const playlistName = (season ?? "").includes(":") ? season : `${season}: ${seasonName(season)}`;
+
+  const parts = [
+    hook,
+    "",
+    citation ? `Backed by: ${citation}` : "",
+    "",
+    "🔔 Subscribe to BioMinute for daily evidence-based health tips.",
+    `📌 Playlist: ${playlistName}`,
+    "",
+    (hashtags ?? "").trim(),
+  ];
+
+  return parts
+    .filter((p) => p !== "")
+    .join("\n")
+    .trim();
+}
+
+/** Returns a friendly season name for the playlist line when only a short code is given. */
+function seasonName(season: string): string {
+  const map: Record<string, string> = {
+    S1: "Morning Habits",
+    S2: "Movement & Body",
+    S3: "Sleep & Recovery",
+    S4: "Stress & Mind",
+    S5: "Nutrition & Myths",
+    S6: "Healthy Aging & Longevity",
+  };
+  const code = (season ?? "").split(":")[0].trim().toUpperCase();
+  return map[code] ?? season;
+}
+
+// ---------------------------------------------------------------------------
+// Upload guard — prevent duplicate YouTube uploads
+// ---------------------------------------------------------------------------
+export interface EpisodeGuard {
+  id: number;
+  epNumber: number;
+  youtubeVideoId?: string | null;
+  status?: string | null;
+}
+
+/**
+ * Throws if the episode already has a YouTube video ID. Call before every
+ * videos.insert path (scheduler, manual trigger, dashboard publish) to prevent
+ * duplicate uploads from race conditions or double-clicks.
+ */
+export function assertNotAlreadyPublished(episode: EpisodeGuard): void {
+  if (episode.youtubeVideoId) {
+    throw new Error(
+      `Episode ${episode.epNumber} is already on YouTube (${episode.youtubeVideoId}). ` +
+        `Delete the existing video first if you want to re-upload.`,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Season → playlist env-var mapping
 // Seasons are stored as either short codes ("S1") or full labels
 // ("S1: Morning Habits"). getPlaylistId normalizes both formats by extracting

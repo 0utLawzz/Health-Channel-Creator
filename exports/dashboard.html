@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioMinute — Production Dashboard</title>
+<style>
+  :root {
+    --dark: #0F172A; --blue: #2F6FED; --emerald: #10B981; --orange: #F97316; --white: #FFFFFF; --purple: #8B5CF6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--dark); color: var(--white);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 32px 24px 64px;
+  }
+  header { max-width: 1200px; margin: 0 auto 28px; }
+  h1 {
+    font-size: 28px; margin: 0 0 6px; font-weight: 700;
+    background: linear-gradient(90deg, var(--blue), var(--emerald));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub { color: #94a3b8; font-size: 14px; margin-bottom: 18px; }
+  .stats { display: flex; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+  .stat {
+    background: #16213e; border: 1px solid #1e2a4a; border-radius: 10px;
+    padding: 10px 16px; font-size: 13px; color: #cbd5e1;
+  }
+  .stat b { color: var(--white); font-size: 16px; display: block; }
+  .filters { display: flex; gap: 8px; margin: 18px 0; flex-wrap: wrap; }
+  .filter-btn {
+    background: #16213e; border: 1px solid #1e2a4a; color: #cbd5e1;
+    padding: 7px 14px; border-radius: 20px; font-size: 13px; cursor: pointer;
+  }
+  .filter-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+  .grid {
+    max-width: 1200px; margin: 0 auto; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px;
+  }
+  .card {
+    background: #131c33; border: 1px solid #1e2a4a; border-radius: 14px; overflow: hidden;
+    transition: transform 0.15s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--emerald); }
+  .card-num {
+    position: absolute; margin: 10px; font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; color: var(--emerald); font-family: monospace;
+  }
+  .thumb {
+    width: 100%; aspect-ratio: 9/16; background: #0a0f1e; object-fit: cover; display: block;
+  }
+  .thumb.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    color: #475569; font-size: 12px; text-align: center; padding: 16px;
+  }
+  .card-body { padding: 12px 14px 14px; position: relative; }
+  .card-title { font-size: 13.5px; font-weight: 600; line-height: 1.35; margin-bottom: 8px; min-height: 36px; }
+  .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 6px; }
+  .badge { padding: 3px 9px; border-radius: 20px; font-weight: 700; letter-spacing: 0.3px; text-transform: capitalize; }
+  .badge.published { background: rgba(16,185,129,0.18); color: var(--emerald); }
+  .badge.scheduled { background: rgba(139,92,246,0.18); color: var(--purple); }
+  .badge.approved { background: rgba(47,111,237,0.18); color: var(--blue); }
+  .badge.complete { background: rgba(47,111,237,0.18); color: var(--blue); }
+  .badge.queued { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .card-details { font-size: 11px; color: #64748b; line-height: 1.5; }
+  .card-details a { color: var(--emerald); text-decoration: none; }
+  .card-details a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>
+  <h1>BioMinute Production Dashboard</h1>
+  <div class="sub">Live pipeline status — combines the local export folders, the database state, and the YouTube publishing queue.</div>
+  <div class="stats">
+    <div class="stat"><b>52</b>Total episodes</div>
+    <div class="stat"><b>4</b>Published</div>
+    <div class="stat"><b>32</b>Scheduled</div>
+    <div class="stat"><b>2</b>Approved / Complete</div>
+    <div class="stat"><b>14</b>Queued</div>
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+    <button class="filter-btn" onclick="filterCards('published', this)">Published</button>
+    <button class="filter-btn" onclick="filterCards('scheduled', this)">Scheduled</button>
+    <button class="filter-btn" onclick="filterCards('approved', this)">Approved</button>
+    <button class="filter-btn" onclick="filterCards('complete', this)">Complete</button>
+    <button class="filter-btn" onclick="filterCards('queued', this)">Queued</button>
+  </div>
+</header>
+<div class="grid" id="grid">
+
+      <div class="card" data-status="published">
+        <div class="card-num">EP 1</div>
+        <video class="thumb" poster="exports/Episode-01-Walk-After-Meals/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-01-Walk-After-Meals/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Walk After Meals</div>
+          <div class="card-meta">
+            <span class="badge published">published</span>
+          </div>
+          <div class="card-details">Post: 2026-07-12 • Published: 2026-07-13 • <a href="https://youtu.be/Q-bPNLP7pNk" target="_blank">YouTube</a></div>
+        </div>
+      </div>
+      <div class="card" data-status="published">
+        <div class="card-num">EP 2</div>
+        <video class="thumb" poster="exports/Episode-02-drink-water-before-your-morning/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-02-drink-water-before-your-morning/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Drink Water Before Your Morning Coffee</div>
+          <div class="card-meta">
+            <span class="badge published">published</span>
+          </div>
+          <div class="card-details">Post: 2026-07-15 • Published: 2026-07-16 • <a href="https://youtu.be/9qviwgAAvI" target="_blank">YouTube</a></div>
+        </div>
+      </div>
+      <div class="card" data-status="published">
+        <div class="card-num">EP 3</div>
+        <video class="thumb" poster="exports/Episode-03-are-you-eating-protein-at/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-03-are-you-eating-protein-at/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Are You Eating Protein at the Wrong Time?</div>
+          <div class="card-meta">
+            <span class="badge published">published</span>
+          </div>
+          <div class="card-details">Post: 2026-07-17 • Published: 2026-07-17 • <a href="https://youtu.be/SEXg_JukPOo" target="_blank">YouTube</a></div>
+        </div>
+      </div>
+      <div class="card" data-status="published">
+        <div class="card-num">EP 4</div>
+        <video class="thumb" poster="exports/Episode-04-is-10-000-steps-actually/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-04-is-10-000-steps-actually/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Is 10,000 Steps Actually a Myth?</div>
+          <div class="card-meta">
+            <span class="badge published">published</span>
+          </div>
+          <div class="card-details">Post: 2026-07-17 • Published: 2026-07-17 • <a href="https://youtu.be/S-ejsqQX3-c" target="_blank">YouTube</a></div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 5</div>
+        <video class="thumb" poster="exports/Episode-05-why-sleep-matters-more-than/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-05-why-sleep-matters-more-than/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Why Sleep Matters More Than You Think</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-20 • Scheduled: 2026-07-20 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 6</div>
+        <video class="thumb" poster="exports/Episode-06-why-are-you-still-hungry-right/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-06-why-are-you-still-hungry-right/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Why Are You Still Hungry Right After Eating?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-21 • Scheduled: 2026-07-22 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 7</div>
+        <video class="thumb" poster="exports/Episode-07-how-deep-breathing-reduces-stress/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-07-how-deep-breathing-reduces-stress/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">How Deep Breathing Reduces Stress</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-22 • Scheduled: 2026-07-24 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 8</div>
+        <video class="thumb" poster="exports/Episode-08-does-drinking-water-really-boost/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-08-does-drinking-water-really-boost/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Does Drinking Water Really Boost Metabolism?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-23 • Scheduled: 2026-07-27 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 9</div>
+        <video class="thumb" poster="exports/Episode-09-morning-sunlight-for-better-sleep/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-09-morning-sunlight-for-better-sleep/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Morning Sunlight for Better Sleep</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-24 • Scheduled: 2026-07-29 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 10</div>
+        <video class="thumb" poster="exports/Episode-10-can-you-build-muscle-without/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-10-can-you-build-muscle-without/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Can You Build Muscle Without Supplements?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-25 • Scheduled: 2026-07-31 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 11</div>
+        <video class="thumb" poster="exports/Episode-11-are-healthy-snacks-secretly-making/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-11-are-healthy-snacks-secretly-making/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Are Healthy Snacks Secretly Making You Gain Weight?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-26 • Scheduled: 2026-08-03 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 12</div>
+        <video class="thumb" poster="exports/Episode-12-sitting-too-long-harms-your/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-12-sitting-too-long-harms-your/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Sitting Too Long Harms Your Body</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-27 • Scheduled: 2026-08-05 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 13</div>
+        <video class="thumb" poster="exports/Episode-13-is-breakfast-really-the-most/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-13-is-breakfast-really-the-most/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Is Breakfast Really the Most Important Meal?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-28 • Scheduled: 2026-08-07 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 14</div>
+        <video class="thumb" poster="exports/Episode-14-do-you-really-need-8/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-14-do-you-really-need-8/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Do You Really Need 8 Glasses of Water a Day?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-29 • Scheduled: 2026-08-10 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 15</div>
+        <video class="thumb" poster="exports/Episode-15-does-eating-late-at-night/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-15-does-eating-late-at-night/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Does Eating Late at Night Cause Weight Gain?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-30 • Scheduled: 2026-08-12 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 16</div>
+        <video class="thumb" poster="exports/Episode-16-can-you-lose-belly-fat/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-16-can-you-lose-belly-fat/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Can You Lose Belly Fat with Ab Exercises?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-07-31 • Scheduled: 2026-08-14 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 17</div>
+        <video class="thumb" poster="exports/Episode-17-whats-the-best-food-to/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-17-whats-the-best-food-to/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">What's the Best Food to Eat Before a Workout?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-01 • Scheduled: 2026-08-17 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 18</div>
+        <video class="thumb" poster="exports/Episode-18-does-more-sweat-mean-more/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-18-does-more-sweat-mean-more/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Does More Sweat Mean More Fat Burned?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-02 • Scheduled: 2026-08-19 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 19</div>
+        <video class="thumb" poster="exports/Episode-19-can-you-lose-fat-without/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-19-can-you-lose-fat-without/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Can You Lose Fat Without Doing Cardio?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-03 • Scheduled: 2026-08-21 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 20</div>
+        <video class="thumb" poster="exports/Episode-20-how-much-protein-do-you/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-20-how-much-protein-do-you/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">How Much Protein Do You Really Need?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-04 • Scheduled: 2026-08-24 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 21</div>
+        <video class="thumb" poster="exports/Episode-21-does-lifting-weights-make-women/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-21-does-lifting-weights-make-women/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Does Lifting Weights Make Women Bulky?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-05 • Scheduled: 2026-08-26 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 22</div>
+        <video class="thumb" poster="exports/Episode-22-is-creatine-safe/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-22-is-creatine-safe/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Is Creatine Safe?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-06 • Scheduled: 2026-08-28 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 23</div>
+        <video class="thumb" poster="exports/Episode-23-why-is-sleep-secretly-affecting/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-23-why-is-sleep-secretly-affecting/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Why Is Sleep Secretly Affecting Your Fitness?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-07 • Scheduled: 2026-08-31 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 24</div>
+        <video class="thumb" poster="exports/Episode-24-is-stretching-before-exercise-enough/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-24-is-stretching-before-exercise-enough/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Is Stretching Before Exercise Enough?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-08 • Scheduled: 2026-09-02 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 25</div>
+        <video class="thumb" poster="exports/Episode-25-can-you-turn-fat-into/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-25-can-you-turn-fat-into/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Can You Turn Fat Into Muscle?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-09 • Scheduled: 2026-09-04 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 26</div>
+        <video class="thumb" poster="exports/Episode-26-should-you-work-out-every/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-26-should-you-work-out-every/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Should You Work Out Every Day?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-10 • Scheduled: 2026-09-07 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 27</div>
+        <video class="thumb" poster="exports/Episode-27-why-does-your-weight-change/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-27-why-does-your-weight-change/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Why Does Your Weight Change Overnight?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-11 • Scheduled: 2026-09-09 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 28</div>
+        <video class="thumb" poster="exports/Episode-28-can-your-metabolism-be-broken/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-28-can-your-metabolism-be-broken/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Can Your Metabolism Be "Broken"?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-12 • Scheduled: 2026-09-11 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 29</div>
+        <video class="thumb" poster="exports/Episode-29-are-eggs-actually-bad-for/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-29-are-eggs-actually-bad-for/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Are Eggs Actually Bad for Your Heart?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-13 • Scheduled: 2026-09-14 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 30</div>
+        <video class="thumb" poster="exports/Episode-30-do-detox-drinks-really-clean/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-30-do-detox-drinks-really-clean/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Do Detox Drinks Really Clean Your Body?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-14 • Scheduled: 2026-09-16 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 31</div>
+        <video class="thumb" poster="exports/Episode-31-should-you-eat-before-or/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-31-should-you-eat-before-or/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Should You Eat Before or After a Workout?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-15 • Scheduled: 2026-09-18 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 32</div>
+        <video class="thumb" poster="exports/Episode-32-does-coffee-help-you-burn/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-32-does-coffee-help-you-burn/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Does Coffee Help You Burn Fat?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-16 • Scheduled: 2026-09-21 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 33</div>
+        <video class="thumb" poster="exports/Episode-33-whats-the-healthiest-cooking-oil/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-33-whats-the-healthiest-cooking-oil/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">What's the Healthiest Cooking Oil?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-17 • Scheduled: 2026-09-23 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 34</div>
+        <video class="thumb" poster="exports/Episode-34-is-walking-enough-to-stay/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-34-is-walking-enough-to-stay/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">Is Walking Enough to Stay Healthy?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-18 • Scheduled: 2026-09-25 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 35</div>
+        <video class="thumb" poster="exports/Episode-35-whats-the-biggest-nutrition-mistake/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-35-whats-the-biggest-nutrition-mistake/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">What's the Biggest Nutrition Mistake After Age 40?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-19 • Scheduled: 2026-09-28 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="scheduled">
+        <div class="card-num">EP 36</div>
+        <video class="thumb" poster="exports/Episode-36-whats-the-1-habit-that/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-36-whats-the-1-habit-that/episode.mp4" type="video/mp4">
+        </video>
+        <div class="card-body">
+          <div class="card-title">What's the #1 Habit That Improves Your Health?</div>
+          <div class="card-meta">
+            <span class="badge scheduled">scheduled</span>
+          </div>
+          <div class="card-details">Post: 2026-08-20 • Scheduled: 2026-09-30 09:00 UTC</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 37</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Intermittent Fasting Actually Work?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-21</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 38</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can Vitamin C Actually Prevent a Cold?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-22</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 39</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Do Cold Showers Really Have Health Benefits?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-23</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 40</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is Blue Light Before Bed Really Ruining Your Sleep?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-24</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 41</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Alcohol Affect Your Sleep More Than You Think?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-25</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 42</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can Probiotics Actually Improve Your Gut Health?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-26</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 43</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is Meditation as Effective as Medication for Anxiety?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-27</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 44</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Do You Need Electrolytes Beyond Just Water?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-28</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 45</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Sunscreen Block Vitamin D Production?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-29</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 46</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is Fasted Cardio Better for Fat Loss?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-30</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 47</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can Poor Posture Really Cause Long-Term Pain?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-08-31</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 48</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Does Magnesium Really Help You Sleep Better?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-09-01</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 49</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Is HIIT Better Than Steady-State Cardio?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-09-02</div>
+        </div>
+      </div>
+      <div class="card" data-status="draft">
+        <div class="card-num">EP 50</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">Can Night Mode Really Fix Screen Time Before Bed?</div>
+          <div class="card-meta">
+            <span class="badge queued">draft</span>
+          </div>
+          <div class="card-details">Post: 2026-09-03</div>
+        </div>
+      </div>
+      <div class="card" data-status="approved">
+        <div class="card-num">EP 998</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">TEST-1: Pipeline Smoke Test (immediate publish)</div>
+          <div class="card-meta">
+            <span class="badge approved">approved</span>
+          </div>
+          <div class="card-details"></div>
+        </div>
+      </div>
+      <div class="card" data-status="approved">
+        <div class="card-num">EP 999</div>
+        <div class="thumb placeholder">Not produced yet</div>
+        <div class="card-body">
+          <div class="card-title">TEST-2: Scheduler Smoke Test (+1 day scheduled publish)</div>
+          <div class="card-meta">
+            <span class="badge approved">approved</span>
+          </div>
+          <div class="card-details"></div>
+        </div>
+      </div>
+</div>
+<script>
+function filterCards(status, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.card').forEach(c => {
+    c.style.display = (status === 'all' || c.dataset.status === status) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
