@@ -4,12 +4,19 @@ import * as schema from "./schema";
 
 const { Pool } = pg;
 
-// Use individual PG* env vars (PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE)
-// when they are available — these point to the built-in Replit PostgreSQL and
-// are always correct inside the Replit environment. Fall back to DATABASE_URL
-// only when those vars are absent (e.g. local development outside Replit).
+// Connection priority:
+//   1. DATABASE_URL secret  → Neon (or any external Postgres) — used in both
+//      dev preview and production when the secret is configured correctly.
+//   2. PG* env vars          → built-in Replit Postgres — automatic fallback
+//      when DATABASE_URL is absent (e.g. fresh repl without the secret set).
 function buildPoolConfig(): pg.PoolConfig {
+  if (process.env.DATABASE_URL) {
+    return { connectionString: process.env.DATABASE_URL };
+  }
   if (process.env.PGHOST && process.env.PGDATABASE) {
+    console.warn(
+      "[db] DATABASE_URL not set — falling back to built-in Replit Postgres (PGHOST).",
+    );
     return {
       host: process.env.PGHOST,
       port: parseInt(process.env.PGPORT ?? "5432", 10),
@@ -18,12 +25,8 @@ function buildPoolConfig(): pg.PoolConfig {
       database: process.env.PGDATABASE,
     };
   }
-  if (!process.env.DATABASE_URL) {
-    console.warn(
-      "[db] WARNING: Neither PGHOST nor DATABASE_URL is set. All database operations will fail.",
-    );
-  }
-  return { connectionString: process.env.DATABASE_URL };
+  console.warn("[db] WARNING: No database credentials found. All DB operations will fail.");
+  return {};
 }
 
 export const pool = new Pool(buildPoolConfig());
