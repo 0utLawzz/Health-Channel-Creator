@@ -144,6 +144,81 @@ async function runScheduledPublish(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Manual publish trigger — POST /api/episodes/:epNumber/publish-now
+// Immediately uploads and publishes a single scheduled episode.
+// ---------------------------------------------------------------------------
+app.post("/api/episodes/:epNumber/publish-now", async (req, res) => {
+  const epNumber = parseInt(req.params.epNumber, 10);
+  if (isNaN(epNumber) || epNumber <= 0) {
+    res.status(400).json({ error: "Invalid episode number" });
+    return;
+  }
+
+  const rows = await db
+    .select()
+    .from(episodesTable)
+    .where(eq(episodesTable.epNumber, epNumber));
+
+  if (!rows.length) {
+    res.status(404).json({ error: `Episode ${epNumber} not found` });
+    return;
+  }
+
+  const episode = rows[0];
+
+  if (episode.youtubeVideoId) {
+    res.status(409).json({
+      error: "Episode already uploaded",
+      youtubeVideoId: episode.youtubeVideoId,
+      youtubeUrl: `https://youtu.be/${episode.youtubeVideoId}`,
+    });
+    return;
+  }
+
+  try {
+    const videoPath = findEpisodeVideoPath(episode.epNumber);
+
+    const tags = (episode.hashtags ?? "")
+      .split(/[\s,]+/)
+      .map((t: string) => t.replace(/^#/, ""))
+      .filter(Boolean);
+
+    const { youtubeVideoId, youtubeUrl } = await uploadEpisodeVideo({
+      videoPath,
+      title: episode.youtubeTitle,
+      description: `${episode.citationCta ?? ""}\n\n${episode.hashtags ?? ""}`,
+      tags,
+      privacyStatus: "public",
+      publishAt: null,
+    });
+
+    try {
+      await addVideoToPlaylist({ youtubeVideoId, season: episode.season });
+    } catch (playlistErr) {
+      logger.warn({ playlistErr }, "publish-now: playlist insert failed (non-fatal)");
+    }
+
+    const now = new Date();
+    await db
+      .update(episodesTable)
+      .set({
+        status: "published",
+        youtubeVideoId,
+        publishedAt: now,
+        scheduledPublishAt: null,
+        updatedAt: now,
+      })
+      .where(eq(episodesTable.epNumber, epNumber));
+
+    logger.info({ epNumber, youtubeVideoId, youtubeUrl }, "publish-now: episode published");
+    res.json({ ok: true, epNumber, youtubeVideoId, youtubeUrl });
+  } catch (err) {
+    logger.error({ err, epNumber }, "publish-now: upload failed");
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Boot
 // ---------------------------------------------------------------------------
 const rawPort = process.env["PORT"];
