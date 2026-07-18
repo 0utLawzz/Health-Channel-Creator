@@ -177,11 +177,15 @@ app.post("/api/episodes/:epNumber/publish-now", async (req, res) => {
 
   const episode = rows[0];
 
-  if (episode.youtubeVideoId) {
+  try {
+    assertNotAlreadyPublished(episode);
+  } catch (err) {
     res.status(409).json({
-      error: "Episode already uploaded",
+      error: err instanceof Error ? err.message : "Already published",
       youtubeVideoId: episode.youtubeVideoId,
-      youtubeUrl: `https://youtu.be/${episode.youtubeVideoId}`,
+      youtubeUrl: episode.youtubeVideoId
+        ? `https://youtu.be/${episode.youtubeVideoId}`
+        : undefined,
     });
     return;
   }
@@ -197,7 +201,12 @@ app.post("/api/episodes/:epNumber/publish-now", async (req, res) => {
     const { youtubeVideoId, youtubeUrl } = await uploadEpisodeVideo({
       videoPath,
       title: episode.youtubeTitle,
-      description: `${episode.citationCta ?? ""}\n\n${episode.hashtags ?? ""}`,
+      description: buildYouTubeDescription({
+        voScript: episode.voScript,
+        citationCta: episode.citationCta,
+        hashtags: episode.hashtags,
+        season: episode.season,
+      }),
       tags,
       privacyStatus: "public",
       publishAt: null,
