@@ -14,7 +14,7 @@ import {
   RejectEpisodeBody,
 } from "@workspace/api-zod";
 import { spawn } from "child_process";
-import { promises as fs } from "fs";
+import { promises as fs, openSync, closeSync, mkdirSync } from "fs";
 import path from "path";
 
 // The valid set of episode status strings (mirrors the Drizzle pgEnum)
@@ -403,13 +403,19 @@ router.post("/episodes/:id/run-production", async (req, res): Promise<void> => {
   const exportDir = buildExportDir(episode.epNumber);
   const scriptPath = path.join(WORKSPACE_ROOT, "scripts", "src", "export-video.ts");
 
-  // Spawn the export script detached so it survives the HTTP response
+  // Ensure export dir exists so the log file can be opened before tsx starts.
+  mkdirSync(exportDir, { recursive: true });
+  const logPath = path.join(exportDir, "export.log");
+  const logFd = openSync(logPath, "w");
+
+  // Spawn the export script detached so it survives the HTTP response.
+  // stdout + stderr both go to export.log — never silent-fail again.
   const child = spawn(
     "npx",
     ["tsx", scriptPath],
     {
       detached: true,
-      stdio: "ignore",
+      stdio: ["ignore", logFd, logFd],
       env: {
         ...process.env,
         BIOMINUTE_EXPORT_URL: exportUrl,
@@ -418,6 +424,8 @@ router.post("/episodes/:id/run-production", async (req, res): Promise<void> => {
     }
   );
   child.unref();
+  // Close our copy of the fd immediately — the child holds its own reference.
+  closeSync(logFd);
 
   res.json({ success: true, message: "Production render started. Poll /build-status for progress." });
 });

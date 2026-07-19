@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "playwright install chromium",
     "hello": "tsx ./src/hello.ts",
     "generate-dashboard": "tsx ./src/generate-dashboard.ts",
     "verify-export": "tsx ./src/verify-export.ts",
