@@ -1,4 +1,5 @@
 - [Importing an external artifacts-repo](importing-external-artifact-repo.md) — overlay source onto a freshly-scaffolded artifact, don't hand-copy scaffold-generated files (tsconfig/vite.config/artifact.toml).
 - [BioMinute video export pipeline](biominute-video-export-pipeline.md) — export script env vars, build-stage flow, TypeScript project references rebuild required after lib changes.
-- [No audio in dashboard artifacts](no-audio-in-dashboard.md) — bgSound/BGM/SFX UI must never appear in publishing-dashboard, biominute-deck, or mockup-sandbox. Audio is biominute-reels + export scripts only.
+- [No audio in dashboard artifacts](no-audio-in-dashboard.md) — bgSound/BGM/SFX UI must never appear in publishing-dashboard. Audio is biominute-reels + export scripts only.
 - [Date format convention](date-format-convention.md) — always use formatPKT (date+time) not formatPKDate (date-only) for all user-facing episode timestamps across the dashboard.
+- [Publish pipeline safety patterns](publish-pipeline-safety.md) — TEST_MODE flag, hard startup env validation, regression test locations.
