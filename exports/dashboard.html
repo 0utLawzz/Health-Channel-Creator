@@ -76,9 +76,9 @@
     <div class="stat"><b>52</b>Total episodes</div>
     <div class="stat"><b>4</b>Published</div>
     <div class="stat"><b>32</b>Scheduled</div>
-    <div class="stat"><b>2</b>Approved / Complete</div>
+    <div class="stat"><b>1</b>Approved / Complete</div>
     <div class="stat"><b>14</b>Scripted</div>
-    <div class="stat"><b>0</b>Queued</div>
+    <div class="stat"><b>1</b>Queued</div>
   </div>
   <div class="filters">
     <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
@@ -714,13 +714,15 @@
           <div class="card-details">Post: 03-Sept-26</div>
         </div>
       </div>
-      <div class="card" data-status="approved">
+      <div class="card" data-status="building">
         <div class="card-num">EP 998</div>
-        <div class="thumb placeholder">Not produced yet</div>
+        <video class="thumb" poster="exports/Episode-998-build/thumbnail.png" controls preload="none">
+          <source src="exports/Episode-998-build/episode.mp4" type="video/mp4">
+        </video>
         <div class="card-body">
           <div class="card-title">TEST-1: Pipeline Smoke Test (immediate publish)</div>
           <div class="card-meta">
-            <span class="badge approved">approved</span>
+            <span class="badge queued">building</span>
           </div>
           <div class="card-details"></div>
         </div>
