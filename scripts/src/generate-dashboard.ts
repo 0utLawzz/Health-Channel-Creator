@@ -27,14 +27,25 @@ function statusBadgeClass(status: string): string {
   }
 }
 
-function formatPKDateTime(value: Date | string | null | undefined): string {
-  if (!value) return '';
-  return new Intl.DateTimeFormat('en-PK', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+function getParts(value: Date | string, options: Intl.DateTimeFormatOptions): Record<string, string> {
+  const parts = new Intl.DateTimeFormat('en-PK', { timeZone: 'Asia/Karachi', ...options }).formatToParts(new Date(value));
+  const map: Record<string, string> = {};
+  for (const p of parts) map[p.type] = p.value;
+  return map;
 }
 
+/** DD-MMM-YY hh:mm AM/PM — e.g. 20-Jul-26 02:00 PM */
+function formatPKDateTime(value: Date | string | null | undefined): string {
+  if (!value) return '';
+  const p = getParts(value, { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true });
+  return `${p.day}-${p.month}-${p.year} ${p.hour}:${p.minute} ${p.dayPeriod}`;
+}
+
+/** DD-MMM-YY — e.g. 20-Jul-26 */
 function formatPKDate(value: Date | string | null | undefined): string {
   if (!value) return '';
-  return new Intl.DateTimeFormat('en-PK', { timeZone: 'Asia/Karachi', dateStyle: 'medium' }).format(new Date(value));
+  const p = getParts(value, { day: '2-digit', month: 'short', year: '2-digit' });
+  return `${p.day}-${p.month}-${p.year}`;
 }
 
 function generateDashboard(episodes: Episode[]): string {

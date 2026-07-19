@@ -279,9 +279,24 @@ router.post("/episodes/:id/approve", async (req, res): Promise<void> => {
     return;
   }
 
+  // Derive scheduledPublishAt from postDate + 09:00 UTC (= 2:00 PM PKT) so the
+  // scheduler can pick it up without manual entry. This is the authoritative
+  // source of truth — never compute it from the previous episode's scheduled
+  // time (that pattern causes cumulative drift).
+  let scheduledPublishAt: Date | null = null;
+  if (episode.postDate) {
+    const d = new Date(`${episode.postDate}T09:00:00Z`);
+    if (!Number.isNaN(d.getTime())) scheduledPublishAt = d;
+  }
+
   const [updated] = await db
     .update(episodesTable)
-    .set({ status: "approved", approvedAt: new Date(), updatedAt: new Date() })
+    .set({
+      status: "approved",
+      approvedAt: new Date(),
+      updatedAt: new Date(),
+      ...(scheduledPublishAt ? { scheduledPublishAt } : {}),
+    })
     .where(eq(episodesTable.id, id))
     .returning();
 

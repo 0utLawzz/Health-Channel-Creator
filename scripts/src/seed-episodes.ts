@@ -229,8 +229,18 @@ async function main() {
   }
 
   for (const row of toUpdate) {
-    // For existing real episodes, only update metadata fields from the workbook.
-    // Never overwrite status, youtubeVideoId, publishedAt, or scheduledPublishAt.
+    // For existing real episodes, update metadata fields from the workbook.
+    // Never overwrite status, youtubeVideoId, or publishedAt.
+    // scheduledPublishAt IS recomputed from postDate + 09:00 UTC for scheduled
+    // episodes — this is the fix for cumulative-drift bugs where the time was
+    // previously derived from the previous episode's scheduled slot instead of
+    // each episode's own postDate.
+    let scheduledPublishAt: Date | null | undefined = undefined; // undefined = leave unchanged
+    if (row.postDate) {
+      const d = new Date(`${row.postDate}T09:00:00Z`);
+      if (!Number.isNaN(d.getTime())) scheduledPublishAt = d;
+    }
+
     await db
       .update(episodesTable)
       .set({
@@ -245,6 +255,8 @@ async function main() {
         citationCta: row.citationCta,
         hashtags: row.hashtags,
         updatedAt: new Date(),
+        // Only write scheduledPublishAt if we have a valid postDate to derive from
+        ...(scheduledPublishAt !== undefined ? { scheduledPublishAt } : {}),
       })
       .where(eq(episodesTable.epNumber, row.epNumber));
   }
