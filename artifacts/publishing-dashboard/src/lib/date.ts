@@ -53,3 +53,19 @@ export function formatPKTime(value: string | Date | null | undefined): string {
   const p = getParts(d, { hour: "2-digit", minute: "2-digit", hour12: true });
   return `${p.hour}:${p.minute} ${p.dayPeriod}`;
 }
+
+/** Format time with seconds in Asia/Karachi — hh:mm:ss AM/PM */
+export function formatPKTimeSec(value: string | Date | null | undefined): string {
+  const d = toDate(value);
+  if (!d) return "—";
+  const p = getParts(d, { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true });
+  return `${p.hour}:${p.minute}:${p.second} ${p.dayPeriod}`;
+}
+
+/** Format date + day in Asia/Karachi — Day, DD MMM YYYY */
+export function formatPKDateLong(value: string | Date | null | undefined): string {
+  const d = toDate(value);
+  if (!d) return "—";
+  const p = getParts(d, { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+  return `${p.weekday}, ${p.day} ${p.month} ${p.year}`;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   useGetEpisodeStats, 
   useListEpisodes, 
@@ -11,7 +11,7 @@ import { YouTubeBanner } from "../components/YouTubeBanner";
 import { differenceInDays } from "date-fns";
 import { Loader2, PlusCircle } from "lucide-react";
 import { Link } from "wouter";
-import { formatPKDate } from "../lib/date";
+import { formatPKDate, formatPKTimeSec, formatPKDateLong } from "../lib/date";
 
 export default function Dashboard() {
   const [activeSeason, setActiveSeason] = useState<string>("all");
@@ -31,6 +31,12 @@ export default function Dashboard() {
     "all", "draft", "scripted", "review", "approved", "scheduled", "published", "building", "rejected"
   ] as const;
 
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const { data: stats, isLoading: statsLoading } = useGetEpisodeStats();
   const { data: upcoming, isLoading: upcomingLoading } = useGetUpcomingEpisodes();
   const { data: episodes, isLoading: episodesLoading } = useListEpisodes({ 
@@ -48,9 +54,20 @@ export default function Dashboard() {
         {/* STATS HEADER */}
         <section className="mb-12">
           <div className="flex items-end justify-between mb-6">
-            <h1 className="font-display text-6xl text-[#0C0C0C] leading-none uppercase tracking-wide">
-              Overview
-            </h1>
+            <div>
+              <h1 className="font-display text-6xl text-[#0C0C0C] leading-none uppercase tracking-wide">
+                Overview
+              </h1>
+              <div className="flex items-center gap-3 mt-2">
+                <span className="font-mono text-sm text-[#555] tracking-widest uppercase">
+                  {formatPKDateLong(now)}
+                </span>
+                <span className="font-mono text-sm font-bold text-[#0C0C0C] bg-[#D4A800] border-[2px] border-[#0C0C0C] px-2 py-0.5 shadow-[2px_2px_0_#0C0C0C] tabular-nums">
+                  {formatPKTimeSec(now)}
+                </span>
+                <span className="font-mono text-[10px] text-[#888] uppercase tracking-wider">PKT</span>
+              </div>
+            </div>
             <div className="flex items-center gap-3">
               <div className="bg-[#D4A800] text-[#0C0C0C] font-display text-xl px-4 py-1 border-[3px] border-[#0C0C0C] shadow-[4px_4px_0_#0C0C0C] rotate-1">
                 STATUS REPORT
