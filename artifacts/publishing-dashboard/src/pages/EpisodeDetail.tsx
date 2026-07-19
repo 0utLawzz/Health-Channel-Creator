@@ -13,7 +13,7 @@ import { Navbar } from "../components/Navbar";
 import { YouTubeBanner } from "../components/YouTubeBanner";
 import { StatusBadge } from "../components/StatusBadge";
 import { ArrowLeft, CheckCircle, Youtube, Loader2, Save } from "lucide-react";
-import { format } from "date-fns";
+import { formatPKDate, formatPKT } from "../lib/date";
 import { useToast } from "@/hooks/use-toast";
 
 export default function EpisodeDetail() {
@@ -149,7 +149,7 @@ export default function EpisodeDetail() {
             </h1>
             <div className="flex gap-3 text-sm font-mono font-bold text-[#555] uppercase">
               <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Season {episode.season}</span>
-              <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Post Date: {format(new Date(episode.postDate), "MMM d, yyyy")}</span>
+              <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Post Date: {formatPKDate(episode.postDate)}</span>
               <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Dur: {episode.duration}</span>
             </div>
           </div>
@@ -323,7 +323,7 @@ export default function EpisodeDetail() {
                   ) : (
                     <div className="font-mono text-sm">
                       {episode.scheduledPublishAt
-                        ? format(new Date(episode.scheduledPublishAt), "PPp")
+                        ? formatPKT(episode.scheduledPublishAt)
                         : "Not scheduled"}
                     </div>
                   )}
@@ -353,7 +353,7 @@ function TimelineItem({ date, label, color }: { date: string, label: string, col
     <div className="relative">
       <div className={`absolute -left-[23px] top-1 w-3 h-3 ${color} border-2 border-[#0C0C0C] rounded-full`}></div>
       <div className="font-mono font-bold text-xs uppercase">{label}</div>
-      <div className="font-sans text-sm text-[#555]">{format(new Date(date), "MMM d, yyyy h:mm a")}</div>
+      <div className="font-sans text-sm text-[#555]">{formatPKT(date)}</div>
     </div>
   );
 }

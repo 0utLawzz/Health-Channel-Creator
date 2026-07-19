@@ -27,6 +27,16 @@ function statusBadgeClass(status: string): string {
   }
 }
 
+function formatPKDateTime(value: Date | string | null | undefined): string {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('en-PK', { timeZone: 'Asia/Karachi', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
+}
+
+function formatPKDate(value: Date | string | null | undefined): string {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('en-PK', { timeZone: 'Asia/Karachi', dateStyle: 'medium' }).format(new Date(value));
+}
+
 function generateDashboard(episodes: Episode[]): string {
   const total = episodes.length;
   const published = episodes.filter((e) => e.status === 'published').length;
@@ -44,9 +54,9 @@ function generateDashboard(episodes: Episode[]): string {
         : `        <div class="thumb placeholder">Not produced yet</div>`;
 
       const meta: string[] = [];
-      if (ep.postDate) meta.push(`Post: ${ep.postDate}`);
-      if (ep.status === 'published' && ep.publishedAt) meta.push(`Published: ${ep.publishedAt.toISOString().slice(0, 10)}`);
-      if (ep.status === 'scheduled' && ep.scheduledPublishAt) meta.push(`Scheduled: ${ep.scheduledPublishAt.toISOString().replace('T', ' ').slice(0, 16)} UTC`);
+      if (ep.postDate) meta.push(`Post: ${formatPKDate(ep.postDate)}`);
+      if (ep.status === 'published' && ep.publishedAt) meta.push(`Published: ${formatPKDateTime(ep.publishedAt)} PKT`);
+      if (ep.status === 'scheduled' && ep.scheduledPublishAt) meta.push(`Scheduled: ${formatPKDateTime(ep.scheduledPublishAt)} PKT`);
       if (ep.youtubeVideoId) meta.push(`<a href="https://youtu.be/${ep.youtubeVideoId}" target="_blank">YouTube</a>`);
 
       return `

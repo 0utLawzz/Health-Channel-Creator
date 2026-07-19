@@ -1,9 +1,10 @@
 import React from "react";
-import { format, differenceInDays, differenceInHours } from "date-fns";
+import { differenceInDays, differenceInHours } from "date-fns";
 import { Loader2, Clock, Calendar } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { useListEpisodes } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
+import { formatPKDate, formatPKTime } from "../lib/date";
 
 export default function Scheduled() {
   const [, navigate] = useLocation();
@@ -89,14 +90,11 @@ export default function Scheduled() {
                         {targetDate && (
                           <>
                             <span className="font-mono text-xs font-bold text-[#0C0C0C]">
-                              {format(targetDate, "MMM d")}
-                            </span>
-                            <span className="font-mono text-xs text-[#555]">
-                              {format(targetDate, "yyyy")}
+                              {formatPKDate(targetDate)}
                             </span>
                             {ep.scheduledPublishAt && (
                               <span className="font-mono text-[10px] text-[#0A6B52] font-bold">
-                                {format(targetDate, "HH:mm")} UTC
+                                {formatPKTime(targetDate)} PKT
                               </span>
                             )}
                           </>

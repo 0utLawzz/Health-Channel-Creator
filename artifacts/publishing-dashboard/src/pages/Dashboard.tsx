@@ -8,9 +8,10 @@ import {
 import { EpisodeCard } from "../components/EpisodeCard";
 import { Navbar } from "../components/Navbar";
 import { YouTubeBanner } from "../components/YouTubeBanner";
-import { format, differenceInDays } from "date-fns";
+import { differenceInDays } from "date-fns";
 import { Loader2, PlusCircle } from "lucide-react";
 import { Link } from "wouter";
+import { formatPKDate } from "../lib/date";
 
 export default function Dashboard() {
   const [activeSeason, setActiveSeason] = useState<string>("all");
@@ -98,7 +99,7 @@ export default function Dashboard() {
                         <p className="font-sans font-medium text-sm line-clamp-2">{ep.hookTitle}</p>
                       </div>
                       <div className="mt-4 font-mono text-xs text-[#555] font-bold">
-                        {format(new Date(ep.postDate), "MMM d, yyyy")}
+                        {formatPKDate(ep.postDate)}
                       </div>
                     </div>
                   );

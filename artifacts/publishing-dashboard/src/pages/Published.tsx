@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { format } from "date-fns";
 import { Loader2, ExternalLink } from "lucide-react";
+import { formatPKT } from "../lib/date";
 import { Navbar } from "../components/Navbar";
 import { useListEpisodes, useGetEpisodeStats } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
@@ -91,7 +91,7 @@ export default function Published() {
                       {ep.publishedAt && (
                         <div className="flex flex-col items-end">
                           <span className="font-mono text-xs font-bold text-[#0C0C0C]">
-                            {format(new Date(ep.publishedAt), "MMM d, yyyy")}
+                            {formatPKT(ep.publishedAt)}
                           </span>
                           <span className="font-mono text-[10px] text-[#555]">published</span>
                         </div>

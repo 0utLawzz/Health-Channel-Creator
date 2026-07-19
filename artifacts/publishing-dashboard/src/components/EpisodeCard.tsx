@@ -3,7 +3,7 @@ import { Episode } from "@workspace/api-client-react";
 import { StatusBadge } from "./StatusBadge";
 import { Link } from "wouter";
 import { Calendar, PlaySquare } from "lucide-react";
-import { format } from "date-fns";
+import { formatPKDate } from "../lib/date";
 
 export function EpisodeCard({ episode }: { episode: Episode }) {
   return (
@@ -40,7 +40,7 @@ export function EpisodeCard({ episode }: { episode: Episode }) {
           <div className="flex justify-between items-center text-xs font-mono text-[#0C0C0C] font-bold">
             <div className="flex items-center gap-1.5">
               <Calendar className="w-4 h-4 text-[#0A6B52]" />
-              {format(new Date(episode.postDate), "MMM d, yyyy")}
+              {formatPKDate(episode.postDate)}
             </div>
             {episode.status === "approved" && (
               <span className="text-[#C94A00] uppercase tracking-wider">Ready</span>
