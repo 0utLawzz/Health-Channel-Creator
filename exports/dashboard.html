@@ -61,6 +61,7 @@
   .badge.scheduled { background: rgba(139,92,246,0.18); color: var(--purple); }
   .badge.approved { background: rgba(47,111,237,0.18); color: var(--blue); }
   .badge.complete { background: rgba(47,111,237,0.18); color: var(--blue); }
+  .badge.scripted { background: rgba(37,99,235,0.12); color: #2563EB; border: 1px solid rgba(37,99,235,0.35); }
   .badge.queued { background: rgba(249,115,22,0.15); color: var(--orange); }
   .card-details { font-size: 11px; color: #64748b; line-height: 1.5; }
   .card-details a { color: var(--emerald); text-decoration: none; }
@@ -76,6 +77,7 @@
     <div class="stat"><b>4</b>Published</div>
     <div class="stat"><b>32</b>Scheduled</div>
     <div class="stat"><b>2</b>Approved / Complete</div>
+    <div class="stat"><b>0</b>Scripted</div>
     <div class="stat"><b>14</b>Queued</div>
   </div>
   <div class="filters">
@@ -84,6 +86,7 @@
     <button class="filter-btn" onclick="filterCards('scheduled', this)">Scheduled</button>
     <button class="filter-btn" onclick="filterCards('approved', this)">Approved</button>
     <button class="filter-btn" onclick="filterCards('complete', this)">Complete</button>
+    <button class="filter-btn" onclick="filterCards('scripted', this)">Scripted</button>
     <button class="filter-btn" onclick="filterCards('queued', this)">Queued</button>
   </div>
 </header>
@@ -99,7 +102,7 @@
           <div class="card-meta">
             <span class="badge published">published</span>
           </div>
-          <div class="card-details">Post: 12-Jul-2026 • Published: 13-Jul-2026, 5:00 am PKT • <a href="https://youtu.be/Q-bPNLP7pNk" target="_blank">YouTube</a></div>
+          <div class="card-details">Post: 12-Jul-26 • Published: 13-Jul-26 05:00 am PKT • <a href="https://youtu.be/Q-bPNLP7pNk" target="_blank">YouTube</a></div>
         </div>
       </div>
       <div class="card" data-status="published">
@@ -112,7 +115,7 @@
           <div class="card-meta">
             <span class="badge published">published</span>
           </div>
-          <div class="card-details">Post: 15-Jul-2026 • Published: 16-Jul-2026, 5:00 am PKT • <a href="https://youtu.be/9qviwgAAvI" target="_blank">YouTube</a></div>
+          <div class="card-details">Post: 15-Jul-26 • Published: 16-Jul-26 05:00 am PKT • <a href="https://youtu.be/9qviwgAAvI" target="_blank">YouTube</a></div>
         </div>
       </div>
       <div class="card" data-status="published">
@@ -125,7 +128,7 @@
           <div class="card-meta">
             <span class="badge published">published</span>
           </div>
-          <div class="card-details">Post: 17-Jul-2026 • Published: 17-Jul-2026, 12:24 pm PKT • <a href="https://youtu.be/SEXg_JukPOo" target="_blank">YouTube</a></div>
+          <div class="card-details">Post: 17-Jul-26 • Published: 17-Jul-26 12:24 pm PKT • <a href="https://youtu.be/SEXg_JukPOo" target="_blank">YouTube</a></div>
         </div>
       </div>
       <div class="card" data-status="published">
@@ -138,7 +141,7 @@
           <div class="card-meta">
             <span class="badge published">published</span>
           </div>
-          <div class="card-details">Post: 17-Jul-2026 • Published: 17-Jul-2026, 8:39 pm PKT • <a href="https://youtu.be/S-ejsqQX3-c" target="_blank">YouTube</a></div>
+          <div class="card-details">Post: 17-Jul-26 • Published: 17-Jul-26 08:39 pm PKT • <a href="https://youtu.be/S-ejsqQX3-c" target="_blank">YouTube</a></div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -151,7 +154,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 20-Jul-2026 • Scheduled: 20-Jul-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 20-Jul-26 • Scheduled: 20-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -164,7 +167,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 21-Jul-2026 • Scheduled: 22-Jul-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 21-Jul-26 • Scheduled: 21-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -177,7 +180,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 22-Jul-2026 • Scheduled: 24-Jul-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 22-Jul-26 • Scheduled: 22-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -190,7 +193,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 23-Jul-2026 • Scheduled: 27-Jul-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 23-Jul-26 • Scheduled: 23-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -203,7 +206,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 24-Jul-2026 • Scheduled: 29-Jul-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 24-Jul-26 • Scheduled: 24-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -216,7 +219,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 25-Jul-2026 • Scheduled: 31-Jul-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 25-Jul-26 • Scheduled: 25-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -229,7 +232,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 26-Jul-2026 • Scheduled: 03-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 26-Jul-26 • Scheduled: 26-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -242,7 +245,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 27-Jul-2026 • Scheduled: 05-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 27-Jul-26 • Scheduled: 27-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -255,7 +258,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 28-Jul-2026 • Scheduled: 07-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 28-Jul-26 • Scheduled: 28-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -268,7 +271,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 29-Jul-2026 • Scheduled: 10-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 29-Jul-26 • Scheduled: 29-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -281,7 +284,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 30-Jul-2026 • Scheduled: 12-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 30-Jul-26 • Scheduled: 30-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -294,7 +297,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 31-Jul-2026 • Scheduled: 14-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 31-Jul-26 • Scheduled: 31-Jul-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -307,7 +310,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 01-Aug-2026 • Scheduled: 17-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 01-Aug-26 • Scheduled: 01-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -320,7 +323,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 02-Aug-2026 • Scheduled: 19-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 02-Aug-26 • Scheduled: 02-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -333,7 +336,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 03-Aug-2026 • Scheduled: 21-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 03-Aug-26 • Scheduled: 03-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -346,7 +349,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 04-Aug-2026 • Scheduled: 24-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 04-Aug-26 • Scheduled: 04-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -359,7 +362,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 05-Aug-2026 • Scheduled: 26-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 05-Aug-26 • Scheduled: 05-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -372,7 +375,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 06-Aug-2026 • Scheduled: 28-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 06-Aug-26 • Scheduled: 06-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -385,7 +388,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 07-Aug-2026 • Scheduled: 31-Aug-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 07-Aug-26 • Scheduled: 07-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -398,7 +401,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 08-Aug-2026 • Scheduled: 02-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 08-Aug-26 • Scheduled: 08-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -411,7 +414,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 09-Aug-2026 • Scheduled: 04-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 09-Aug-26 • Scheduled: 09-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -424,7 +427,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 10-Aug-2026 • Scheduled: 07-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 10-Aug-26 • Scheduled: 10-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -437,7 +440,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 11-Aug-2026 • Scheduled: 09-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 11-Aug-26 • Scheduled: 11-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -450,7 +453,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 12-Aug-2026 • Scheduled: 11-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 12-Aug-26 • Scheduled: 12-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -463,7 +466,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 13-Aug-2026 • Scheduled: 14-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 13-Aug-26 • Scheduled: 13-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -476,7 +479,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 14-Aug-2026 • Scheduled: 16-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 14-Aug-26 • Scheduled: 14-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -489,7 +492,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 15-Aug-2026 • Scheduled: 18-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 15-Aug-26 • Scheduled: 15-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -502,7 +505,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 16-Aug-2026 • Scheduled: 21-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 16-Aug-26 • Scheduled: 16-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -515,7 +518,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 17-Aug-2026 • Scheduled: 23-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 17-Aug-26 • Scheduled: 17-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -528,7 +531,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 18-Aug-2026 • Scheduled: 25-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 18-Aug-26 • Scheduled: 18-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -541,7 +544,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 19-Aug-2026 • Scheduled: 28-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 19-Aug-26 • Scheduled: 19-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="scheduled">
@@ -554,7 +557,7 @@
           <div class="card-meta">
             <span class="badge scheduled">scheduled</span>
           </div>
-          <div class="card-details">Post: 20-Aug-2026 • Scheduled: 30-Sept-2026, 2:00 pm PKT</div>
+          <div class="card-details">Post: 20-Aug-26 • Scheduled: 20-Aug-26 02:00 pm PKT</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -565,7 +568,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 21-Aug-2026</div>
+          <div class="card-details">Post: 21-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -576,7 +579,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 22-Aug-2026</div>
+          <div class="card-details">Post: 22-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -587,7 +590,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 23-Aug-2026</div>
+          <div class="card-details">Post: 23-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -598,7 +601,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 24-Aug-2026</div>
+          <div class="card-details">Post: 24-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -609,7 +612,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 25-Aug-2026</div>
+          <div class="card-details">Post: 25-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -620,7 +623,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 26-Aug-2026</div>
+          <div class="card-details">Post: 26-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -631,7 +634,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 27-Aug-2026</div>
+          <div class="card-details">Post: 27-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -642,7 +645,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 28-Aug-2026</div>
+          <div class="card-details">Post: 28-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -653,7 +656,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 29-Aug-2026</div>
+          <div class="card-details">Post: 29-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -664,7 +667,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 30-Aug-2026</div>
+          <div class="card-details">Post: 30-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -675,7 +678,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 31-Aug-2026</div>
+          <div class="card-details">Post: 31-Aug-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -686,7 +689,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 01-Sept-2026</div>
+          <div class="card-details">Post: 01-Sept-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -697,7 +700,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 02-Sept-2026</div>
+          <div class="card-details">Post: 02-Sept-26</div>
         </div>
       </div>
       <div class="card" data-status="draft">
@@ -708,7 +711,7 @@
           <div class="card-meta">
             <span class="badge queued">draft</span>
           </div>
-          <div class="card-details">Post: 03-Sept-2026</div>
+          <div class="card-details">Post: 03-Sept-26</div>
         </div>
       </div>
       <div class="card" data-status="approved">

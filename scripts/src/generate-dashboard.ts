@@ -23,6 +23,7 @@ function statusBadgeClass(status: string): string {
     case 'scheduled': return 'scheduled';
     case 'approved': return 'approved';
     case 'complete': return 'complete';
+    case 'scripted': return 'scripted';
     default: return 'queued';
   }
 }
@@ -53,7 +54,8 @@ function generateDashboard(episodes: Episode[]): string {
   const published = episodes.filter((e) => e.status === 'published').length;
   const scheduled = episodes.filter((e) => e.status === 'scheduled').length;
   const approved = episodes.filter((e) => e.status === 'approved' || e.status === 'complete').length;
-  const queued = total - published - scheduled - approved;
+  const scripted = episodes.filter((e) => e.status === 'scripted').length;
+  const queued = total - published - scheduled - approved - scripted;
 
   const cards = episodes
     .map((ep) => {
@@ -148,6 +150,7 @@ ${thumb}
   .badge.scheduled { background: rgba(139,92,246,0.18); color: var(--purple); }
   .badge.approved { background: rgba(47,111,237,0.18); color: var(--blue); }
   .badge.complete { background: rgba(47,111,237,0.18); color: var(--blue); }
+  .badge.scripted { background: rgba(37,99,235,0.12); color: #2563EB; border: 1px solid rgba(37,99,235,0.35); }
   .badge.queued { background: rgba(249,115,22,0.15); color: var(--orange); }
   .card-details { font-size: 11px; color: #64748b; line-height: 1.5; }
   .card-details a { color: var(--emerald); text-decoration: none; }
@@ -163,6 +166,7 @@ ${thumb}
     <div class="stat"><b>${published}</b>Published</div>
     <div class="stat"><b>${scheduled}</b>Scheduled</div>
     <div class="stat"><b>${approved}</b>Approved / Complete</div>
+    <div class="stat"><b>${scripted}</b>Scripted</div>
     <div class="stat"><b>${queued}</b>Queued</div>
   </div>
   <div class="filters">
@@ -171,6 +175,7 @@ ${thumb}
     <button class="filter-btn" onclick="filterCards('scheduled', this)">Scheduled</button>
     <button class="filter-btn" onclick="filterCards('approved', this)">Approved</button>
     <button class="filter-btn" onclick="filterCards('complete', this)">Complete</button>
+    <button class="filter-btn" onclick="filterCards('scripted', this)">Scripted</button>
     <button class="filter-btn" onclick="filterCards('queued', this)">Queued</button>
   </div>
 </header>
