@@ -237,10 +237,20 @@ export interface UploadEpisodeVideoResult {
  * - If `publishAt` is provided → always uploads as `private` with `publishAt`
  *   set; YouTube automatically flips it to public/unlisted at that timestamp.
  * - Otherwise → uses `privacyStatus` as-is.
+ *
+ * TEST_MODE: set TEST_MODE=true in env to skip the real upload and return a
+ * fake video ID. Use for all TEST-* episodes so tests never touch the live
+ * channel.
  */
 export async function uploadEpisodeVideo(
   params: UploadEpisodeVideoParams,
 ): Promise<UploadEpisodeVideoResult> {
+  if (process.env.TEST_MODE === "true") {
+    const fakeId = `TEST_${Date.now()}`;
+    logger.info({ title: params.title }, `TEST_MODE: would upload: ${params.title}`);
+    return { youtubeVideoId: fakeId, youtubeUrl: `https://youtu.be/${fakeId}` };
+  }
+
   const youtube = google.youtube({ version: "v3", auth: getOAuth2Client() });
 
   const usesSchedule = !!params.publishAt;
@@ -298,10 +308,20 @@ export interface AddToPlaylistResult {
  * Adds a video to the season playlist configured in env vars.
  * Returns null (with a warning log) if the playlist ID is not configured for
  * this season — this is non-fatal so a missing env var never blocks publishing.
+ *
+ * TEST_MODE: skips the real API call and returns null.
  */
 export async function addVideoToPlaylist(
   params: AddToPlaylistParams,
 ): Promise<AddToPlaylistResult | null> {
+  if (process.env.TEST_MODE === "true") {
+    logger.info(
+      { youtubeVideoId: params.youtubeVideoId, season: params.season },
+      "TEST_MODE: would add video to playlist",
+    );
+    return null;
+  }
+
   const playlistId = getPlaylistId(params.season);
   if (!playlistId) {
     logger.warn(

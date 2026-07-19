@@ -4,6 +4,9 @@
  *         tsx scripts/src/upload-now.ts 4 5 6
  *
  * Uses DATABASE_URL (Neon) and all YOUTUBE_* secrets from env.
+ *
+ * Set TEST_MODE=true to do a dry-run: logs what would be uploaded without
+ * touching the YouTube API or updating the database.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -12,6 +15,36 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { eq } from "drizzle-orm";
 import { episodesTable } from "@workspace/db";
+
+// ---------------------------------------------------------------------------
+// Env validation — fail loudly before doing anything if required vars are absent
+// ---------------------------------------------------------------------------
+const TEST_MODE = process.env.TEST_MODE === "true";
+
+const REQUIRED_VARS = TEST_MODE
+  ? ["DATABASE_URL"] // YouTube creds not needed in test mode
+  : [
+      "DATABASE_URL",
+      "YOUTUBE_CLIENT_ID",
+      "YOUTUBE_CLIENT_SECRET",
+      "YOUTUBE_REFRESH_TOKEN",
+      "YOUTUBE_PLAYLIST_S1",
+      "YOUTUBE_PLAYLIST_S2",
+      "YOUTUBE_PLAYLIST_S3",
+      "YOUTUBE_PLAYLIST_S4",
+      "YOUTUBE_PLAYLIST_S5",
+      "YOUTUBE_PLAYLIST_S6",
+    ];
+
+const missingVars = REQUIRED_VARS.filter((k) => !process.env[k]);
+if (missingVars.length > 0) {
+  console.error(
+    "\n🚫  upload-now aborted — missing required environment variables:\n" +
+      missingVars.map((k) => `   • ${k}`).join("\n") +
+      "\n\nAdd these to Replit Secrets before running.\n",
+  );
+  process.exit(1);
+}
 
 // ---------------------------------------------------------------------------
 // DB
@@ -134,13 +167,32 @@ function findVideoPath(epNumber: number): string {
 // Upload a single episode
 // ---------------------------------------------------------------------------
 async function uploadEp(epNumber: number) {
-  console.log(`\n=== Uploading Episode ${epNumber} ===`);
+  console.log(`\n=== ${TEST_MODE ? "[TEST_MODE] " : ""}Uploading Episode ${epNumber} ===`);
 
   const rows = await db.select().from(episodesTable).where(eq(episodesTable.epNumber, epNumber));
   if (!rows.length) throw new Error(`Episode ${epNumber} not found in DB.`);
   const ep = rows[0];
 
   assertNotAlreadyPublished(ep);
+
+  const description = buildYouTubeDescription({
+    voScript: ep.voScript,
+    citationCta: ep.citationCta,
+    hashtags: ep.hashtags,
+    season: ep.season,
+  });
+
+  // ------------------------------------------------------------------
+  // TEST_MODE: log what would happen and stop — never touch YouTube or
+  // update the database with a fake video ID.
+  // ------------------------------------------------------------------
+  if (TEST_MODE) {
+    console.log(`  [TEST_MODE] would upload: "${ep.youtubeTitle}"`);
+    console.log(`  [TEST_MODE] season: ${ep.season}, playlist env: ${seasonEnvKey(ep.season ?? "")}`);
+    console.log(`  [TEST_MODE] description preview:\n${description.slice(0, 200)}...`);
+    console.log(`  [TEST_MODE] No YouTube API call made. DB unchanged.`);
+    return;
+  }
 
   const videoPath = findVideoPath(epNumber);
   console.log(`  Video: ${videoPath}`);
@@ -149,13 +201,6 @@ async function uploadEp(epNumber: number) {
     .split(/[\s,]+/)
     .map((t: string) => t.replace(/^#/, ""))
     .filter(Boolean);
-
-  const description = buildYouTubeDescription({
-    voScript: ep.voScript,
-    citationCta: ep.citationCta,
-    hashtags: ep.hashtags,
-    season: ep.season,
-  });
 
   const youtube = google.youtube({ version: "v3", auth: getOAuth2Client() });
 
