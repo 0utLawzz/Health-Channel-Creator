@@ -11,7 +11,7 @@ import { YouTubeBanner } from "../components/YouTubeBanner";
 import { differenceInDays } from "date-fns";
 import { Loader2, PlusCircle } from "lucide-react";
 import { Link } from "wouter";
-import { formatPKDate, formatPKTimeSec, formatPKDateLong } from "../lib/date";
+import { formatPKT, formatPKTimeSec, formatPKDateLong } from "../lib/date";
 
 export default function Dashboard() {
   const [activeSeason, setActiveSeason] = useState<string>("all");
@@ -116,7 +116,7 @@ export default function Dashboard() {
                         <p className="font-sans font-medium text-sm line-clamp-2">{ep.hookTitle}</p>
                       </div>
                       <div className="mt-4 font-mono text-xs text-[#555] font-bold">
-                        {formatPKDate(ep.postDate)}
+                        {formatPKT(ep.postDate)}
                       </div>
                     </div>
                   );

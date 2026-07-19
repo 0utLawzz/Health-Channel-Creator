@@ -4,7 +4,7 @@ import { Navbar } from "../components/Navbar";
 import { useListEpisodes, useApproveEpisode, useUpdateEpisode } from "@workspace/api-client-react";
 import type { Episode } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { formatPKDate } from "../lib/date";
+import { formatPKT } from "../lib/date";
 
 export default function PreviewQueue() {
   const queryClient = useQueryClient();
@@ -133,7 +133,7 @@ export default function PreviewQueue() {
                     </span>
                   </div>
                   <p className="font-sans text-sm line-clamp-2 mt-1">{ep.hookTitle}</p>
-                  <p className="font-mono text-xs text-[#999] mt-1">{formatPKDate(ep.postDate)}</p>
+                  <p className="font-mono text-xs text-[#999] mt-1">{formatPKT(ep.postDate)}</p>
                 </button>
               ))
             )}
@@ -159,7 +159,7 @@ export default function PreviewQueue() {
                 {/* Meta */}
                 <div className="p-6 border-b-[3px] border-[#0C0C0C]">
                   <h2 className="font-display text-3xl text-[#0C0C0C] mb-1">EP {String(selected.epNumber).padStart(2, "0")} — {selected.hookTitle}</h2>
-                  <p className="font-mono text-xs text-[#555]">{selected.season} · {formatPKDate(selected.postDate)}</p>
+                  <p className="font-mono text-xs text-[#555]">{selected.season} · {formatPKT(selected.postDate)}</p>
                 </div>
 
                 {/* Script */}

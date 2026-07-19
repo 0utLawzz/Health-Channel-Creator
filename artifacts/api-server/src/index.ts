@@ -52,10 +52,35 @@ function logStartupCredentials(): void {
 }
 
 // ---------------------------------------------------------------------------
+// Scheduler auto-publish log — circular buffer (last 50 events)
+// ---------------------------------------------------------------------------
+interface SchedulerLogEntry {
+  ts: string;
+  epNumber: number;
+  hookTitle: string;
+  status: "success" | "failed";
+  youtubeVideoId?: string;
+  error?: string;
+}
+const schedulerLog: SchedulerLogEntry[] = [];
+let schedulerLastChecked: string | null = null;
+
+function pushSchedulerLog(entry: SchedulerLogEntry) {
+  schedulerLog.unshift(entry);
+  if (schedulerLog.length > 50) schedulerLog.length = 50;
+}
+
+app.get("/api/scheduler/log", (_req, res) => {
+  res.json({ log: schedulerLog, lastChecked: schedulerLastChecked });
+});
+
+// ---------------------------------------------------------------------------
 // Scheduler: every 15 minutes, find episodes where status = 'scheduled' AND
 // scheduledPublishAt <= now, then upload them to YouTube and mark published.
 // ---------------------------------------------------------------------------
 async function runScheduledPublish(): Promise<void> {
+  schedulerLastChecked = new Date().toISOString();
+
   const hasYouTubeCredentials =
     !!process.env.YOUTUBE_CLIENT_ID &&
     !!process.env.YOUTUBE_CLIENT_SECRET &&
@@ -138,11 +163,25 @@ async function runScheduledPublish(): Promise<void> {
           })
           .where(eq(episodesTable.id, episode.id));
 
+        pushSchedulerLog({
+          ts: now.toISOString(),
+          epNumber: episode.epNumber,
+          hookTitle: episode.hookTitle,
+          status: "success",
+          youtubeVideoId,
+        });
         logger.info(
           { episodeId: episode.id, epNumber: episode.epNumber, youtubeVideoId, youtubeUrl },
           "Scheduler: episode published successfully",
         );
       } catch (err) {
+        pushSchedulerLog({
+          ts: new Date().toISOString(),
+          epNumber: episode.epNumber,
+          hookTitle: episode.hookTitle,
+          status: "failed",
+          error: err instanceof Error ? err.message : String(err),
+        });
         logger.error(
           { err, episodeId: episode.id, epNumber: episode.epNumber },
           "Scheduler: failed to publish episode — will retry next cycle",

@@ -1,14 +1,29 @@
 import React from "react";
 import { differenceInDays, differenceInHours } from "date-fns";
-import { Loader2, Clock, Calendar } from "lucide-react";
+import { Loader2, Clock, Calendar, CheckCircle2, XCircle, Bot } from "lucide-react";
 import { Navbar } from "../components/Navbar";
-import { useListEpisodes } from "@workspace/api-client-react";
+import { useListEpisodes, customFetch } from "@workspace/api-client-react";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { formatPKDate, formatPKTime } from "../lib/date";
+import { formatPKT } from "../lib/date";
+
+interface SchedulerLogEntry {
+  ts: string;
+  epNumber: number;
+  hookTitle: string;
+  status: "success" | "failed";
+  youtubeVideoId?: string;
+  error?: string;
+}
 
 export default function Scheduled() {
   const [, navigate] = useLocation();
   const { data: episodes, isLoading } = useListEpisodes({ status: "scheduled" });
+  const { data: schedulerData } = useQuery<{ log: SchedulerLogEntry[]; lastChecked: string | null }>({
+    queryKey: ["/api/scheduler/log"],
+    queryFn: () => customFetch("/api/scheduler/log"),
+    refetchInterval: 60_000,
+  });
 
   return (
     <div className="min-h-screen bg-[#EDEAE0] pb-20">
@@ -88,16 +103,9 @@ export default function Scheduled() {
                       <div className="shrink-0 px-6 py-4 border-l-[3px] border-[#0C0C0C] flex flex-col items-center gap-1">
                         <Calendar size={16} className="text-[#555]" />
                         {targetDate && (
-                          <>
-                            <span className="font-mono text-xs font-bold text-[#0C0C0C]">
-                              {formatPKDate(targetDate)}
-                            </span>
-                            {ep.scheduledPublishAt && (
-                              <span className="font-mono text-[10px] text-[#0A6B52] font-bold">
-                                {formatPKTime(targetDate)} PKT
-                              </span>
-                            )}
-                          </>
+                          <span className="font-mono text-xs font-bold text-[#0C0C0C] text-center">
+                            {formatPKT(targetDate)}
+                          </span>
                         )}
                       </div>
 
@@ -122,6 +130,58 @@ export default function Scheduled() {
               })}
           </div>
         )}
+        {/* ── Auto-Publish Engine Log ── */}
+        <section className="mt-14">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <Bot size={18} className="text-[#0A6B52]" />
+              <h2 className="font-display text-3xl text-[#0C0C0C] uppercase">Auto-Publish Engine</h2>
+            </div>
+            <span className="font-mono text-[10px] text-[#555] uppercase tracking-wider">
+              {schedulerData?.lastChecked
+                ? `Last checked: ${formatPKT(schedulerData.lastChecked)}`
+                : "Not yet checked this session"}
+            </span>
+            <div className="ml-auto flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#0A6B52] animate-pulse" />
+              <span className="font-mono text-[10px] font-bold text-[#0A6B52] uppercase">Running · every 15 min</span>
+            </div>
+          </div>
+
+          {!schedulerData?.log || schedulerData.log.length === 0 ? (
+            <div className="bg-[#FAF7EE] border-[3px] border-[#0C0C0C] p-8 text-center shadow-[4px_4px_0_#0C0C0C]">
+              <p className="font-mono text-sm text-[#555]">No auto-publish events yet this session. The engine runs every 15 minutes.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {schedulerData.log.map((entry, i) => (
+                <div key={i} className={`flex items-center gap-4 px-5 py-3 border-[2px] border-[#0C0C0C] shadow-[3px_3px_0_#0C0C0C] font-mono text-xs ${
+                  entry.status === "success" ? "bg-[#E8F5E9]" : "bg-[#FEE8E8]"
+                }`}>
+                  {entry.status === "success"
+                    ? <CheckCircle2 size={16} className="text-[#0A6B52] shrink-0" />
+                    : <XCircle size={16} className="text-[#C94A00] shrink-0" />}
+                  <span className="font-bold text-[#555] shrink-0">{formatPKT(entry.ts)}</span>
+                  <span className="font-bold text-[#0C0C0C]">EP {String(entry.epNumber).padStart(2, "0")}</span>
+                  <span className="text-[#555] truncate">{entry.hookTitle}</span>
+                  {entry.status === "success" && entry.youtubeVideoId && (
+                    <a
+                      href={`https://youtube.com/watch?v=${entry.youtubeVideoId}`}
+                      target="_blank" rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="ml-auto shrink-0 text-[#C94A00] font-bold border border-[#C94A00] px-2 py-0.5 hover:bg-[#C94A00] hover:text-white transition-colors"
+                    >
+                      YT ↗
+                    </a>
+                  )}
+                  {entry.status === "failed" && (
+                    <span className="ml-auto shrink-0 text-[#C94A00] font-bold truncate max-w-xs">{entry.error}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );

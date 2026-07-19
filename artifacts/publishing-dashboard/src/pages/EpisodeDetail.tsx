@@ -6,14 +6,15 @@ import {
   useApproveEpisode, 
   usePublishToYouTube,
   useGetYouTubeStatus,
+  useRunProduction,
   Episode,
   EpisodeUpdate
 } from "@workspace/api-client-react";
 import { Navbar } from "../components/Navbar";
 import { YouTubeBanner } from "../components/YouTubeBanner";
 import { StatusBadge } from "../components/StatusBadge";
-import { ArrowLeft, CheckCircle, Youtube, Loader2, Save } from "lucide-react";
-import { formatPKDate, formatPKT } from "../lib/date";
+import { ArrowLeft, CheckCircle, Youtube, Loader2, Save, Clapperboard, RefreshCw } from "lucide-react";
+import { formatPKT } from "../lib/date";
 import { useToast } from "@/hooks/use-toast";
 
 export default function EpisodeDetail() {
@@ -28,10 +29,12 @@ export default function EpisodeDetail() {
   const updateMutation = useUpdateEpisode();
   const approveMutation = useApproveEpisode();
   const publishMutation = usePublishToYouTube();
+  const runProductionMutation = useRunProduction();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Partial<EpisodeUpdate>>({});
   const [confirmApprove, setConfirmApprove] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<string>("");
   
   const initRef = useRef<number | null>(null);
 
@@ -43,6 +46,7 @@ export default function EpisodeDetail() {
         hashtags: episode.hashtags,
         scheduledPublishAt: episode.scheduledPublishAt || undefined
       });
+      setPendingStatus(episode.status);
     }
   }, [episode]);
 
@@ -92,6 +96,37 @@ export default function EpisodeDetail() {
           setConfirmApprove(false);
           refetch();
           toast({ title: "Approved", description: "Episode is approved and ready for publishing.", className: "bg-[#0A6B52] text-white border-2 border-black rounded-none" });
+        }
+      }
+    );
+  };
+
+  const handleStatusChange = () => {
+    if (!pendingStatus || pendingStatus === episode.status) return;
+    updateMutation.mutate(
+      { id, data: { status: pendingStatus as Episode["status"] } },
+      {
+        onSuccess: () => {
+          refetch();
+          toast({ title: "Status Updated", description: `Episode moved to ${pendingStatus.toUpperCase()}.`, className: "bg-[#0C0C0C] text-white border-2 border-black rounded-none" });
+        },
+        onError: () => {
+          toast({ title: "Error", description: "Failed to update status.", variant: "destructive" });
+        }
+      }
+    );
+  };
+
+  const handleRunProduction = () => {
+    runProductionMutation.mutate(
+      { id },
+      {
+        onSuccess: () => {
+          refetch();
+          toast({ title: "Production Started", description: "Episode is now building.", className: "bg-[#C9A800] text-[#0C0C0C] border-2 border-black rounded-none" });
+        },
+        onError: () => {
+          toast({ title: "Error", description: "Failed to start production.", variant: "destructive" });
         }
       }
     );
@@ -149,7 +184,7 @@ export default function EpisodeDetail() {
             </h1>
             <div className="flex gap-3 text-sm font-mono font-bold text-[#555] uppercase">
               <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Season {episode.season}</span>
-              <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Post Date: {formatPKDate(episode.postDate)}</span>
+              <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Post Date: {formatPKT(episode.postDate)}</span>
               <span className="bg-[#E2DDD0] px-2 py-1 border-2 border-[#0C0C0C]">Dur: {episode.duration}</span>
             </div>
           </div>
@@ -188,6 +223,44 @@ export default function EpisodeDetail() {
                 VIEW ON YOUTUBE
               </a>
             )}
+
+            {/* ── Manual Status Change ── */}
+            <div className="border-t-[2px] border-[#0C0C0C] pt-3 space-y-2">
+              <p className="font-mono text-[10px] font-bold text-[#555] uppercase tracking-widest">Change Status</p>
+
+              {episode.status === "scripted" && (
+                <button
+                  onClick={handleRunProduction}
+                  disabled={runProductionMutation.isPending}
+                  className="w-full brutal-btn bg-[#C9A800] text-[#0C0C0C] border-[2.5px] border-[#0C0C0C] flex items-center justify-center gap-2 py-2 text-sm hover:brightness-95"
+                >
+                  {runProductionMutation.isPending
+                    ? <Loader2 className="animate-spin w-4 h-4" />
+                    : <Clapperboard className="w-4 h-4" />}
+                  RUN PRODUCTION
+                </button>
+              )}
+
+              <div className="flex gap-2">
+                <select
+                  value={pendingStatus || episode.status}
+                  onChange={(e) => setPendingStatus(e.target.value)}
+                  className="flex-1 font-mono text-xs border-[2px] border-[#0C0C0C] bg-[#FAF7EE] px-2 py-2 shadow-[2px_2px_0_#0C0C0C] focus:outline-none uppercase"
+                >
+                  {(["draft","scripted","review","approved","scheduled","published","building","rejected"] as const).map(s => (
+                    <option key={s} value={s}>{s.toUpperCase()}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleStatusChange}
+                  disabled={updateMutation.isPending || !pendingStatus || pendingStatus === episode.status}
+                  className="brutal-btn bg-[#0C0C0C] text-white font-mono text-xs px-3 py-2 border-[2px] border-[#0C0C0C] disabled:opacity-40 flex items-center gap-1"
+                >
+                  {updateMutation.isPending ? <Loader2 className="animate-spin w-3 h-3" /> : <RefreshCw className="w-3 h-3" />}
+                  APPLY
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
