@@ -1,5 +1,5 @@
 kind = "web"
-previewPath = "/publishing-dashboard/"
+previewPath = "/"
 title = "BioMinute Publishing Dashboard"
 version = "1.0.0"
 id = "artifacts/publishing-dashboard"
@@ -7,7 +7,7 @@ router = "path"
 
 [[services]]
 name = "web"
-paths = [ "/publishing-dashboard/" ]
+paths = [ "/" ]
 localPort = 24083
 
 [services.development]
@@ -24,4 +24,3 @@ to = "/index.html"
 
 [services.env]
 PORT = "24083"
-BASE_PATH = "/publishing-dashboard/"

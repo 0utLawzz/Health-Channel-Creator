@@ -42,7 +42,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=24083 BASE_PATH=/publishing-dashboard/ pnpm --filter @workspace/publishing-dashboard run dev"
+args = "PORT=24083 pnpm --filter @workspace/publishing-dashboard run dev"
 waitForPort = 24083
 
 [workflows.workflow.metadata]
