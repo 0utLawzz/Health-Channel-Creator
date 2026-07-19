@@ -8,6 +8,7 @@ import {
 } from "@workspace/api-client-react";
 import type { BuildStatus } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "wouter";
 
 export default function Building() {
   const queryClient = useQueryClient();
@@ -117,9 +118,9 @@ export default function Building() {
           <div className="bg-[#FAF7EE] border-[3px] border-[#0C0C0C] p-16 text-center shadow-[5px_5px_0_#0C0C0C]">
             <p className="font-display text-4xl text-[#0C0C0C] mb-3">PIPELINE CLEAR</p>
             <p className="font-mono text-sm text-[#555]">No episodes currently in the building pipeline.</p>
-            <a href="/new" className="inline-block mt-6 font-mono font-bold text-xs px-6 py-3 border-[2px] border-[#0C0C0C] bg-[#C9A800] text-[#0C0C0C] shadow-[3px_3px_0_#0C0C0C] uppercase hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+            <Link href="/new" className="inline-block mt-6 font-mono font-bold text-xs px-6 py-3 border-[2px] border-[#0C0C0C] bg-[#C9A800] text-[#0C0C0C] shadow-[3px_3px_0_#0C0C0C] uppercase hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
               + New Episode
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

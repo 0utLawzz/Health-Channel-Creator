@@ -386,15 +386,15 @@ router.post("/episodes/:id/run-production", async (req, res): Promise<void> => {
     return;
   }
 
-  if (episode.status !== "building") {
-    res.status(400).json({ error: "Episode must be in 'building' status to run production" });
+  if (episode.status !== "building" && episode.status !== "scripted") {
+    res.status(400).json({ error: `Episode must be in 'scripted' or 'building' status to run production (current: ${episode.status})` });
     return;
   }
 
-  // Mark as rendering
+  // Promote scripted → building, then mark as rendering
   await db
     .update(episodesTable)
-    .set({ buildStage: "rendering", updatedAt: new Date() })
+    .set({ status: "building", buildStage: "rendering", updatedAt: new Date() })
     .where(eq(episodesTable.id, id));
 
   // Determine the biominute-reels URL and output dir
