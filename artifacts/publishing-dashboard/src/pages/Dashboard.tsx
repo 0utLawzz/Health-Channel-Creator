@@ -28,7 +28,7 @@ export default function Dashboard() {
   ];
 
   const STATUS_FILTERS = [
-    "all", "draft", "review", "approved", "scheduled", "published", "building", "rejected"
+    "all", "draft", "scripted", "review", "approved", "scheduled", "published", "building", "rejected"
   ] as const;
 
   const { data: stats, isLoading: statsLoading } = useGetEpisodeStats();

@@ -7,7 +7,7 @@
  */
 import * as zod from 'zod';
 
-const EPISODE_STATUSES = ['draft', 'complete', 'review', 'approved', 'scheduled', 'published', 'building', 'rejected'] as const;
+const EPISODE_STATUSES = ['draft', 'scripted', 'complete', 'review', 'approved', 'scheduled', 'published', 'building', 'rejected'] as const;
 
 /**
  * @summary Health check
@@ -61,6 +61,7 @@ export const GetEpisodeStatsResponse = zod.object({
   "total": zod.number(),
   "byStatus": zod.object({
     "draft": zod.number(),
+    "scripted": zod.number(),
     "complete": zod.number(),
     "review": zod.number(),
     "approved": zod.number(),

@@ -18,6 +18,7 @@ export type EpisodeStatus = typeof EpisodeStatus[keyof typeof EpisodeStatus];
 
 export const EpisodeStatus = {
   draft: 'draft',
+  scripted: 'scripted',
   complete: 'complete',
   review: 'review',
   approved: 'approved',
@@ -66,6 +67,7 @@ export type EpisodeUpdateStatus = typeof EpisodeUpdateStatus[keyof typeof Episod
 
 export const EpisodeUpdateStatus = {
   draft: 'draft',
+  scripted: 'scripted',
   complete: 'complete',
   review: 'review',
   approved: 'approved',
@@ -87,6 +89,7 @@ export interface EpisodeUpdate {
 
 export type EpisodeStatsByStatus = {
   draft: number;
+  scripted: number;
   complete: number;
   review: number;
   approved: number;
@@ -155,6 +158,7 @@ export type ListEpisodesStatus = typeof ListEpisodesStatus[keyof typeof ListEpis
 
 export const ListEpisodesStatus = {
   draft: 'draft',
+  scripted: 'scripted',
   complete: 'complete',
   review: 'review',
   approved: 'approved',

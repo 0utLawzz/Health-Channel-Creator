@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 
 export const episodeStatusEnum = pgEnum("episode_status", [
   "draft",
+  "scripted",
   "complete",
   "review",
   "approved",

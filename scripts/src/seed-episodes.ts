@@ -16,7 +16,7 @@ const MASTER_WORKBOOK = path.join(
 );
 const EXPORTS_DIR = path.join(PROJECT_ROOT, "exports");
 
-type DbStatus = "draft" | "complete" | "review" | "approved" | "scheduled" | "published";
+type DbStatus = "draft" | "scripted" | "complete" | "review" | "approved" | "scheduled" | "published";
 
 function hasExportedVideo(epNumber: number): boolean {
   const padded = String(epNumber).padStart(2, "0");
@@ -42,6 +42,7 @@ function workbookStatusToDb(status: string): DbStatus {
   const s = String(status ?? "").toLowerCase();
   if (s.includes("published")) return "published";
   if (s.includes("complete") || s.includes("approved")) return "complete";
+  if (s.includes("scripted")) return "scripted";
   if (s.includes("test")) return "approved"; // test episodes are ready to publish
   return "draft";
 }

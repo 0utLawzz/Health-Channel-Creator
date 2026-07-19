@@ -20,6 +20,7 @@ import path from "path";
 // The valid set of episode status strings (mirrors the Drizzle pgEnum)
 type EpisodeStatusValue =
   | "draft"
+  | "scripted"
   | "complete"
   | "review"
   | "approved"
@@ -95,6 +96,7 @@ router.get("/episodes/stats", async (req, res): Promise<void> => {
 
   const byStatus = {
     draft: 0,
+    scripted: 0,
     complete: 0,
     review: 0,
     approved: 0,

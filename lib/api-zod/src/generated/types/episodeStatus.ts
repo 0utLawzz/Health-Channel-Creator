@@ -11,6 +11,7 @@ export type EpisodeStatus = typeof EpisodeStatus[keyof typeof EpisodeStatus];
 
 export const EpisodeStatus = {
   draft: 'draft',
+  scripted: 'scripted',
   complete: 'complete',
   review: 'review',
   approved: 'approved',
