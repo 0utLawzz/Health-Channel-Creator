@@ -3,3 +3,4 @@
 - [No audio in dashboard artifacts](no-audio-in-dashboard.md) — bgSound/BGM/SFX UI must never appear in publishing-dashboard. Audio is biominute-reels + export scripts only.
 - [Date format convention](date-format-convention.md) — always use formatPKT (date+time) not formatPKDate (date-only) for all user-facing episode timestamps across the dashboard.
 - [Publish pipeline safety patterns](publish-pipeline-safety.md) — TEST_MODE flag, hard startup env validation, regression test locations.
+- [BioMinute scheduled time drift](biominute-scheduled-time-drift.md) — seed-episodes resets DB publish times to 09:00 UTC; already-uploaded YouTube videos must be synced with reschedule.ts.
