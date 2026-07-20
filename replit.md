@@ -27,9 +27,10 @@ attached_assets/       Master plan XLSX, brand assets, logos
 
 ## How to Run
 
-Both workflows start automatically:
-- **API Server**: `artifacts/api-server: API Server` workflow (port 8080)
-- **Publishing Dashboard**: `artifacts/publishing-dashboard: web` workflow (port 24083)
+All three workflows start automatically:
+- **API Server**: `artifacts/api-server: API Server` workflow (port 8080, path `/api`)
+- **Publishing Dashboard**: `artifacts/publishing-dashboard: web` workflow (port 24083, path `/`)
+- **BioMinute Reels**: `artifacts/biominute-reels: web` workflow (port 25078, path `/biominute-reels/`)
 
 To reseed the database from the master XLSX:
 ```
