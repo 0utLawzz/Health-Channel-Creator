@@ -90,6 +90,15 @@ app.get("/api/scheduler/log", (_req, res) => {
   res.json({ log: schedulerLog, lastChecked: schedulerLastChecked });
 });
 
+// POST /api/scheduler/run — manually trigger a scheduler check immediately.
+// Useful after a server restart that may have missed a due episode.
+app.post("/api/scheduler/run", async (_req, res) => {
+  res.json({ queued: true, message: "Scheduler check triggered" });
+  runScheduledPublish().catch((err) =>
+    logger.error({ err }, "Scheduler: manual trigger failed"),
+  );
+});
+
 // ---------------------------------------------------------------------------
 // Scheduler: every 15 minutes, find episodes where status = 'scheduled' AND
 // scheduledPublishAt <= now, then upload them to YouTube and mark published.
@@ -320,8 +329,13 @@ app.listen(port, (err) => {
 
   logger.info({ port }, "Server listening");
 
-  // Start the background scheduler after the server is up
+  // Start the background scheduler after the server is up.
+  // Run immediately on startup so any episodes that became due while the
+  // server was down are caught right away (not 15 min later).
   const INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+  runScheduledPublish().catch((err) =>
+    logger.error({ err }, "Scheduler: startup check failed"),
+  );
   setInterval(runScheduledPublish, INTERVAL_MS);
   logger.info(
     { intervalMinutes: 15 },
