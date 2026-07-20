@@ -32,5 +32,10 @@ Config: `artifacts/api-server/vitest.config.ts`
 
 **Rule:** When fixing a pipeline bug, add a test that would catch the regression.
 
+## Scheduler must-run-on-startup pattern
+`setInterval` alone means a bounced server waits up to 15 min before its first check. The fix: call `runScheduledPublish()` immediately inside the `app.listen()` callback *before* setting up the interval. Any episode that became due during the downtime is caught the moment the server comes back. Also exposed `POST /api/scheduler/run` for manual on-demand triggers.
+
+**Why:** Episode 5 was 13 hours overdue because the production server died at 03:37 UTC and the dev workflow bounced; neither instance was running at 09:00 UTC when the episode was due.
+
 ## upload-now.ts duplication note
 `scripts/src/upload-now.ts` has local copies of `buildYouTubeDescription`, `assertNotAlreadyPublished`, `seasonEnvKey`, `findVideoPath` — identical logic to `youtube-upload.ts` but not imported from it. If description format ever changes, update both places.
