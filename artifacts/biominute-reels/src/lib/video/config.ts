@@ -21,12 +21,12 @@ export const CANVAS_STYLE = {
 // Scene durations for the current episode. The video player uses these to
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
-// EP 42 — "Can Probiotics Actually Improve Your Gut Health?" (S5: Nutrition & Myths)
+// EP 50 — "Can Night Mode Really Fix Screen Time Before Bed?"
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: gut bacteria + capsule + veggies
-  1: 6500, // Strain & dose matter; healthy people see modest benefit
-  2: 7000, // Probiotic adds few dots vs fiber feeds many
-  3: 6000, // Food first, pills optional
-  4: 6500, // CTA: "Do you take a probiotic supplement?"
-  5: 5000, // Thumbnail end card
+  0: 4500, // Scene 0
+  1: 6500, // Scene 1
+  2: 7000, // Scene 2
+  3: 6000, // Scene 3
+  4: 6500, // Scene 4
+  5: 5000, // Scene 5
 } as const;

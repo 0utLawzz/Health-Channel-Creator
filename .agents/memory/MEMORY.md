@@ -4,3 +4,4 @@
 - [Date format convention](date-format-convention.md) — always use formatPKT (date+time) not formatPKDate (date-only) for all user-facing episode timestamps across the dashboard.
 - [Publish pipeline safety patterns](publish-pipeline-safety.md) — TEST_MODE flag, hard startup env validation, regression test locations.
 - [BioMinute scheduled time drift](biominute-scheduled-time-drift.md) — seed-episodes resets DB publish times to 09:00 UTC; already-uploaded YouTube videos must be synced with reschedule.ts.
+- [batch-export-schedule WORKSPACE_ROOT fix](batch-export-workspace-root.md) — script needs `..` not `../..` to resolve workspace root when run via pnpm exec.

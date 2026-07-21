@@ -31,7 +31,7 @@ import { episodesTable } from '@workspace/db';
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const SKIP_EXPORT = process.env.SKIP_EXPORT === 'true';
 
-const WORKSPACE_ROOT = path.resolve(process.cwd(), '../..');
+const WORKSPACE_ROOT = path.resolve(process.cwd(), '..');
 const REELS_SRC = path.join(WORKSPACE_ROOT, 'artifacts/biominute-reels/src/components/video/video_scenes');
 const CONFIG_PATH = path.join(WORKSPACE_ROOT, 'artifacts/biominute-reels/src/lib/video/config.ts');
 const EXPORTS_DIR = path.join(WORKSPACE_ROOT, 'exports');
