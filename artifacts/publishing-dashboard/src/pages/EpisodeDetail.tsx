@@ -280,7 +280,7 @@ export default function EpisodeDetail() {
               </div>
             </div>
 
-            {/* Visuals & Audio Panel */}
+            {/* Visuals & Production Notes Panel */}
             <div className="brutal-card p-6 bg-[#FAF7EE]">
               <h2 className="font-display text-3xl mb-4 flex items-center gap-3">
                 <span className="bg-[#0C0C0C] text-white px-2 py-0.5 text-xl rotate-[2deg]">2</span>
