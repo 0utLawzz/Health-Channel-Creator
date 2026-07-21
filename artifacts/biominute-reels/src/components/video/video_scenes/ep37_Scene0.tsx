@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
-import { Pill, Apple, Utensils, Activity } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Clock, Utensils, Moon } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -9,6 +9,7 @@ const SPRING_SMOOTH = { type: 'spring', stiffness: 120, damping: 25 } as const;
 
 export function Scene0() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -16,7 +17,12 @@ export function Scene0() {
       audioRef.current.volume = 0.6;
       audioRef.current.play().catch(() => {});
     }
+    const t = setInterval(() => setTick((v) => v + 1), 800);
+    return () => clearInterval(t);
   }, []);
+
+  // Animated clock hand angle
+  const handDeg = (tick % 12) * 30;
 
   return (
     <motion.div
@@ -30,12 +36,12 @@ export function Scene0() {
 
       {/* Background glow */}
       <motion.div
-        className="absolute top-[12%] w-[520px] h-[520px] bg-gradient-to-tr from-[#10b981]/15 to-[#f97316]/10 rounded-full blur-[130px]"
+        className="absolute top-[12%] w-[520px] h-[520px] bg-gradient-to-tr from-[#10b981]/15 to-[#2F6FED]/10 rounded-full blur-[130px]"
         animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.65, 0.4] }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Visual: gut with bacteria dots + capsule + veggie */}
+      {/* Clock visual */}
       <div className="absolute top-[185px] flex flex-col items-center gap-6 z-10 w-full px-12">
         <motion.div
           className="relative w-[220px] h-[220px]"
@@ -43,40 +49,48 @@ export function Scene0() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.3, ...SPRING_SNAPPY }}
         >
-          {/* Gut shape */}
+          {/* Clock face — split half emerald / half blue */}
           <svg width="220" height="220" viewBox="0 0 220 220" className="absolute inset-0">
-            <path
-              d="M60 70 Q60 30 110 30 Q160 30 160 70 Q160 110 110 110 Q70 110 70 150 Q70 190 110 190 Q150 190 150 150"
-              fill="none"
-              stroke="#334155"
-              strokeWidth="8"
+            {/* Eating window (top half — emerald) */}
+            <path d="M 110 110 L 110 10 A 100 100 0 0 1 210 110 Z" fill="#10b981" opacity="0.25" />
+            <path d="M 110 110 L 210 110 A 100 100 0 0 1 110 210 Z" fill="#10b981" opacity="0.12" />
+            {/* Fasting window (left half — blue, dimmed) */}
+            <path d="M 110 110 L 110 210 A 100 100 0 0 1 10 110 Z" fill="#2F6FED" opacity="0.15" />
+            <path d="M 110 110 L 10 110 A 100 100 0 0 1 110 10 Z" fill="#2F6FED" opacity="0.08" />
+            {/* Clock ring */}
+            <circle cx="110" cy="110" r="100" fill="none" stroke="#334155" strokeWidth="4" />
+            {/* Clock hand */}
+            <motion.line
+              x1="110" y1="110"
+              x2="110" y2="30"
+              stroke="#f8fafc"
+              strokeWidth="4"
               strokeLinecap="round"
+              animate={{ rotate: handDeg }}
+              style={{ originX: '110px', originY: '110px' }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
             />
-            {/* Bacteria dots */}
-            <circle cx="90" cy="60" r="8" fill="#10b981" opacity="0.8" />
-            <circle cx="130" cy="50" r="6" fill="#2F6FED" opacity="0.8" />
-            <circle cx="150" cy="80" r="7" fill="#f97316" opacity="0.8" />
-            <circle cx="80" cy="140" r="6" fill="#14b8a6" opacity="0.8" />
-            <circle cx="120" cy="160" r="8" fill="#10b981" opacity="0.8" />
-            <circle cx="140" cy="130" r="5" fill="#2F6FED" opacity="0.8" />
+            <circle cx="110" cy="110" r="8" fill="#10b981" />
           </svg>
 
-          {/* Capsule icon */}
+          {/* Labels */}
           <motion.div
-            className="absolute top-2 left-2"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-2 right-0 flex items-center gap-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
           >
-            <Pill size={48} color="#f97316" strokeWidth={1.6} />
+            <Utensils size={16} color="#10b981" />
+            <span className="text-[#10b981] font-display font-bold text-[13px] uppercase">Eating</span>
           </motion.div>
-
-          {/* Veggie icon */}
           <motion.div
-            className="absolute bottom-2 right-2"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+            className="absolute bottom-2 left-0 flex items-center gap-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
           >
-            <Apple size={48} color="#10b981" strokeWidth={1.6} />
+            <Moon size={16} color="#2F6FED" />
+            <span className="text-[#2F6FED] font-display font-bold text-[13px] uppercase">Fasting</span>
           </motion.div>
         </motion.div>
 
@@ -86,7 +100,7 @@ export function Scene0() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, ...SPRING_SMOOTH }}
         >
-          <Utensils size={20} color="#10b981" />
+          <Clock size={20} color="#10b981" />
           <span className="text-[#10b981] font-display font-bold text-[18px] uppercase tracking-wider">S5 • Nutrition &amp; Myths</span>
         </motion.div>
       </div>
@@ -102,14 +116,14 @@ export function Scene0() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Can Probiotics
+          Does Intermittent
           <motion.span
             className="text-[#10b981] block mt-2 drop-shadow-md"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.9, ...SPRING_SNAPPY }}
           >
-            Actually Improve
+            Fasting
           </motion.span>
           <motion.span
             className="text-[#f97316] block mt-1 drop-shadow-md"
@@ -117,7 +131,7 @@ export function Scene0() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1.3, ...SPRING_SNAPPY }}
           >
-            Your Gut Health?
+            Actually Work?
           </motion.span>
         </motion.h1>
       </div>

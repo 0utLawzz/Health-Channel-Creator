@@ -21,12 +21,12 @@ export const CANVAS_STYLE = {
 // Scene durations for the current episode. The video player uses these to
 // advance scenes automatically. Keep the total loop duration in sync with
 // the exported MP4 length so the record/export control captures the full video.
-// EP 37 — "Does Intermittent Fasting Actually Work?" (S5: Nutrition & Myths)
+// EP 42 — "Can Probiotics Actually Improve Your Gut Health?" (S5: Nutrition & Myths)
 export const SCENE_DURATIONS = {
-  0: 4500, // Hook: "Does Intermittent Fasting Actually Work?" (clock split eating/fasting)
-  1: 6500, // Not magic — just timing; structures when you eat
-  2: 7000, // Eating window (bright emerald) vs fasting window (dimmed blue) + calorie ticker
-  3: 6000, // Balance scale: IF vs traditional at equal height — same results
-  4: 6500, // CTA: "Have you tried intermittent fasting?" + Varady et al. citation
+  0: 4500, // Hook: gut bacteria + capsule + veggies
+  1: 6500, // Strain & dose matter; healthy people see modest benefit
+  2: 7000, // Probiotic adds few dots vs fiber feeds many
+  3: 6000, // Food first, pills optional
+  4: 6500, // CTA: "Do you take a probiotic supplement?"
   5: 5000, // Thumbnail end card
 } as const;

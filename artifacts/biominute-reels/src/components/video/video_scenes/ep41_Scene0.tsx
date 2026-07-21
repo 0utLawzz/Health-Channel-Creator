@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Pill, Apple, Utensils, Activity } from 'lucide-react';
+import { Wine, Bed, Moon, Clock } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -30,12 +30,12 @@ export function Scene0() {
 
       {/* Background glow */}
       <motion.div
-        className="absolute top-[12%] w-[520px] h-[520px] bg-gradient-to-tr from-[#10b981]/15 to-[#f97316]/10 rounded-full blur-[130px]"
+        className="absolute top-[12%] w-[520px] h-[520px] bg-gradient-to-tr from-[#f97316]/15 to-[#2F6FED]/10 rounded-full blur-[130px]"
         animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.65, 0.4] }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Visual: gut with bacteria dots + capsule + veggie */}
+      {/* Visual: wine glass + bed + moon */}
       <div className="absolute top-[185px] flex flex-col items-center gap-6 z-10 w-full px-12">
         <motion.div
           className="relative w-[220px] h-[220px]"
@@ -43,51 +43,46 @@ export function Scene0() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.3, ...SPRING_SNAPPY }}
         >
-          {/* Gut shape */}
-          <svg width="220" height="220" viewBox="0 0 220 220" className="absolute inset-0">
-            <path
-              d="M60 70 Q60 30 110 30 Q160 30 160 70 Q160 110 110 110 Q70 110 70 150 Q70 190 110 190 Q150 190 150 150"
-              fill="none"
-              stroke="#334155"
-              strokeWidth="8"
-              strokeLinecap="round"
-            />
-            {/* Bacteria dots */}
-            <circle cx="90" cy="60" r="8" fill="#10b981" opacity="0.8" />
-            <circle cx="130" cy="50" r="6" fill="#2F6FED" opacity="0.8" />
-            <circle cx="150" cy="80" r="7" fill="#f97316" opacity="0.8" />
-            <circle cx="80" cy="140" r="6" fill="#14b8a6" opacity="0.8" />
-            <circle cx="120" cy="160" r="8" fill="#10b981" opacity="0.8" />
-            <circle cx="140" cy="130" r="5" fill="#2F6FED" opacity="0.8" />
-          </svg>
-
-          {/* Capsule icon */}
+          {/* Wine glass with glow */}
           <motion.div
-            className="absolute top-2 left-2"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            animate={{ rotate: [-5, 5, -5] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Pill size={48} color="#f97316" strokeWidth={1.6} />
+            <div className="relative">
+              <div className="absolute inset-0 bg-[#f97316]/20 blur-[30px] rounded-full" />
+              <Wine size={88} color="#f97316" strokeWidth={1.4} />
+            </div>
           </motion.div>
 
-          {/* Veggie icon */}
+          {/* Bed icon */}
           <motion.div
-            className="absolute bottom-2 right-2"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+            className="absolute bottom-0 left-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0 }}
           >
-            <Apple size={48} color="#10b981" strokeWidth={1.6} />
+            <Bed size={56} color="#2F6FED" strokeWidth={1.4} />
+          </motion.div>
+
+          {/* Moon */}
+          <motion.div
+            className="absolute top-4 right-4"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Moon size={56} color="#14b8a6" strokeWidth={1.4} />
           </motion.div>
         </motion.div>
 
         <motion.div
-          className="flex items-center gap-3 bg-[#10b981]/10 border border-[#10b981]/30 px-7 py-4 rounded-2xl"
+          className="flex items-center gap-3 bg-[#14b8a6]/10 border border-[#14b8a6]/30 px-7 py-4 rounded-2xl"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, ...SPRING_SMOOTH }}
         >
-          <Utensils size={20} color="#10b981" />
-          <span className="text-[#10b981] font-display font-bold text-[18px] uppercase tracking-wider">S5 • Nutrition &amp; Myths</span>
+          <Clock size={20} color="#14b8a6" />
+          <span className="text-[#14b8a6] font-display font-bold text-[18px] uppercase tracking-wider">S3 • Sleep &amp; Recovery</span>
         </motion.div>
       </div>
 
@@ -102,22 +97,22 @@ export function Scene0() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Can Probiotics
+          Does Alcohol Affect
           <motion.span
-            className="text-[#10b981] block mt-2 drop-shadow-md"
+            className="text-[#f97316] block mt-2 drop-shadow-md"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.9, ...SPRING_SNAPPY }}
           >
-            Actually Improve
+            Your Sleep More
           </motion.span>
           <motion.span
-            className="text-[#f97316] block mt-1 drop-shadow-md"
+            className="text-[#2F6FED] block mt-1 drop-shadow-md"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1.3, ...SPRING_SNAPPY }}
           >
-            Your Gut Health?
+            Than You Think?
           </motion.span>
         </motion.h1>
       </div>

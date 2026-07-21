@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { Pill, Dna, Activity, CheckCircle } from 'lucide-react';
+import { Droplets, Zap, Smile, Activity } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -30,30 +30,30 @@ export function Scene1() {
 
       <div className="absolute top-[185px] flex flex-col items-center gap-5 z-10 w-full px-10">
         <motion.div
-          className="bg-[#2F6FED]/10 border border-[#2F6FED]/30 px-8 py-4 rounded-2xl"
+          className="bg-[#14b8a6]/10 border border-[#14b8a6]/30 px-8 py-4 rounded-2xl"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#2F6FED] font-display font-bold text-[22px] uppercase tracking-wider">Strain &amp; Dose Matter</span>
+          <span className="text-[#14b8a6] font-display font-bold text-[22px] uppercase tracking-wider">The Short-Term Boost Is Real</span>
         </motion.div>
 
-        {/* Central probiotic capsule with DNA */}
+        {/* Central shower icon */}
         <motion.div
           className="w-[160px] h-[160px] rounded-full flex items-center justify-center"
-          style={{ backgroundColor: '#10b98118', border: '4px solid #10b98155' }}
+          style={{ backgroundColor: '#2F6FED18', border: '4px solid #2F6FED55' }}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.5, ...SPRING_SNAPPY }}
         >
-          <Pill size={80} color="#10b981" strokeWidth={1.6} />
+          <Droplets size={80} color="#2F6FED" strokeWidth={1.6} />
         </motion.div>
 
         {/* Key insight cards */}
         {[
-          { icon: Dna, color: '#2F6FED', title: 'Not all probiotics are equal', body: 'Different strains do different things' },
-          { icon: Activity, color: '#f97316', title: 'Some conditions have evidence', body: 'Certain strains can help specific issues' },
-          { icon: CheckCircle, color: '#10b981', title: 'Healthy people? Modest benefit', body: 'For general gut health, effects are often small' },
+          { icon: Zap, color: '#2F6FED', title: 'More alertness', body: 'Cold water triggers a quick arousal response' },
+          { icon: Smile, color: '#f97316', title: 'Improved mood', body: 'Many people report feeling energized after' },
+          { icon: Activity, color: '#14b8a6', title: 'Stress hormones rise', body: 'A small, short-term spike that some find energizing' },
         ].map((item, i) => {
           const Icon = item.icon;
           return (
@@ -62,7 +62,7 @@ export function Scene1() {
               className="bg-[#1e293b] border border-[#334155] rounded-[24px] px-7 py-4 flex items-center gap-5 w-full"
               initial={{ x: -40, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.9 + i * 0.3, ...SPRING_SMOOTH }}
+              transition={{ delay: 1.0 + i * 0.3, ...SPRING_SMOOTH }}
             >
               <div
                 className="w-[58px] h-[58px] rounded-full flex items-center justify-center shrink-0"
@@ -89,14 +89,14 @@ export function Scene1() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Specificity
+          A Real
           <motion.span
             className="text-[#2F6FED] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.6, ...SPRING_SNAPPY }}
           >
-            Is Everything
+            Jolt, Not Magic
           </motion.span>
         </motion.h2>
       </div>

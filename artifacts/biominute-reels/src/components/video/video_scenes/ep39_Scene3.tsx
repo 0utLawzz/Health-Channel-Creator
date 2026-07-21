@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
-import { CheckCircle, AlertTriangle, Stethoscope, Apple } from 'lucide-react';
+import { CheckCircle, XCircle, Droplets, Clock } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -35,37 +35,45 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#10b981] font-display font-bold text-[22px] uppercase tracking-wider">The Practical Verdict</span>
+          <span className="text-[#10b981] font-display font-bold text-[22px] uppercase tracking-wider">The Balanced Take</span>
         </motion.div>
 
-        {/* When probiotics help vs when diet wins */}
+        {/* Two columns: supported vs not supported */}
         <div className="flex gap-4 w-full">
-          <motion.div
-            className="flex-1 rounded-[24px] p-5 flex flex-col items-center gap-3 border"
-            style={{ backgroundColor: '#2F6FED18', borderColor: '#2F6FED45' }}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, ...SPRING_SNAPPY }}
-          >
-            <Stethoscope size={44} color="#2F6FED" strokeWidth={1.8} />
-            <span className="text-[#2F6FED] font-display font-bold text-[18px] uppercase text-center leading-tight">Specific<br/>Conditions</span>
-            <span className="text-[#94a3b8] font-body text-[15px] text-center">Certain strains can help</span>
-          </motion.div>
-
+          {/* Supported */}
           <motion.div
             className="flex-1 rounded-[24px] p-5 flex flex-col items-center gap-3 border"
             style={{ backgroundColor: '#10b98118', borderColor: '#10b98145' }}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.5, ...SPRING_SNAPPY }}
+          >
+            <div className="w-[58px] h-[58px] rounded-full flex items-center justify-center shrink-0"
+              style={{ backgroundColor: '#10b98120', border: '3px solid #10b98140' }}>
+              <CheckCircle size={30} color="#10b981" strokeWidth={1.8} />
+            </div>
+            <span className="text-[#10b981] font-display font-bold text-[20px] uppercase text-center">Short-term boost</span>
+            <span className="text-[#94a3b8] font-body text-[16px] text-center">Alertness, mood, energy</span>
+          </motion.div>
+
+          {/* Not supported */}
+          <motion.div
+            className="flex-1 rounded-[24px] p-5 flex flex-col items-center gap-3 border"
+            style={{ backgroundColor: '#33415530', borderColor: '#64748b45' }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.7, ...SPRING_SNAPPY }}
           >
-            <Apple size={44} color="#10b981" strokeWidth={1.8} />
-            <span className="text-[#10b981] font-display font-bold text-[18px] uppercase text-center leading-tight">General<br/>Gut Health</span>
-            <span className="text-[#94a3b8] font-body text-[15px] text-center">Fiber wins day-to-day</span>
+            <div className="w-[58px] h-[58px] rounded-full flex items-center justify-center shrink-0"
+              style={{ backgroundColor: '#f9731620', border: '3px solid #f9731640' }}>
+              <XCircle size={30} color="#f97316" strokeWidth={1.8} />
+            </div>
+            <span className="text-[#f97316] font-display font-bold text-[20px] uppercase text-center">Big claims</span>
+            <span className="text-[#94a3b8] font-body text-[16px] text-center">Fat loss, super immunity</span>
           </motion.div>
         </div>
 
-        {/* Summary card */}
+        {/* Resilience over time */}
         <motion.div
           className="bg-[#1e293b] border border-[#334155] rounded-[28px] px-8 py-5 flex items-center gap-5 w-full"
           initial={{ opacity: 0, y: 20 }}
@@ -73,12 +81,12 @@ export function Scene3() {
           transition={{ delay: 1.5, ...SPRING_SMOOTH }}
         >
           <div className="w-[58px] h-[58px] rounded-full flex items-center justify-center shrink-0"
-            style={{ backgroundColor: '#10b98120', border: '3px solid #10b98140' }}>
-            <CheckCircle size={30} color="#10b981" strokeWidth={1.8} />
+            style={{ backgroundColor: '#2F6FED20', border: '3px solid #2F6FED40' }}>
+            <Clock size={30} color="#2F6FED" strokeWidth={1.8} />
           </div>
           <div>
-            <p className="font-display font-bold text-[22px] uppercase leading-tight text-[#10b981]">Focus on variety first</p>
-            <p className="text-[#94a3b8] font-body text-[19px] leading-snug mt-1">A diverse, fiber-rich diet tends to matter more for already-healthy people than any single supplement</p>
+            <p className="font-display font-bold text-[22px] uppercase leading-tight text-[#2F6FED]">May build stress resilience</p>
+            <p className="text-[#94a3b8] font-body text-[19px] leading-snug mt-1">Regular cold exposure can help some people adapt over time — but it is optional, not essential</p>
           </div>
         </motion.div>
       </div>
@@ -93,14 +101,14 @@ export function Scene3() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Food First,
+          One Option
           <motion.span
-            className="text-[#10b981] block mt-2 drop-shadow-md"
+            className="text-[#14b8a6] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.6, ...SPRING_SNAPPY }}
           >
-            Pills Optional
+            Among Many
           </motion.span>
         </motion.h2>
       </div>

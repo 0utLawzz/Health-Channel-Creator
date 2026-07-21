@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { Pill, Apple, Carrot, Salad } from 'lucide-react';
+import { Calendar, Clock, TrendingDown } from 'lucide-react';
 import { BOTTOM_SAFE_ZONE_PX } from '@/lib/video';
 
 const BASE_URL = import.meta.env.BASE_URL ?? '/';
@@ -9,7 +9,7 @@ const SPRING_SMOOTH = { type: 'spring', stiffness: 120, damping: 25 } as const;
 
 export function Scene2() {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [bacteria, setBacteria] = useState(3);
+  const [days, setDays] = useState(10);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -17,9 +17,10 @@ export function Scene2() {
       audioRef.current.volume = 0.6;
       audioRef.current.play().catch(() => {});
     }
+    // Tick the illness duration down
     const t = setInterval(() => {
-      setBacteria((v) => (v < 12 ? v + 1 : 12));
-    }, 300);
+      setDays((v) => (v > 7 ? v - 1 : 7));
+    }, 400);
     return () => clearInterval(t);
   }, []);
 
@@ -35,85 +36,77 @@ export function Scene2() {
 
       <div className="absolute top-[180px] flex flex-col items-center gap-5 z-10 w-full px-10">
         <motion.div
-          className="bg-[#10b981]/10 border border-[#10b981]/30 px-8 py-4 rounded-2xl"
+          className="bg-[#2F6FED]/10 border border-[#2F6FED]/30 px-8 py-4 rounded-2xl"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#10b981] font-display font-bold text-[22px] uppercase tracking-wider">Feed What You Already Have</span>
+          <span className="text-[#2F6FED] font-display font-bold text-[22px] uppercase tracking-wider">The Duration Effect</span>
         </motion.div>
 
-        {/* Probiotic capsule vs fiber plate */}
+        {/* Calendar comparison */}
         <div className="flex gap-4 w-full">
-          {/* Probiotic — adds few dots */}
+          {/* Without regular vitamin C — longer illness */}
           <motion.div
-            className="flex-1 rounded-[24px] p-5 flex flex-col items-center gap-3 border"
-            style={{ backgroundColor: '#f9731618', borderColor: '#f9731645' }}
+            className="flex-1 rounded-[24px] p-6 flex flex-col items-center gap-3 border"
+            style={{ backgroundColor: '#33415530', borderColor: '#64748b45' }}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.5, ...SPRING_SNAPPY }}
           >
-            <Pill size={44} color="#f97316" strokeWidth={1.8} />
-            <span className="text-[#f97316] font-display font-bold text-[18px] uppercase text-center leading-tight">Probiotic<br/>Capsule</span>
-            <div className="flex gap-1 flex-wrap justify-center w-full px-4">
-              {[...Array(3)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="w-3 h-3 rounded-full bg-[#f97316]"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 1.0 + i * 0.1 }}
-                />
-              ))}
+            <Calendar size={44} color="#94a3b8" strokeWidth={1.8} />
+            <span className="text-[#94a3b8] font-display font-bold text-[18px] uppercase text-center leading-tight">No Regular<br/>Vitamin C</span>
+            <div className="w-full h-4 bg-[#1e293b] rounded-full overflow-hidden mt-2">
+              <motion.div
+                className="h-full bg-[#94a3b8]"
+                initial={{ width: '0%' }}
+                animate={{ width: '100%' }}
+                transition={{ delay: 1.0, duration: 1.2 }}
+              />
             </div>
-            <span className="text-[#94a3b8] font-body text-[15px] text-center">Adds a few strains</span>
+            <span className="text-[#64748b] font-body text-[16px] text-center">~10 days</span>
           </motion.div>
 
-          {/* Fiber/veggie plate — multiplies many dots */}
+          {/* With regular vitamin C — shorter */}
           <motion.div
-            className="flex-1 rounded-[24px] p-5 flex flex-col items-center gap-3 border"
+            className="flex-1 rounded-[24px] p-6 flex flex-col items-center gap-3 border"
             style={{ backgroundColor: '#10b98118', borderColor: '#10b98145' }}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.7, ...SPRING_SNAPPY }}
           >
-            <div className="flex gap-2">
-              <Apple size={36} color="#10b981" strokeWidth={1.8} />
-              <Carrot size={36} color="#f97316" strokeWidth={1.8} />
-              <Salad size={36} color="#14b8a6" strokeWidth={1.8} />
+            <Clock size={44} color="#10b981" strokeWidth={1.8} />
+            <span className="text-[#10b981] font-display font-bold text-[18px] uppercase text-center leading-tight">Regular<br/>Vitamin C</span>
+            <div className="w-full h-4 bg-[#1e293b] rounded-full overflow-hidden mt-2">
+              <motion.div
+                className="h-full bg-[#10b981]"
+                initial={{ width: '0%' }}
+                animate={{ width: '70%' }}
+                transition={{ delay: 1.0, duration: 1.2 }}
+              />
             </div>
-            <span className="text-[#10b981] font-display font-bold text-[18px] uppercase text-center leading-tight">Fiber-Rich<br/>Diet</span>
-            <div className="flex gap-1 flex-wrap justify-center w-full px-2">
-              {[...Array(bacteria)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: ['#10b981', '#2F6FED', '#f97316', '#14b8a6'][i % 4] }}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 1.0 + i * 0.08 }}
-                />
-              ))}
-            </div>
-            <span className="text-[#94a3b8] font-body text-[15px] text-center">Feeds diverse bacteria</span>
+            <span className="text-[#64748b] font-body text-[16px] text-center">~7 days</span>
           </motion.div>
         </div>
 
-        {/* Count ticker */}
+        {/* Duration ticker */}
         <motion.div
           className="w-full bg-[#1e293b] border border-[#334155] rounded-[28px] px-8 py-6 flex flex-col items-center gap-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, ...SPRING_SMOOTH }}
+          transition={{ delay: 1.2, ...SPRING_SMOOTH }}
         >
-          <span className="text-[#94a3b8] font-display font-bold text-[20px] uppercase tracking-wide">Gut bacteria diversity</span>
+          <div className="flex items-center gap-3">
+            <TrendingDown size={28} color="#10b981" strokeWidth={1.8} />
+            <span className="text-[#94a3b8] font-display font-bold text-[20px] uppercase tracking-wide">Illness duration</span>
+          </div>
           <motion.span
             className="text-[#10b981] font-display font-bold text-[64px] leading-none tabular-nums"
-            key={bacteria}
+            key={days}
           >
-            {bacteria} types
+            {days}d
           </motion.span>
-          <span className="text-[#64748b] font-body text-[18px]">fiber feeds more species than one supplement</span>
+          <span className="text-[#64748b] font-body text-[18px]">modest shortening for consistent takers</span>
         </motion.div>
       </div>
 
@@ -127,14 +120,14 @@ export function Scene2() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Diet Feeds
+          Shorten,
           <motion.span
             className="text-[#10b981] block mt-2 drop-shadow-md"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.6, ...SPRING_SNAPPY }}
           >
-            The Whole Gut
+            Not Stop
           </motion.span>
         </motion.h2>
       </div>

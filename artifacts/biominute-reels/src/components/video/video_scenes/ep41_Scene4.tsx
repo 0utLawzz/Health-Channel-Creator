@@ -38,13 +38,13 @@ export function Scene4() {
           <div className="absolute top-6 right-8 w-4 h-4 bg-[#10b981] rounded-full" />
 
           <motion.div
-            className="flex items-center gap-2 bg-[#10b981]/10 border border-[#10b981]/30 px-5 py-2 rounded-full mb-5"
+            className="flex items-center gap-2 bg-[#f97316]/10 border border-[#f97316]/30 px-5 py-2 rounded-full mb-5"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, ...SPRING_SMOOTH }}
           >
-            <Repeat size={18} color="#10b981" />
-            <span className="text-[#10b981] font-display font-bold text-[15px] uppercase tracking-wide">Gut Health</span>
+            <Repeat size={18} color="#f97316" />
+            <span className="text-[#f97316] font-display font-bold text-[15px] uppercase tracking-wide">Sleep Quality</span>
           </motion.div>
 
           <motion.div
@@ -52,7 +52,7 @@ export function Scene4() {
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.6, ...SPRING_SNAPPY }}
           >
-            <div className="w-24 h-24 rounded-full bg-[#10b981] flex items-center justify-center">
+            <div className="w-24 h-24 rounded-full bg-[#14b8a6] flex items-center justify-center">
               <MessageCircle size={48} color="#f8fafc" strokeWidth={1.8} />
             </div>
           </motion.div>
@@ -63,9 +63,9 @@ export function Scene4() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 0.8 }}
           >
-            Do You Take a
-            <span className="text-[#10b981] block mt-2">Probiotic</span>
-            <span className="text-[#f97316] block mt-1">Supplement?</span>
+            Does a Nightcap
+            <span className="text-[#f97316] block mt-2">Help or Hurt</span>
+            <span className="text-[#2F6FED] block mt-1">Your Sleep?</span>
           </motion.h2>
 
           <motion.div
@@ -90,7 +90,7 @@ export function Scene4() {
         <div className="flex items-center gap-4 text-[#94a3b8] text-[20px] font-medium bg-[#0F172A]/90 px-6 py-4 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
           <BookOpen className="shrink-0" size={26} />
           <p className="leading-relaxed text-left">
-            Source: General research on probiotic strain-specificity and gut microbiome diversity
+            Source: General sleep research on alcohol's effect on sleep architecture and REM suppression
           </p>
         </div>
       </motion.div>
