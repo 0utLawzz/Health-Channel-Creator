@@ -7,7 +7,6 @@
  */
 import * as zod from 'zod';
 
-const EPISODE_STATUSES = ['draft', 'scripted', 'complete', 'review', 'approved', 'scheduled', 'published', 'building', 'rejected'] as const;
 
 /**
  * @summary Health check
@@ -21,14 +20,14 @@ export const HealthCheckResponse = zod.object({
  * @summary List all episodes
  */
 export const ListEpisodesQueryParams = zod.object({
-  "status": zod.enum(EPISODE_STATUSES).optional(),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']).optional(),
   "season": zod.coerce.string().optional()
 })
 
 export const ListEpisodesResponseItem = zod.object({
   "id": zod.number(),
   "epNumber": zod.number(),
-  "status": zod.enum(EPISODE_STATUSES),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']),
   "dateBuilt": zod.string().nullish(),
   "postDate": zod.string(),
   "season": zod.string(),
@@ -43,8 +42,7 @@ export const ListEpisodesResponseItem = zod.object({
   "citationCta": zod.string(),
   "hashtags": zod.string(),
   "youtubeVideoId": zod.string().nullish(),
-  "buildStage": zod.string().nullish(),
-  "buildNote": zod.string().nullish(),
+  "facebookVideoId": zod.string().nullish(),
   "scheduledPublishAt": zod.string().nullish(),
   "approvedAt": zod.string().nullish(),
   "publishedAt": zod.string().nullish(),
@@ -55,21 +53,68 @@ export const ListEpisodesResponse = zod.array(ListEpisodesResponseItem)
 
 
 /**
+ * @summary Create a new episode (enters building pipeline)
+ */
+export const createEpisodeBodyDurationDefault = `60s`;
+export const createEpisodeBodyBgSoundDefault = `calm ambient`;
+export const createEpisodeBodyAspectRatioDefault = `9:16`;
+
+export const CreateEpisodeBody = zod.object({
+  "epNumber": zod.number(),
+  "postDate": zod.string(),
+  "season": zod.string(),
+  "duration": zod.string().default(createEpisodeBodyDurationDefault),
+  "hookTitle": zod.string(),
+  "youtubeTitle": zod.string(),
+  "voScript": zod.string(),
+  "visualDirection": zod.string(),
+  "bgSound": zod.string().default(createEpisodeBodyBgSoundDefault),
+  "thumbnailPrompt": zod.string(),
+  "citationCta": zod.string(),
+  "hashtags": zod.string(),
+  "aspectRatio": zod.string().default(createEpisodeBodyAspectRatioDefault)
+})
+
+export const CreateEpisodeResponse = zod.object({
+  "id": zod.number(),
+  "epNumber": zod.number(),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']),
+  "dateBuilt": zod.string().nullish(),
+  "postDate": zod.string(),
+  "season": zod.string(),
+  "aspectRatio": zod.string().optional(),
+  "duration": zod.string(),
+  "hookTitle": zod.string(),
+  "youtubeTitle": zod.string(),
+  "voScript": zod.string(),
+  "visualDirection": zod.string(),
+  "bgSound": zod.string(),
+  "thumbnailPrompt": zod.string(),
+  "citationCta": zod.string(),
+  "hashtags": zod.string(),
+  "youtubeVideoId": zod.string().nullish(),
+  "facebookVideoId": zod.string().nullish(),
+  "scheduledPublishAt": zod.string().nullish(),
+  "approvedAt": zod.string().nullish(),
+  "publishedAt": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
  * @summary Get episode stats summary
  */
 export const GetEpisodeStatsResponse = zod.object({
   "total": zod.number(),
   "byStatus": zod.object({
-    "draft": zod.number(),
-    "scripted": zod.number(),
-    "complete": zod.number(),
-    "review": zod.number(),
-    "approved": zod.number(),
-    "scheduled": zod.number(),
-    "published": zod.number(),
-    "building": zod.number(),
-    "rejected": zod.number()
-  }),
+  "draft": zod.number(),
+  "complete": zod.number(),
+  "review": zod.number(),
+  "approved": zod.number(),
+  "scheduled": zod.number(),
+  "published": zod.number()
+}),
   "nextPostDate": zod.string().nullish(),
   "publishedThisMonth": zod.number()
 })
@@ -81,7 +126,7 @@ export const GetEpisodeStatsResponse = zod.object({
 export const GetUpcomingEpisodesResponseItem = zod.object({
   "id": zod.number(),
   "epNumber": zod.number(),
-  "status": zod.enum(EPISODE_STATUSES),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']),
   "dateBuilt": zod.string().nullish(),
   "postDate": zod.string(),
   "season": zod.string(),
@@ -96,8 +141,7 @@ export const GetUpcomingEpisodesResponseItem = zod.object({
   "citationCta": zod.string(),
   "hashtags": zod.string(),
   "youtubeVideoId": zod.string().nullish(),
-  "buildStage": zod.string().nullish(),
-  "buildNote": zod.string().nullish(),
+  "facebookVideoId": zod.string().nullish(),
   "scheduledPublishAt": zod.string().nullish(),
   "approvedAt": zod.string().nullish(),
   "publishedAt": zod.string().nullish(),
@@ -117,7 +161,7 @@ export const GetEpisodeParams = zod.object({
 export const GetEpisodeResponse = zod.object({
   "id": zod.number(),
   "epNumber": zod.number(),
-  "status": zod.enum(EPISODE_STATUSES),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']),
   "dateBuilt": zod.string().nullish(),
   "postDate": zod.string(),
   "season": zod.string(),
@@ -132,8 +176,7 @@ export const GetEpisodeResponse = zod.object({
   "citationCta": zod.string(),
   "hashtags": zod.string(),
   "youtubeVideoId": zod.string().nullish(),
-  "buildStage": zod.string().nullish(),
-  "buildNote": zod.string().nullish(),
+  "facebookVideoId": zod.string().nullish(),
   "scheduledPublishAt": zod.string().nullish(),
   "approvedAt": zod.string().nullish(),
   "publishedAt": zod.string().nullish(),
@@ -150,19 +193,17 @@ export const UpdateEpisodeParams = zod.object({
 })
 
 export const UpdateEpisodeBody = zod.object({
-  "status": zod.enum(EPISODE_STATUSES).optional(),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']).optional(),
   "youtubeTitle": zod.string().optional(),
   "citationCta": zod.string().optional(),
   "hashtags": zod.string().optional(),
-  "scheduledPublishAt": zod.string().optional(),
-  "buildStage": zod.string().optional(),
-  "buildNote": zod.string().optional()
+  "scheduledPublishAt": zod.string().optional()
 })
 
 export const UpdateEpisodeResponse = zod.object({
   "id": zod.number(),
   "epNumber": zod.number(),
-  "status": zod.enum(EPISODE_STATUSES),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']),
   "dateBuilt": zod.string().nullish(),
   "postDate": zod.string(),
   "season": zod.string(),
@@ -177,8 +218,7 @@ export const UpdateEpisodeResponse = zod.object({
   "citationCta": zod.string(),
   "hashtags": zod.string(),
   "youtubeVideoId": zod.string().nullish(),
-  "buildStage": zod.string().nullish(),
-  "buildNote": zod.string().nullish(),
+  "facebookVideoId": zod.string().nullish(),
   "scheduledPublishAt": zod.string().nullish(),
   "approvedAt": zod.string().nullish(),
   "publishedAt": zod.string().nullish(),
@@ -197,7 +237,7 @@ export const ApproveEpisodeParams = zod.object({
 export const ApproveEpisodeResponse = zod.object({
   "id": zod.number(),
   "epNumber": zod.number(),
-  "status": zod.enum(EPISODE_STATUSES),
+  "status": zod.enum(['draft', 'complete', 'review', 'approved', 'scheduled', 'published']),
   "dateBuilt": zod.string().nullish(),
   "postDate": zod.string(),
   "season": zod.string(),
@@ -212,8 +252,7 @@ export const ApproveEpisodeResponse = zod.object({
   "citationCta": zod.string(),
   "hashtags": zod.string(),
   "youtubeVideoId": zod.string().nullish(),
-  "buildStage": zod.string().nullish(),
-  "buildNote": zod.string().nullish(),
+  "facebookVideoId": zod.string().nullish(),
   "scheduledPublishAt": zod.string().nullish(),
   "approvedAt": zod.string().nullish(),
   "publishedAt": zod.string().nullish(),
@@ -221,27 +260,6 @@ export const ApproveEpisodeResponse = zod.object({
   "updatedAt": zod.string()
 })
 
-
-/**
- * @summary Create a new episode (enters building pipeline)
- */
-export const CreateEpisodeBody = zod.object({
-  "epNumber": zod.number(),
-  "postDate": zod.string(),
-  "season": zod.string(),
-  "duration": zod.string().default("60s"),
-  "hookTitle": zod.string(),
-  "youtubeTitle": zod.string(),
-  "voScript": zod.string(),
-  "visualDirection": zod.string(),
-  "bgSound": zod.string().default("calm ambient"),
-  "thumbnailPrompt": zod.string(),
-  "citationCta": zod.string(),
-  "hashtags": zod.string(),
-  "aspectRatio": zod.string().default("9:16")
-})
-
-export const CreateEpisodeParams = zod.object({})
 
 /**
  * @summary Get build status for an episode
@@ -330,3 +348,37 @@ export const PublishToYouTubeResponse = zod.object({
   "scheduledAt": zod.string().nullish(),
   "message": zod.string()
 })
+
+
+/**
+ * @summary Check if Facebook page is connected
+ */
+export const GetFacebookStatusResponse = zod.object({
+  "connected": zod.boolean(),
+  "pageId": zod.string().nullish()
+})
+
+
+/**
+ * @summary Publish episode video to Facebook page
+ */
+export const PublishToFacebookParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const publishToFacebookBodyPublishedDefault = true;
+
+export const PublishToFacebookBody = zod.object({
+  "scheduleAt": zod.string().nullish().describe('ISO datetime to schedule. Null = publish immediately.'),
+  "published": zod.boolean().default(publishToFacebookBodyPublishedDefault).describe('Whether the video should be published immediately or saved as draft.')
+})
+
+export const PublishToFacebookResponse = zod.object({
+  "success": zod.boolean(),
+  "facebookVideoId": zod.string().nullish(),
+  "facebookUrl": zod.string().nullish(),
+  "scheduledAt": zod.string().nullish(),
+  "message": zod.string()
+})
+
+

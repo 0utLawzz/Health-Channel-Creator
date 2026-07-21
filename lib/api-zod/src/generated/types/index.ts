@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './buildStatus';
+export * from './createEpisodeBody';
 export * from './episode';
 export * from './episodeStats';
 export * from './episodeStatsByStatus';
@@ -13,11 +15,17 @@ export * from './episodeStatus';
 export * from './episodeUpdate';
 export * from './episodeUpdateStatus';
 export * from './errorResponse';
+export * from './facebookPublishRequest';
+export * from './facebookPublishResult';
+export * from './facebookStatus';
 export * from './healthStatus';
 export * from './listEpisodesParams';
 export * from './listEpisodesStatus';
 export * from './publishRequest';
 export * from './publishRequestPrivacyStatus';
 export * from './publishResult';
+export * from './rejectEpisodeBody';
+export * from './rejectEpisodeResponse';
+export * from './runProductionResult';
 export * from './youTubeAuthUrl';
 export * from './youTubeStatus';

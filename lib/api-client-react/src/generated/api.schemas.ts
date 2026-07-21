@@ -18,14 +18,11 @@ export type EpisodeStatus = typeof EpisodeStatus[keyof typeof EpisodeStatus];
 
 export const EpisodeStatus = {
   draft: 'draft',
-  scripted: 'scripted',
   complete: 'complete',
   review: 'review',
   approved: 'approved',
   scheduled: 'scheduled',
   published: 'published',
-  building: 'building',
-  rejected: 'rejected',
 } as const;
 
 export interface Episode {
@@ -49,9 +46,7 @@ export interface Episode {
   /** @nullable */
   youtubeVideoId?: string | null;
   /** @nullable */
-  buildStage?: string | null;
-  /** @nullable */
-  buildNote?: string | null;
+  facebookVideoId?: string | null;
   /** @nullable */
   scheduledPublishAt?: string | null;
   /** @nullable */
@@ -67,14 +62,11 @@ export type EpisodeUpdateStatus = typeof EpisodeUpdateStatus[keyof typeof Episod
 
 export const EpisodeUpdateStatus = {
   draft: 'draft',
-  scripted: 'scripted',
   complete: 'complete',
   review: 'review',
   approved: 'approved',
   scheduled: 'scheduled',
   published: 'published',
-  building: 'building',
-  rejected: 'rejected',
 } as const;
 
 export interface EpisodeUpdate {
@@ -83,20 +75,15 @@ export interface EpisodeUpdate {
   citationCta?: string;
   hashtags?: string;
   scheduledPublishAt?: string;
-  buildStage?: string;
-  buildNote?: string;
 }
 
 export type EpisodeStatsByStatus = {
   draft: number;
-  scripted: number;
   complete: number;
   review: number;
   approved: number;
   scheduled: number;
   published: number;
-  building: number;
-  rejected: number;
 };
 
 export interface EpisodeStats {
@@ -148,36 +135,43 @@ export interface PublishResult {
   message: string;
 }
 
-export type ListEpisodesParams = {
-status?: ListEpisodesStatus;
-season?: string;
-};
+export interface FacebookStatus {
+  connected: boolean;
+  /** @nullable */
+  pageId?: string | null;
+}
 
-export type ListEpisodesStatus = typeof ListEpisodesStatus[keyof typeof ListEpisodesStatus];
+export interface FacebookPublishRequest {
+  /**
+     * ISO datetime to schedule. Null = publish immediately.
+     * @nullable
+     */
+  scheduleAt?: string | null;
+  /** Whether the video should be published immediately or saved as draft. */
+  published?: boolean;
+}
 
-
-export const ListEpisodesStatus = {
-  draft: 'draft',
-  scripted: 'scripted',
-  complete: 'complete',
-  review: 'review',
-  approved: 'approved',
-  scheduled: 'scheduled',
-  published: 'published',
-  building: 'building',
-  rejected: 'rejected',
-} as const;
+export interface FacebookPublishResult {
+  success: boolean;
+  /** @nullable */
+  facebookVideoId?: string | null;
+  /** @nullable */
+  facebookUrl?: string | null;
+  /** @nullable */
+  scheduledAt?: string | null;
+  message: string;
+}
 
 export interface CreateEpisodeBody {
   epNumber: number;
   postDate: string;
   season: string;
-  duration: string;
+  duration?: string;
   hookTitle: string;
   youtubeTitle: string;
   voScript: string;
   visualDirection: string;
-  bgSound: string;
+  bgSound?: string;
   thumbnailPrompt: string;
   citationCta: string;
   hashtags: string;
@@ -204,3 +198,28 @@ export interface RunProductionResult {
 export interface RejectEpisodeBody {
   buildNote?: string;
 }
+
+export interface RejectEpisodeResponse {
+  id: number;
+  status: string;
+  /** @nullable */
+  buildNote?: string | null;
+}
+
+export type ListEpisodesParams = {
+status?: ListEpisodesStatus;
+season?: string;
+};
+
+export type ListEpisodesStatus = typeof ListEpisodesStatus[keyof typeof ListEpisodesStatus];
+
+
+export const ListEpisodesStatus = {
+  draft: 'draft',
+  complete: 'complete',
+  review: 'review',
+  approved: 'approved',
+  scheduled: 'scheduled',
+  published: 'published',
+} as const;
+

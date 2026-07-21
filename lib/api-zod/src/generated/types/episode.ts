@@ -28,9 +28,7 @@ export interface Episode {
   /** @nullable */
   youtubeVideoId?: string | null;
   /** @nullable */
-  buildStage?: string | null;
-  /** @nullable */
-  buildNote?: string | null;
+  facebookVideoId?: string | null;
   /** @nullable */
   scheduledPublishAt?: string | null;
   /** @nullable */

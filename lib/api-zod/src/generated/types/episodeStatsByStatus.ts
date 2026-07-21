@@ -8,12 +8,9 @@
 
 export type EpisodeStatsByStatus = {
   draft: number;
-  scripted: number;
   complete: number;
   review: number;
   approved: number;
   scheduled: number;
   published: number;
-  building: number;
-  rejected: number;
 };

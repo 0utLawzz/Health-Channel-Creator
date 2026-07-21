@@ -32,6 +32,7 @@ export const episodesTable = pgTable("episodes", {
   citationCta: text("citation_cta").notNull(),
   hashtags: text("hashtags").notNull(),
   youtubeVideoId: text("youtube_video_id"),
+  facebookVideoId: text("facebook_video_id"),
   buildStage: text("build_stage"),
   buildNote: text("build_note"),
   scheduledPublishAt: timestamp("scheduled_publish_at"),

@@ -26,11 +26,15 @@ import type {
   EpisodeStats,
   EpisodeUpdate,
   ErrorResponse,
+  FacebookPublishRequest,
+  FacebookPublishResult,
+  FacebookStatus,
   HealthStatus,
   ListEpisodesParams,
   PublishRequest,
   PublishResult,
   RejectEpisodeBody,
+  RejectEpisodeResponse,
   RunProductionResult,
   YouTubeAuthUrl,
   YouTubeStatus
@@ -223,6 +227,77 @@ export function useListEpisodes<TData = Awaited<ReturnType<typeof listEpisodes>>
 
 
 
+
+export const getCreateEpisodeUrl = () => {
+
+
+
+
+  return `/api/episodes`
+}
+
+/**
+ * @summary Create a new episode (enters building pipeline)
+ */
+export const createEpisode = async (createEpisodeBody: CreateEpisodeBody, options?: RequestInit): Promise<Episode> => {
+
+  return customFetch<Episode>(getCreateEpisodeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createEpisodeBody)
+  }
+);}
+
+
+
+
+
+export const getCreateEpisodeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createEpisode>>, TError,{data: BodyType<CreateEpisodeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createEpisode>>, TError,{data: BodyType<CreateEpisodeBody>}, TContext> => {
+
+const mutationKey = ['createEpisode'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createEpisode>>, {data: BodyType<CreateEpisodeBody>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createEpisode(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateEpisodeMutationResult = NonNullable<Awaited<ReturnType<typeof createEpisode>>>
+    export type CreateEpisodeMutationBody = BodyType<CreateEpisodeBody>
+    export type CreateEpisodeMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a new episode (enters building pipeline)
+ */
+export const useCreateEpisode = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createEpisode>>, TError,{data: BodyType<CreateEpisodeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createEpisode>>,
+        TError,
+        {data: BodyType<CreateEpisodeBody>},
+        TContext
+      > => {
+      return useMutation(getCreateEpisodeMutationOptions(options));
+    }
 
 export const getGetEpisodeStatsUrl = () => {
 
@@ -598,6 +673,226 @@ export const useApproveEpisode = <TError = ErrorType<unknown>,
       return useMutation(getApproveEpisodeMutationOptions(options));
     }
 
+export const getGetBuildStatusUrl = (id: number,) => {
+
+
+
+
+  return `/api/episodes/${id}/build-status`
+}
+
+/**
+ * @summary Get build status for an episode
+ */
+export const getBuildStatus = async (id: number, options?: RequestInit): Promise<BuildStatus> => {
+
+  return customFetch<BuildStatus>(getGetBuildStatusUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBuildStatusQueryKey = (id: number,) => {
+    return [
+    `/api/episodes/${id}/build-status`
+    ] as const;
+    }
+
+
+export const getGetBuildStatusQueryOptions = <TData = Awaited<ReturnType<typeof getBuildStatus>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBuildStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBuildStatusQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBuildStatus>>> = ({ signal }) => getBuildStatus(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBuildStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBuildStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getBuildStatus>>>
+export type GetBuildStatusQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get build status for an episode
+ */
+
+export function useGetBuildStatus<TData = Awaited<ReturnType<typeof getBuildStatus>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBuildStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBuildStatusQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRunProductionUrl = (id: number,) => {
+
+
+
+
+  return `/api/episodes/${id}/run-production`
+}
+
+/**
+ * @summary Trigger production render for an episode
+ */
+export const runProduction = async (id: number, options?: RequestInit): Promise<RunProductionResult> => {
+
+  return customFetch<RunProductionResult>(getRunProductionUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRunProductionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runProduction>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof runProduction>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['runProduction'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof runProduction>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  runProduction(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RunProductionMutationResult = NonNullable<Awaited<ReturnType<typeof runProduction>>>
+
+    export type RunProductionMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Trigger production render for an episode
+ */
+export const useRunProduction = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runProduction>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof runProduction>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getRunProductionMutationOptions(options));
+    }
+
+export const getRejectEpisodeUrl = (id: number,) => {
+
+
+
+
+  return `/api/episodes/${id}/reject`
+}
+
+/**
+ * @summary Reject a building episode
+ */
+export const rejectEpisode = async (id: number,
+    rejectEpisodeBody?: RejectEpisodeBody, options?: RequestInit): Promise<RejectEpisodeResponse> => {
+
+  return customFetch<RejectEpisodeResponse>(getRejectEpisodeUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(rejectEpisodeBody)
+  }
+);}
+
+
+
+
+
+export const getRejectEpisodeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rejectEpisode>>, TError,{id: number;data?: BodyType<RejectEpisodeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof rejectEpisode>>, TError,{id: number;data?: BodyType<RejectEpisodeBody>}, TContext> => {
+
+const mutationKey = ['rejectEpisode'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof rejectEpisode>>, {id: number;data?: BodyType<RejectEpisodeBody>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  rejectEpisode(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RejectEpisodeMutationResult = NonNullable<Awaited<ReturnType<typeof rejectEpisode>>>
+    export type RejectEpisodeMutationBody = BodyType<RejectEpisodeBody> | undefined
+    export type RejectEpisodeMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Reject a building episode
+ */
+export const useRejectEpisode = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rejectEpisode>>, TError,{id: number;data?: BodyType<RejectEpisodeBody>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof rejectEpisode>>,
+        TError,
+        {id: number;data?: BodyType<RejectEpisodeBody>},
+        TContext
+      > => {
+      return useMutation(getRejectEpisodeMutationOptions(options));
+    }
+
 export const getGetYouTubeAuthUrlUrl = () => {
 
 
@@ -824,134 +1119,152 @@ export const usePublishToYouTube = <TError = ErrorType<ErrorResponse>,
       return useMutation(getPublishToYouTubeMutationOptions(options));
     }
 
+export const getGetFacebookStatusUrl = () => {
 
 
-// ── New Build Pipeline Hooks ───────────────────────────────────────────────────
 
-export const getCreateEpisodeUrl = () => `/api/episodes`
 
-export const createEpisode = async (createEpisodeBody: CreateEpisodeBody, options?: RequestInit): Promise<Episode> => {
-  return customFetch<Episode>(getCreateEpisodeUrl(), {
+  return `/api/facebook/status`
+}
+
+/**
+ * @summary Check if Facebook page is connected
+ */
+export const getFacebookStatus = async ( options?: RequestInit): Promise<FacebookStatus> => {
+
+  return customFetch<FacebookStatus>(getGetFacebookStatusUrl(),
+  {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createEpisodeBody)
-  });
-}
-
-export const getCreateEpisodeMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createEpisode>>, TError, { data: BodyType<CreateEpisodeBody> }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationOptions<Awaited<ReturnType<typeof createEpisode>>, TError, { data: BodyType<CreateEpisodeBody> }, TContext> => {
-  const mutationKey = ['createEpisode'];
-  const { mutation: mutationOptions, request: requestOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof createEpisode>>, { data: BodyType<CreateEpisodeBody> }> = (props) => {
-    const { data } = props ?? {};
-    return createEpisode(data, requestOptions);
-  };
-  return { mutationFn, ...mutationOptions };
-};
-
-export type CreateEpisodeMutationResult = NonNullable<Awaited<ReturnType<typeof createEpisode>>>
-export type CreateEpisodeMutationBody = BodyType<CreateEpisodeBody>
-export type CreateEpisodeMutationError = ErrorType<unknown>
-
-export const useCreateEpisode = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createEpisode>>, TError, { data: BodyType<CreateEpisodeBody> }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationResult<Awaited<ReturnType<typeof createEpisode>>, TError, { data: BodyType<CreateEpisodeBody> }, TContext> => {
-  return useMutation(getCreateEpisodeMutationOptions(options));
-};
+    method: 'GET'
 
 
-export const getGetBuildStatusUrl = (id: number) => `/api/episodes/${id}/build-status`
+  }
+);}
 
-export const getBuildStatus = async (id: number, options?: RequestInit): Promise<BuildStatus> => {
-  return customFetch<BuildStatus>(getGetBuildStatusUrl(id), { ...options, method: 'GET' });
-}
 
-export const getGetBuildStatusQueryKey = (id: number) => [`/api/episodes/${id}/build-status`] as const;
 
-export const getGetBuildStatusQueryOptions = <TData = Awaited<ReturnType<typeof getBuildStatus>>, TError = ErrorType<unknown>>(
-  id: number,
-  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getBuildStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+
+
+export const getGetFacebookStatusQueryKey = () => {
+    return [
+    `/api/facebook/status`
+    ] as const;
+    }
+
+
+export const getGetFacebookStatusQueryOptions = <TData = Awaited<ReturnType<typeof getFacebookStatus>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getFacebookStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-  const queryKey = queryOptions?.queryKey ?? getGetBuildStatusQueryKey(id);
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBuildStatus>>> = ({ signal }) => getBuildStatus(id, { signal, ...requestOptions });
-  return { queryKey, queryFn, enabled: Boolean(id), ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getBuildStatus>>, TError, TData> & { queryKey: QueryKey };
-};
 
-export const useGetBuildStatus = <TData = Awaited<ReturnType<typeof getBuildStatus>>, TError = ErrorType<unknown>>(
-  id: number,
-  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getBuildStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetBuildStatusQueryOptions(id, options);
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
-  return withQueryKey(query, queryOptions.queryKey);
-};
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetFacebookStatusQueryKey();
 
 
-export const getRunProductionUrl = (id: number) => `/api/episodes/${id}/run-production`
 
-export const runProduction = async (id: number, options?: RequestInit): Promise<RunProductionResult> => {
-  return customFetch<RunProductionResult>(getRunProductionUrl(id), { ...options, method: 'POST' });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getFacebookStatus>>> = ({ signal }) => getFacebookStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getFacebookStatus>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export const getRunProductionMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof runProduction>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationOptions<Awaited<ReturnType<typeof runProduction>>, TError, { id: number }, TContext> => {
-  const mutationKey = ['runProduction'];
-  const { mutation: mutationOptions, request: requestOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof runProduction>>, { id: number }> = (props) => {
-    const { id } = props ?? {};
-    return runProduction(id, requestOptions);
-  };
-  return { mutationFn, ...mutationOptions };
-};
-
-export const useRunProduction = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof runProduction>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationResult<Awaited<ReturnType<typeof runProduction>>, TError, { id: number }, TContext> => {
-  return useMutation(getRunProductionMutationOptions(options));
-};
+export type GetFacebookStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getFacebookStatus>>>
+export type GetFacebookStatusQueryError = ErrorType<unknown>
 
 
-export const getRejectEpisodeUrl = (id: number) => `/api/episodes/${id}/reject`
+/**
+ * @summary Check if Facebook page is connected
+ */
 
-export const rejectEpisode = async (id: number, rejectEpisodeBody?: RejectEpisodeBody, options?: RequestInit): Promise<Episode> => {
-  return customFetch<Episode>(getRejectEpisodeUrl(id), {
+export function useGetFacebookStatus<TData = Awaited<ReturnType<typeof getFacebookStatus>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getFacebookStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetFacebookStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getPublishToFacebookUrl = (id: number,) => {
+
+
+
+
+  return `/api/facebook/publish/${id}`
+}
+
+/**
+ * @summary Publish episode video to Facebook page
+ */
+export const publishToFacebook = async (id: number,
+    facebookPublishRequest: FacebookPublishRequest, options?: RequestInit): Promise<FacebookPublishResult> => {
+
+  return customFetch<FacebookPublishResult>(getPublishToFacebookUrl(id),
+  {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(rejectEpisodeBody ?? {})
-  });
-}
+    body: JSON.stringify(facebookPublishRequest)
+  }
+);}
 
-export const getRejectEpisodeMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof rejectEpisode>>, TError, { id: number; data?: BodyType<RejectEpisodeBody> }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationOptions<Awaited<ReturnType<typeof rejectEpisode>>, TError, { id: number; data?: BodyType<RejectEpisodeBody> }, TContext> => {
-  const mutationKey = ['rejectEpisode'];
-  const { mutation: mutationOptions, request: requestOptions } = options ?
-    options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, request: undefined };
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof rejectEpisode>>, { id: number; data?: BodyType<RejectEpisodeBody> }> = (props) => {
-    const { id, data } = props ?? {};
-    return rejectEpisode(id, data, requestOptions);
-  };
-  return { mutationFn, ...mutationOptions };
-};
 
-export const useRejectEpisode = <TError = ErrorType<unknown>, TContext = unknown>(
-  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof rejectEpisode>>, TError, { id: number; data?: BodyType<RejectEpisodeBody> }, TContext>, request?: SecondParameter<typeof customFetch> }
-): UseMutationResult<Awaited<ReturnType<typeof rejectEpisode>>, TError, { id: number; data?: BodyType<RejectEpisodeBody> }, TContext> => {
-  return useMutation(getRejectEpisodeMutationOptions(options));
-};
 
-/** Returns the direct URL to stream an episode's exported mp4 */
-export const getEpisodeVideoUrl = (id: number) => `/api/episodes/${id}/video`;
+
+
+export const getPublishToFacebookMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof publishToFacebook>>, TError,{id: number;data: BodyType<FacebookPublishRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof publishToFacebook>>, TError,{id: number;data: BodyType<FacebookPublishRequest>}, TContext> => {
+
+const mutationKey = ['publishToFacebook'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof publishToFacebook>>, {id: number;data: BodyType<FacebookPublishRequest>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  publishToFacebook(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PublishToFacebookMutationResult = NonNullable<Awaited<ReturnType<typeof publishToFacebook>>>
+    export type PublishToFacebookMutationBody = BodyType<FacebookPublishRequest>
+    export type PublishToFacebookMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Publish episode video to Facebook page
+ */
+export const usePublishToFacebook = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof publishToFacebook>>, TError,{id: number;data: BodyType<FacebookPublishRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof publishToFacebook>>,
+        TError,
+        {id: number;data: BodyType<FacebookPublishRequest>},
+        TContext
+      > => {
+      return useMutation(getPublishToFacebookMutationOptions(options));
+    }
+

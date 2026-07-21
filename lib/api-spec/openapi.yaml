@@ -13,6 +13,8 @@ tags:
     description: Episode management
   - name: youtube
     description: YouTube publishing operations
+  - name: facebook
+    description: Facebook page publishing operations
 paths:
   /healthz:
     get:
@@ -51,6 +53,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Episode"
+    post:
+      operationId: createEpisode
+      tags: [episodes]
+      summary: Create a new episode (enters building pipeline)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEpisodeBody"
+      responses:
+        "201":
+          description: Created episode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Episode"
 
   /episodes/stats:
     get:
@@ -147,6 +166,69 @@ paths:
               schema:
                 $ref: "#/components/schemas/Episode"
 
+  /episodes/{id}/build-status:
+    get:
+      operationId: getBuildStatus
+      tags: [episodes]
+      summary: Get build status for an episode
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Build status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuildStatus"
+
+  /episodes/{id}/run-production:
+    post:
+      operationId: runProduction
+      tags: [episodes]
+      summary: Trigger production render for an episode
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Production started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunProductionResult"
+
+  /episodes/{id}/reject:
+    post:
+      operationId: rejectEpisode
+      tags: [episodes]
+      summary: Reject a building episode
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectEpisodeBody"
+      responses:
+        "200":
+          description: Rejected episode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RejectEpisodeResponse"
+
   /youtube/auth-url:
     get:
       operationId: getYouTubeAuthUrl
@@ -197,6 +279,50 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PublishResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /facebook/status:
+    get:
+      operationId: getFacebookStatus
+      tags: [facebook]
+      summary: Check if Facebook page is connected
+      responses:
+        "200":
+          description: Connection status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacebookStatus"
+
+  /facebook/publish/{id}:
+    post:
+      operationId: publishToFacebook
+      tags: [facebook]
+      summary: Publish episode video to Facebook page
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FacebookPublishRequest"
+      responses:
+        "200":
+          description: Facebook publish result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacebookPublishResult"
         "400":
           description: Bad request
           content:
@@ -257,6 +383,8 @@ components:
         hashtags:
           type: string
         youtubeVideoId:
+          type: ["string", "null"]
+        facebookVideoId:
           type: ["string", "null"]
         scheduledPublishAt:
           type: ["string", "null"]
@@ -372,3 +500,131 @@ components:
         message:
           type: string
       required: [success, message]
+
+    FacebookStatus:
+      type: object
+      properties:
+        connected:
+          type: boolean
+        pageId:
+          type: ["string", "null"]
+      required: [connected]
+
+    FacebookPublishRequest:
+      type: object
+      properties:
+        scheduleAt:
+          type: ["string", "null"]
+          description: ISO datetime to schedule. Null = publish immediately.
+        published:
+          type: boolean
+          default: true
+          description: Whether the video should be published immediately or saved as draft.
+      required: []
+
+    FacebookPublishResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        facebookVideoId:
+          type: ["string", "null"]
+        facebookUrl:
+          type: ["string", "null"]
+        scheduledAt:
+          type: ["string", "null"]
+        message:
+          type: string
+      required: [success, message]
+
+    CreateEpisodeBody:
+      type: object
+      properties:
+        epNumber:
+          type: integer
+        postDate:
+          type: string
+        season:
+          type: string
+        duration:
+          type: string
+          default: "60s"
+        hookTitle:
+          type: string
+        youtubeTitle:
+          type: string
+        voScript:
+          type: string
+        visualDirection:
+          type: string
+        bgSound:
+          type: string
+          default: "calm ambient"
+        thumbnailPrompt:
+          type: string
+        citationCta:
+          type: string
+        hashtags:
+          type: string
+        aspectRatio:
+          type: string
+          default: "9:16"
+      required:
+        - epNumber
+        - postDate
+        - season
+        - hookTitle
+        - youtubeTitle
+        - voScript
+        - visualDirection
+        - thumbnailPrompt
+        - citationCta
+        - hashtags
+
+    BuildStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        buildStage:
+          type: ["string", "null"]
+        buildNote:
+          type: ["string", "null"]
+        videoExists:
+          type: boolean
+        videoPath:
+          type: ["string", "null"]
+      required:
+        - id
+        - status
+        - videoExists
+
+    RunProductionResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success, message]
+
+    RejectEpisodeBody:
+      type: object
+      properties:
+        buildNote:
+          type: string
+
+    RejectEpisodeResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        buildNote:
+          type: ["string", "null"]
+      required:
+        - id
+        - status
