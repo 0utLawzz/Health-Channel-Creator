@@ -122,18 +122,48 @@ function graphApiBase(): string {
 }
 
 /** Returns a configured access token or throws. */
-function getCredentials(): { pageAccessToken: string; pageId: string } {
-  const pageAccessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+async function getCredentials(): Promise<{ pageAccessToken: string; pageId: string }> {
+  const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
   const pageId = process.env.FACEBOOK_PAGE_ID;
 
-  if (!pageAccessToken || !pageId) {
+  if (!token || !pageId) {
     throw new Error(
       "Facebook credentials are not configured " +
         "(FACEBOOK_PAGE_ACCESS_TOKEN / FACEBOOK_PAGE_ID).",
     );
   }
 
-  return { pageAccessToken, pageId };
+  // If the stored token is a user token, exchange it for the page access token.
+  // This lets callers supply either token type without manual conversion.
+  try {
+    const debugUrl = new URL(`${graphApiBase()}/debug_token`);
+    debugUrl.searchParams.set("input_token", token);
+    debugUrl.searchParams.set("access_token", token);
+    const debugRes = await fetch(debugUrl.toString());
+    const debugData = (await debugRes.json()) as Record<string, unknown>;
+    const tokenType = (debugData.data as Record<string, unknown>)?.type as string | undefined;
+
+    if (tokenType === "USER") {
+      // Exchange for page-scoped token
+      const pageUrl = new URL(`${graphApiBase()}/${pageId}`);
+      pageUrl.searchParams.set("fields", "access_token");
+      pageUrl.searchParams.set("access_token", token);
+      const pageRes = await fetch(pageUrl.toString());
+      const pageData = (await pageRes.json()) as Record<string, unknown>;
+      const pageToken = pageData.access_token as string | undefined;
+      if (!pageToken) {
+        throw new Error("Could not exchange user token for page access token — ensure the token has pages_manage_posts scope.");
+      }
+      logger.info({ pageId }, "Exchanged user token for page access token");
+      return { pageAccessToken: pageToken, pageId };
+    }
+  } catch (err) {
+    // If token type detection fails, proceed with the stored token and let
+    // Facebook's API surface any permission errors directly.
+    logger.warn({ err }, "Could not detect Facebook token type — using token as-is");
+  }
+
+  return { pageAccessToken: token, pageId };
 }
 
 /**
@@ -152,7 +182,7 @@ export async function uploadEpisodeToFacebook(
     return { facebookVideoId: fakeId, facebookUrl: `https://facebook.com/${fakeId}` };
   }
 
-  const { pageAccessToken, pageId } = getCredentials();
+  const { pageAccessToken, pageId } = await getCredentials();
 
   const url = new URL(`${graphApiBase()}/${pageId}/videos`);
   const form = new FormData();
