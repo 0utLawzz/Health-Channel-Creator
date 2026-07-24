@@ -48,6 +48,11 @@ const SCENE_DURATIONS: Record<number, Record<number, number>> = {
   48: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
   49: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
   50: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
+  51: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
+  52: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
+  53: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
+  54: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
+  55: { 0: 4500, 1: 6500, 2: 7000, 3: 6000, 4: 6500, 5: 5000 },
 };
 
 // Episode slugs for export folder naming
@@ -60,6 +65,11 @@ const EP_SLUGS: Record<number, string> = {
   48: 'magnesium-and-sleep',
   49: 'hiit-vs-steady-cardio',
   50: 'night-mode-and-sleep',
+  51: 'hair-washing-and-baldness',
+  52: 'seed-oils-and-inflammation',
+  53: 'raw-milk-vs-pasteurized',
+  54: 'animal-vs-plant-protein',
+  55: 'fluoride-in-water',
 };
 
 // ---------------------------------------------------------------------------
