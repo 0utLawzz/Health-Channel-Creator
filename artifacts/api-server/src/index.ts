@@ -329,16 +329,14 @@ app.listen(port, (err) => {
 
   logger.info({ port }, "Server listening");
 
-  // Start the background scheduler after the server is up.
-  // Run immediately on startup so any episodes that became due while the
-  // server was down are caught right away (not 15 min later).
-  const INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
-  runScheduledPublish().catch((err) =>
-    logger.error({ err }, "Scheduler: startup check failed"),
-  );
-  setInterval(runScheduledPublish, INTERVAL_MS);
-  logger.info(
-    { intervalMinutes: 15 },
-    "Scheduler started — checking for due episodes every 15 minutes",
-  );
+  // AUTO-SCHEDULER DISABLED — publishing is now managed manually via YouTube Studio.
+  // The runScheduledPublish function and /api/scheduler/log + /api/scheduler/run
+  // routes are kept for reference but the background interval is not started.
+  //
+  // const INTERVAL_MS = 15 * 60 * 1000;
+  // runScheduledPublish().catch((err) =>
+  //   logger.error({ err }, "Scheduler: startup check failed"),
+  // );
+  // setInterval(runScheduledPublish, INTERVAL_MS);
+  logger.info("Auto-scheduler disabled — manual YouTube Studio scheduling in use");
 });
